@@ -9,10 +9,12 @@ class Offset
 {
 	public var x:Float;
 	public var y:Float;
+	public var asPercentage:Bool = false;
 
-	public function new(x:Float, y:Float)
+	public function new(x:Float, y:Float, asPercentage:Bool = false)
 	{
 		this.x = x;
 		this.y = y;
+		this.asPercentage = asPercentage;
 	}
 }

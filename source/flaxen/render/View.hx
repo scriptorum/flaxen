@@ -170,8 +170,10 @@ class View extends com.haxepunk.Entity
 			if(hasComponent(Offset))
 			{
 				var o = getComponent(Offset);
-				offsetX = ((img == null || img.scaleX == 1) ? o.x : o.x * img.scaleX);
-				offsetY = ((img == null || img.scaleY == 1) ? o.y : o.y * img.scaleY);
+				var ox = (o.asPercentage ? o.x * img.width : o.x);
+				var oy = (o.asPercentage ? o.y * img.height : o.y);
+				offsetX = ((img == null || img.scaleX == 1) ? ox : ox * img.scaleX);
+				offsetY = ((img == null || img.scaleY == 1) ? oy : oy * img.scaleY);
 			}
 
 			var pos = getComponent(Position);

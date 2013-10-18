@@ -255,8 +255,16 @@ class EntityService
 		var off = e.get(Offset);
 		if(off != null)
 		{
-			x -= off.x;
-			y -= off.y;
+			if(off.asPercentage)
+			{
+				x -= off.x * image.width;
+				y -= off.y * image.height;
+			}
+			else
+			{
+				x -= off.x;
+				y -= off.y;
+			}
 		}
 
 		return(x >= pos.x && x < (pos.x + image.width) && 
