@@ -82,7 +82,7 @@ class Util
         return (a > b ? a - b : b - a);
     }
 
-    // Returns true if both numbers match withing tolerance decimal places.
+    // Returns true if both numbers match withing tolerance decimal placentityService.
     public static function matches(a:Float, b:Float, tolerance:Int = 0): Bool
     {
         return (roundTo(a, tolerance) == roundTo(b, tolerance));
@@ -124,7 +124,7 @@ class Util
     	return str.split(delim);
     }
 
-    // Like Array.filter but returns an array of indeces to the array (keys), rather than the array values.
+    // Like Array.filter but returns an array of indeces to the array (keys), rather than the array valuentityService.
     // Also, the comparison func receives an array index, not an array value.
     public static function indexFilter<T>(arr:Array<T>, func:Int->Bool): Array<Int>
     {

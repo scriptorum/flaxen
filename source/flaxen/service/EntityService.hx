@@ -37,34 +37,9 @@ class DependentsNode extends Node<DependentsNode>
 
 class EntityService
 {
-	public static inline var CONFIG:String = "configuration";
 	public static inline var CONTROL:String = "control";
 	public static inline var APPLICATION:String = "application";
-	public static inline var MUSIC_ID:String = "musicId";
-	public static inline var PLAY_EXCLUSION:String = "playExlusion"; // for transitions
-	public static inline var LEVELEND_CONTINUE:String = "buttonContinue";
-	public static inline var LEVELEND_REPLAY:String = "buttonReplay";
-	public static inline var BACK_BUTTON:String = "backButton";
-	public static inline var MAINMENU_NEW:String = "mainMenuNew";
-	public static inline var MAINMENU_CONTINUE:String = "mainMenuContinue";
-	public static inline var MAINMENU_SELECT:String = "mainMenuSelect";
-	public static inline var MAINMENU_MUTE:String = "mainMenuMute";
-	public static inline var GAME_INTERACTIONS:String = "gameInteractionsMarker";
-	public static inline var DISABLE_ORB_DEATH:String = "disableOrbDeath";
-	public static inline var EDITOR:String = "editor";
-	public static inline var DEFAULT_FONT:String = "font/vademecu.ttf";
-	public static inline var MAIN_FONT:String = "font/Cacophony Loud.ttf";
-	public static inline var SELECT_FONT:String = "font/AccidentalPresidency.ttf";
-	public static inline var LEVEL_FONT:String = DEFAULT_FONT;
 	public static inline var GLOBAL_AUDIO_NAME:String = "globalAudio";
-	public static inline var POPUP_TITLE_FONT_SIZE:Int = 20;
-	public static inline var POPUP_TEXT_FONT_SIZE:Int = 16;
-	public static inline var POPUP_TEXT_FONT_LEADING:Int = -1;
-	public static inline var SELECT_TITLE_FONT_SIZE:Int = 30;
-	public static inline var SELECT_TEXT_FONT_SIZE:Int = 24;
-
-	public static inline var TIP_FONT_NAME:String = MAIN_FONT;
-	public static inline var TIP_FONT_SIZE:Int = 18;
 
 	public var engine:Engine;
 	public var nextId:Int = 0;
@@ -164,7 +139,7 @@ class EntityService
 		removeDependents(node.entity);
 	}
 
-	// Creates a lifecycle dependency between entities. When the parent entity
+	// Creates a lifecycle dependency between entitientityService. When the parent entity
 	// is destroyed, all of its dependent children will also be immediately destroyed.
 	public function addDependent(parent:Entity, child:Entity): Void
 	{		

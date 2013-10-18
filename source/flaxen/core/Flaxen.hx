@@ -21,9 +21,9 @@ import flaxen.system.ActionSystem;
 class Flaxen extends com.haxepunk.Engine
 {
 	public var ash:ash.core.Engine;
+	public var entityService:EntityService;
 	
 	private var nextSystemPriority:Int = 0;
-	private var factory:EntityService;
 
 	public function new()
 	{
@@ -40,8 +40,8 @@ class Flaxen extends com.haxepunk.Engine
 			HXP.console.enable();
 		#end
 
-		ash = new ash.core.Engine(); // ecs
-		factory = new EntityService(ash); // factory service
+		this.ash = new ash.core.Engine(); // ecs
+		this.entityService = new EntityService(ash);
 		initSystems(); // ash systems
 
 		HXP.scene = new FlaxenScene(this);
@@ -51,11 +51,11 @@ class Flaxen extends com.haxepunk.Engine
 	{
 		// addSystem(new InitSystem(ash, factory));
 		// addSystem(new InputSystem(ash, factory));
-		addSystem(new ActionSystem(ash, factory));
-		addSystem(new TweeningSystem(ash, factory));
-		addSystem(new CameraSystem(ash, factory));
-		addSystem(new RenderingSystem(ash));
-		addSystem(new AudioSystem(ash, factory));
+		addSystem(new ActionSystem(this));
+		addSystem(new TweeningSystem(this));
+		addSystem(new CameraSystem(this));
+		addSystem(new RenderingSystem(this));
+		addSystem(new AudioSystem(this));
 	}	
 
     public function addSystem(system:System):Void

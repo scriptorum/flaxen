@@ -5,9 +5,7 @@
  */
 package flaxen.system;
 
-import ash.core.System;
 import ash.ObjectMap;
-
 import com.haxepunk.HXP;
 import flaxen.service.ProfileService;
 

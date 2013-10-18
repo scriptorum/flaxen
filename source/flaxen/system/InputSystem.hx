@@ -1,16 +1,11 @@
 package flaxen.system;
 
-import ash.core.Engine;
-import ash.core.System;
 import ash.core.Node;
-import ash.core.Entity;
-
 import com.haxepunk.utils.Key;
 import com.haxepunk.HXP;
-
+import flaxen.core.FlaxenSystem;
 import flaxen.node.ControlNode;
 import flaxen.node.EditorObjectNode;
-import flaxen.service.EntityService;
 import flaxen.service.InputService;
 import flaxen.service.SaveService;
 import flaxen.component.Firing;
@@ -34,7 +29,7 @@ import flaxen.util.Util;
 import sys.io.FileOutput;
 #end
 
-class InputSystem extends System
+class InputSystem extends FlaxenSystem
 {
 	public var engine:Engine;
 	public var factory:EntityService;
@@ -80,7 +75,7 @@ class InputSystem extends System
  			var x = InputService.mouseX;
  			var y = InputService.mouseY;
  			var selectedNode:EditorObjectNode = null;
-			for(object in engine.getNodeList(EditorObjectNode))
+			for(object in ash.getNodeList(EditorObjectNode))
 			{
 				if(factory.hitTest(object.entity, x, y))
 				{
@@ -181,7 +176,7 @@ class InputSystem extends System
 	public function handleProfileControl()
 	{
 		#if profiler 
-	 	for(node in engine.getNodeList(ProfileControlNode))
+	 	for(node in ash.getNodeList(ProfileControlNode))
 	 	{
 	 		if(InputService.lastKey() == Key.P)
 	 		{
@@ -199,7 +194,7 @@ class InputSystem extends System
 		// Flush and rebuild display objects, for debugging
 		// This doesn't work so well...
 		// if(InputService.pressed(Key.TAB))
-		// 	for(node in engine.getNodeList(flaxen.node.DisplayNode))
+		// 	for(node in ash.getNodeList(flaxen.node.DisplayNode))
 		// 		node.entity.remove(flaxen.component.Display);
 
 		if(InputService.pressed(InputService.debug))
@@ -208,13 +203,13 @@ class InputSystem extends System
 				haxe.Log.clear();
 
 			#else
-				var path:String = "/Users/elund/Development/reRocket/entities.log";
+				var path:String = "/Users/elund/Development/reRocket/entitientityService.log";
 				Util.dumpLog(engine, path);
 				// trace(Util.dumpHaxePunk(com.haxepunk.HXP.scene));
 			#end
 
 			trace("Entity list:");	
-			for(e in engine.entities)
+			for(e in ash.entities)
 				trace(" * " + e.name);			
 		}
 		#end
@@ -291,14 +286,14 @@ class InputSystem extends System
  		else if(InputService.pressed(Key.SPACE))
  		{
  			var now = Timestamp.now();
-	 		var tube = engine.getEntityByName("tube");
+	 		var tube = ash.getEntityByName("tube");
 	 		if(!tube.has(Firing))
  				tube.add(new Firing(now));
  		}
 
  		else if(InputService.released(Key.SPACE))
  		{
-	 		var tube = engine.getEntityByName("tube");
+	 		var tube = ash.getEntityByName("tube");
 	 		if(tube.has(Firing))
  				tube.get(Firing).end = Timestamp.now();
  		}
@@ -375,7 +370,7 @@ class InputSystem extends System
 	public function handleMenuControl()
 	{
 		var level = factory.getConfig().get(Level);
-	 	for(node in engine.getNodeList(MenuControlNode))
+	 	for(node in ash.getNodeList(MenuControlNode))
 	 	{
 	 		// Just one thing to click on
 	 		if(InputService.clicked || InputService.lastKey() != 0)
@@ -456,7 +451,7 @@ class InputSystem extends System
 
 	public function handleLevelEndControl()
 	{
-	 	for(node in engine.getNodeList(LevelEndControlNode))
+	 	for(node in ash.getNodeList(LevelEndControlNode))
 	 	{
  			if(isButtonPressed(EntityService.LEVELEND_REPLAY) || InputService.pressed(Key.R))
  			{

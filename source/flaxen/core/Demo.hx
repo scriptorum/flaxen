@@ -18,6 +18,6 @@ class Demo
 		var e = flaxen.newEntity()
 			.add(new Image("art/flaxen.png"))
 			.add(new Position(HXP.halfWidth, HXP.halfHeight))
-			.add(new Offset(-0.5, -0.5, true));
+			.add(Offset.center);		
 	}
 }

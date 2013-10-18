@@ -1,11 +1,8 @@
 package flaxen.system;
 
-import ash.core.Engine;
-import ash.core.System;
 import ash.core.Node;
-
 import com.haxepunk.HXP;
-
+import flaxen.core.FlaxenSystem;
 import flaxen.render.ImageView;
 import flaxen.render.AnimationView;
 import flaxen.render.BackdropView;
@@ -19,28 +16,18 @@ import flaxen.node.DisplayNode;
 
 import flaxen.component.Display;
 
-class RenderingSystem extends System
+class RenderingSystem extends FlaxenSystem
 {
-	public var engine:Engine;
-
-	public function new(engine:Engine)
+	override public function init()
 	{
-		super();
-		this.engine = engine;
-		engine.getNodeList(DisplayNode).nodeRemoved.add(displayNodeRemoved);
-		// engine.getNodeList(TextNode).nodeAdded.add(function(node:TextNode)
-		// {
-		// 	trace("Adding " + node.entity.name + " to engine!");
-		// });
+		ash.getNodeList(DisplayNode).nodeRemoved.add(displayNodeRemoved);
 	}
 
 	private function displayNodeRemoved(node:DisplayNode): Void
 	{
-		// trace("Removing a display node for entity " + node.entity.name);
 		HXP.scene.remove(node.display.view);
 	}
 
-	// TO DO respond to move events
 	override public function update(_)
 	{
 		updateViews(BackdropNode, BackdropView);
@@ -54,7 +41,7 @@ class RenderingSystem extends System
 	private function updateViews<TNode:Node<TNode>>(nodeClass:Class<TNode>, viewClass:Class<View>)
 	{
 		// Loop through all nodes for this node class
-	 	for(node in engine.getNodeList(nodeClass))
+	 	for(node in ash.getNodeList(nodeClass))
 	 	{
 	 		var entity = node.entity;
 
@@ -75,7 +62,7 @@ class RenderingSystem extends System
 
 	 		// Damn view blew up the whole entity!
 	 		if(display.destroyEntity)
-	 			engine.removeEntity(entity);
+	 			ash.removeEntity(entity);
 		}
 	}	
 }

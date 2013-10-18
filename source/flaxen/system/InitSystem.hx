@@ -1,31 +1,20 @@
 package flaxen.system;
 
-import ash.core.Engine;
 import ash.core.System;
-import ash.core.Entity;
-
 import com.haxepunk.HXP;
-
-import flaxen.service.EntityService;
 import flaxen.component.Application;
 
 /*
  * In charge of maintenance of game scenes/modes including intialization of the main flaxen.
  */
 
-class InitSystem extends System
+class InitSystem extends FlaxenSystem
 {
 	private var app:Application;
 
-	public var factory:EntityService;
-	public var engine:Engine;
-
-	public function new(engine:Engine, factory:EntityService)
+	public function init()
 	{
-		super();
-		this.engine = engine;
-		this.factory = factory;
-		this.app = factory.getApplication();
+		this.app = entityService.getApplication();
 	}
 
 	override public function update(time:Float)
@@ -38,23 +27,23 @@ class InitSystem extends System
 
 	private function initMode()
 	{
-		factory.transitionTo(app.mode);
+		entityService.transitionTo(app.mode);
 
 		switch(app.mode)
 		{
 			case INIT:
-			factory.startInit();
+			entityService.startInit();
 			app.changeMode(MENU);
 			initMode(); // immediately transition to above mode
 
 			case MENU:
-			factory.startMenu();
+			entityService.startMenu();
 
 			case GAME:
-			factory.startPlay();
+			entityService.startPlay();
 
 			case END:
-			factory.startLevelSelect();
+			entityService.startLevelSelect();
 		}
 
 		app.init = false;

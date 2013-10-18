@@ -7,7 +7,7 @@ import flaxen.node.MovementNode;
 import flaxen.service.EntityService;
 import flaxen.component.Velocity;
 
-class MovementSystem extends System
+class MovementSystem extends FlaxenSystem
 {
 	public var factory:EntityService;
 	public var engine:Engine;
@@ -21,7 +21,7 @@ class MovementSystem extends System
 
 	override public function update(time:Float)
 	{
-	 	for(node in engine.getNodeList(MovementNode))
+	 	for(node in ash.getNodeList(MovementNode))
 	 	{
 	 		node.position.x += node.velocity.x * time;
 	 		node.position.y += node.velocity.y * time;

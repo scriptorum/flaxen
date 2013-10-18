@@ -1,20 +1,16 @@
 package flaxen.system;
 
-import ash.core.Engine;
-import ash.core.System;
+import flash.media.SoundChannel;
+import flash.media.SoundTransform;
+import flash.events.Event;
+import openfl.Assets;
 import ash.core.Node;
 import ash.core.Entity;
-
 import flaxen.component.Audio;
 import flaxen.component.Sound;
 import flaxen.component.Timestamp;
 import flaxen.node.SoundNode;
-import flaxen.service.EntityService;
-
-import openfl.Assets;
-import flash.media.SoundChannel;
-import flash.media.SoundTransform;
-import flash.events.Event;
+import flaxen.core.FlaxenSystem;
 
 class AudioNode extends Node<AudioNode>
 {
@@ -22,17 +18,11 @@ class AudioNode extends Node<AudioNode>
 	public var audio:Audio;
 }
 
-class AudioSystem extends System
+class AudioSystem extends FlaxenSystem
 {
-	public var engine:Engine;
-	public var factory:EntityService;
-
-	public function new(engine:Engine, factory:EntityService)
+	override public function init()
 	{
-		super();
-		this.engine = engine;
-		this.factory = factory;
-		engine.getNodeList(AudioNode).nodeRemoved.add(audioNodeRemoved);
+		ash.getNodeList(AudioNode).nodeRemoved.add(audioNodeRemoved);
 	}
 
 	private function audioNodeRemoved(node:AudioNode): Void
@@ -42,10 +32,10 @@ class AudioSystem extends System
 
 	override public function update(_)
 	{
-		var globalAudio:GlobalAudio = factory.getGlobalAudio();
+		var globalAudio:GlobalAudio = entityService.getGlobalAudio();
 		if(globalAudio.stopping)
 		{
-			for(node in engine.getNodeList(AudioNode))
+			for(node in ash.getNodeList(AudioNode))
 			{
 				if(globalAudio.cutoff == null || node.audio.startTime < globalAudio.cutoff.stamp)
 					node.sound.stop = true;
@@ -54,7 +44,7 @@ class AudioSystem extends System
 			globalAudio.cutoff = null;
 		}
 
-		for(node in engine.getNodeList(SoundNode))
+		for(node in ash.getNodeList(SoundNode))
 		{
 			var sound = node.sound;
 			if(node.entity.has(Audio))
@@ -102,7 +92,7 @@ class AudioSystem extends System
 		}
 
 		trace("Sound failure for " + sound.file + " (" + msg + ")");
-		engine.removeEntity(entity);
+		ash.removeEntity(entity);
 	}
 
 	private function updateAudio(sound:Sound, entity:Entity, globalAudio:GlobalAudio): Void
@@ -119,7 +109,7 @@ class AudioSystem extends System
 		if(sound.complete)
 		{
 			if(sound.destroyEntity)	
-				engine.removeEntity(entity);
+				ash.removeEntity(entity);
 			else if(sound.destroyComponent)
 				entity.remove(Audio);	
 
