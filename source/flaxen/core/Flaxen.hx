@@ -17,6 +17,7 @@ import flaxen.component.Audio;
 import flaxen.component.Timestamp;
 import flaxen.component.Offset;
 import flaxen.node.SoundNode;
+import flaxen.node.TransitionalNode;
 import flaxen.util.Easing;
 
 // import flaxen.system.InitSystem;
@@ -325,10 +326,12 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/*
-	 * APPLICATION FUNCTIONS
-	 * The application is a universal entity
+	 * APPLICATION AND TRANSITION FUNCTIONS
 	 */
 
+	 // The application is a universal entity storing the current game mode, and 
+	 // whether or not this mode has been initialized. The application entity
+	 // is protected from removal when transitioning.
 	public function getApplication(): Application
 	{
 		var e = resolveEntity(APPLICATION);
@@ -341,6 +344,51 @@ class Flaxen extends com.haxepunk.Engine
 		}
 		return app;
 	}
+
+	// Transitions to another mode
+	public function transitionTo(mode:ApplicationMode): Void
+	{
+		// Remove all entities, excepting those marked as transitional for this mode
+		for(e in ash.entities)
+		{
+			if(e.has(Transitional))
+			{
+				var transitional:Transitional = e.get(Transitional);
+				if(transitional.isProtected(mode))
+				{
+					if(transitional.destroyComponent)
+						e.remove(Transitional);
+					else 
+						transitional.complete = true;					
+					continue;
+				}
+			}
+
+			ash.removeEntity(e);
+		}
+	}
+
+	public function removeTransitionedEntities(matching:String = null, excluding:String = null)
+	{
+		for(node in ash.getNodeList(TransitionalNode))
+		{
+			if(node.transitional.isCompleted()) // should spare Always transitionals from removal
+			{
+				if(matching != null && matching != node.transitional.kind)
+					continue;
+				if(excluding != null && excluding == node.transitional.kind)
+					continue;
+
+				ash.removeEntity(node.entity);				
+			}
+		}
+	}
+
+	public function restartApplicationMode(): Void
+	{
+		var app:Application = getApplication();
+		app.initialized = false;
+	}	
 
 	/*
 	 * AUDIO FUNCTIONS

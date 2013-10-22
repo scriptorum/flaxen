@@ -8,6 +8,8 @@ import flaxen.component.Image;
 import flaxen.component.Position;
 import flaxen.component.Offset;
 
+import flaxen.component.Application;
+
 class Demo
 {
 	public static function main()

@@ -12,14 +12,14 @@ class InitSystem extends FlaxenSystem
 {
 	private var app:Application;
 
-	public function init()
+	override public function init()
 	{
 		this.app = entityService.getApplication();
 	}
 
 	override public function update(time:Float)
 	{
-		if(app.init == false)
+		if(app.initialized == true)
 			return;
 
 		initMode();
@@ -46,6 +46,6 @@ class InitSystem extends FlaxenSystem
 			entityService.startLevelSelect();
 		}
 
-		app.init = false;
+		app.initalized = false;
 	}
 }
