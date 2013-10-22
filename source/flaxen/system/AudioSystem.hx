@@ -32,7 +32,7 @@ class AudioSystem extends FlaxenSystem
 
 	override public function update(_)
 	{
-		var globalAudio:GlobalAudio = entityService.getGlobalAudio();
+		var globalAudio:GlobalAudio = flaxen.getGlobalAudio();
 		if(globalAudio.stopping)
 		{
 			for(node in ash.getNodeList(AudioNode))

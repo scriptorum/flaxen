@@ -1,3 +1,9 @@
+//
+// The entity-specific stuff should be moved to Flaxen itself
+// The other stuff deserves its own service
+// If a service requires a universal object as the first parameter, call it a MixIn instead.
+//
+
 package flaxen.service;
 
 import com.haxepunk.HXP;
@@ -64,7 +70,7 @@ class EntityService
 		{
 			app = new Application();
 			e.add(app);
-			e.add(Transitional.ALWAYS);
+			e.add(Transitional.Always);
 		}
 		return app;
 	}
@@ -116,7 +122,7 @@ class EntityService
 	{
 		for(node in engine.getNodeList(TransitionalNode))
 		{
-			if(node.transitional.isCompleted()) // should spare ALWAYS transitionals from removal
+			if(node.transitional.isCompleted()) // should spare Always transitionals from removal
 			{
 				if(matching != null && matching != node.transitional.kind)
 					continue;
@@ -187,27 +193,27 @@ class EntityService
 		dependents.clear();
 	}
 
-	public function markerNameToEntityName(markerName:String): String
+	public function expandMarkerName(markerName:String): String
 	{
 		return "marker-" + markerName;
 	}
 
 	public function hasMarker(markerName:String): Bool
 	{
-		var name = markerNameToEntityName(markerName);
+		var name = expandMarkerName(markerName);
 		return (engine.getEntityByName(name) != null);
 	}
 
 	public function addMarker(markerName:String): Void
 	{
-		var name = markerNameToEntityName(markerName);
+		var name = expandMarkerName(markerName);
 		if(!hasMarker(name))
 			resolveEntity(name);
 	}
 
 	public function removeMarker(markerName:String): Void
 	{
-		var name = markerNameToEntityName(markerName);
+		var name = expandMarkerName(markerName);
 		var entity = engine.getEntityByName(name);
 		if(entity != null)
 			engine.removeEntity(entity);
@@ -252,7 +258,7 @@ class EntityService
 			ProfileService.init();
 			var e = new Entity("profileControl");
 			e.add(ProfileControl.instance);
-			e.add(Transitional.ALWAYS);
+			e.add(Transitional.Always);
 			engine.addEntity(e);
 		#end
 	}
@@ -359,7 +365,7 @@ class EntityService
 		{
 			entity = new Entity(GLOBAL_AUDIO_NAME);
 			entity.add(new GlobalAudio());
-			entity.add(Transitional.ALWAYS);
+			entity.add(Transitional.Always);
 			engine.addEntity(entity);
 		}
 		return entity.get(GlobalAudio);
