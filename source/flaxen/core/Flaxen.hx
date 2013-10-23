@@ -2,8 +2,7 @@
     TODO:
     3. Add support for InputSystem, to make it easier to hook in inputs.
     4. Add Intents.
-    5. Improve how custom systems are added to the framework.
-*/
+ */
 
 package flaxen.core;
 
@@ -18,6 +17,7 @@ import flaxen.component.Position;
 import flaxen.component.Image;
 import flaxen.component.Animation;
 import flaxen.component.Application;
+import flaxen.component.Transitional;
 import flaxen.component.Alpha;
 import flaxen.component.Audio;
 import flaxen.component.Timestamp;

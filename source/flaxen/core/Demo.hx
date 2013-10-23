@@ -21,8 +21,10 @@ import flaxen.core.Flaxen;
 import flaxen.component.Image;
 import flaxen.component.Position;
 import flaxen.component.Offset;
-
+import flaxen.component.Scale;
+import flaxen.component.Tween;
 import flaxen.component.Application;
+import flaxen.util.Easing;
 
 class Demo extends Flaxen
 {
@@ -39,9 +41,12 @@ class Demo extends Flaxen
 
 	public function startInit(_)
 	{
-		newEntity()
+		var e:Entity = newEntity()
 			.add(new Image("art/flaxen.png"))
 			.add(new Position(HXP.halfWidth, HXP.halfHeight))
-			.add(Offset.center);		
+			.add(new Scale())
+			.add(Offset.center);
+		var tween:Tween = addTween(e.get(Scale), { x:0.8, y:1.2 }, 0.2, Easing.easeOutQuad);
+		tween.loop = Both;
 	}
 }

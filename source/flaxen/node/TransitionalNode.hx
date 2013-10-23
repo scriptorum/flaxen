@@ -2,7 +2,7 @@ package flaxen.node;
 
 import ash.core.Node;
 
-import flaxen.component.Application;
+import flaxen.component.Transitional;
 
 class TransitionalNode extends Node<TransitionalNode>
 {

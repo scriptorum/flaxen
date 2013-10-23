@@ -14,7 +14,6 @@ import flaxen.core.FlaxenSystem;
 // results, and enables you to do things like take over user actions, or replay
 // movements from a file, etc.
 //
-// TODO Come up with a generic input system that I can hook into outside of Flaxen.
 class InputSystem extends FlaxenSystem
 {
 	override public function update(_)

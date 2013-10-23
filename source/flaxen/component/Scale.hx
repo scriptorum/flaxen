@@ -2,10 +2,10 @@ package flaxen.component;
 
 class Scale
 {
-	public var x:Float = 1.0;
-	public var y:Float = 1.0;
+	public var x:Float;
+	public var y:Float;
 
-	public function new(x:Float, y:Float)
+	public function new(x:Float = 1.0, y:Float = 1.0)
 	{
 		this.x = x;
 		this.y = y;

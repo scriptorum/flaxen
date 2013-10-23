@@ -3,7 +3,7 @@ package flaxen.component;
 import ash.core.Engine;
 import flaxen.util.Easing;
 
-enum TweenLoop { NONE; FORWARD; BACKWARD; BOTH; BOTH_BACKWARD; }
+enum TweenLoop { None; Forward; Backward; Both; BothBackward; }
 
 class Tween
 {
@@ -33,7 +33,7 @@ class Tween
 		this.target = target;
 		this.duration = duration;
 		this.easing = (easing == null ? Easing.linearTween : easing);
-		this.loop = TweenLoop.NONE;
+		this.loop = TweenLoop.None;
 		this.name = "tween"  + Std.string(++created);
 		
 		if(autoStart)
@@ -83,7 +83,7 @@ class Tween
  		
 		for(i in 0...props.length)
 		{
-			var pos = (loop == TweenLoop.BOTH_BACKWARD || loop == TweenLoop.BACKWARD ? 
+			var pos = (loop == TweenLoop.BothBackward || loop == TweenLoop.Backward ? 
 				duration - elapsed : elapsed);
 			var value = easing(pos, starts[i], ranges[i], duration, optional);
 			Reflect.setProperty(source, props[i], value);
@@ -92,16 +92,16 @@ class Tween
 
  		if(elapsed >= duration)
  		{
-			if(loop == TweenLoop.NONE)
+			if(loop == TweenLoop.None)
 			{				
  				complete = true;
  				return;
 			}
 
-			if(loop == TweenLoop.BOTH)
-				loop = TweenLoop.BOTH_BACKWARD;
-			else if(loop == TweenLoop.BOTH_BACKWARD)
-				loop = TweenLoop.BOTH;
+			if(loop == TweenLoop.Both)
+				loop = TweenLoop.BothBackward;
+			else if(loop == TweenLoop.BothBackward)
+				loop = TweenLoop.Both;
 
 			restart();
  		}
