@@ -54,6 +54,7 @@ class Flaxen extends com.haxepunk.Engine
 
 	private var nextSystemPriority:Int = 0;
 	private var nextId:Int = 0;
+	private var modeSystem:ModeSystem;
 
 	public var ash:ash.core.Engine;
 	
@@ -88,7 +89,8 @@ class Flaxen extends com.haxepunk.Engine
 
 	private function initSystems()
 	{
-		addSystem(new ModeSystem(this));
+		modeSystem = new ModeSystem(this);
+		addSystem(modeSystem);
 		// addSystem(new InputSystem(ash, factory));
 		addSystem(new ActionSystem(this));
 		addSystem(new TweeningSystem(this));
@@ -401,6 +403,21 @@ class Flaxen extends com.haxepunk.Engine
 		app.nextMode = app.currentMode;
 		app.currentMode = null;
 	}	
+
+	// Adds a function that is called when an application mode is started
+	// For example, this will log some text to console at game start:
+	// 		setModeStartHandler(Init, function(_) { trace("Hi"); });
+	public function setStartHandler(mode:ApplicationMode, handler:ModeHandler): Void
+	{
+		modeSystem.registerStartHandler(mode, handler);
+	}
+
+	// Adds a function that is called when an application mode is stopped
+	// This happens before the unprotected entities are removed.
+	public function setStopHandler(mode:ApplicationMode, handler:ModeHandler): Void
+	{
+		modeSystem.registerStopHandler(mode, handler);
+	}
 
 	/*
 	 * AUDIO FUNCTIONS

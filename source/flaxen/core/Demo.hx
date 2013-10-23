@@ -10,14 +10,35 @@ import flaxen.component.Offset;
 
 import flaxen.component.Application;
 
-class Demo
+class Demo extends Flaxen
 {
 	public static function main()
 	{
-		var flaxen = new Flaxen();
-		//flaxen.addSystem();
-		
-		var e = flaxen.newEntity()
+		new Demo();
+
+		// You don't have to subclass Flaxen if you don't want to:
+		//
+		// 	var flaxen = new Flaxen();
+		//  flaxen.setStartHandler(Init, function(flaxen:Flaxen)
+		//  {
+		//  	flaxen.newEntity()....
+		//	});
+		//
+		// If you don't care to use the init system, you can just start creating entities:
+		//
+		// 	var flaxen = new Flaxen();
+		//  flaxen.newEntity()....
+	}
+
+	public function new()
+	{
+		super();
+		setStartHandler(Init, startInit);
+	}
+
+	public function startInit(_)
+	{
+		newEntity()
 			.add(new Image("art/flaxen.png"))
 			.add(new Position(HXP.halfWidth, HXP.halfHeight))
 			.add(Offset.center);		
