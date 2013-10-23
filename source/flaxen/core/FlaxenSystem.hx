@@ -18,9 +18,10 @@ class FlaxenSystem extends System
 
 	// Override with system initialization
 	public function init(): Void
-	{		
+	{
 	}
 
+	// Override with custom system updating 
 	override public function update(time:Float)
 	{
 	}
