@@ -1,7 +1,5 @@
 /*
     TODO:
-    1. Change ModeSystem to allow custom-defined behaviors when game modes are transitioned.
-    2. Add transition-out-of behaviors as well.
     3. Add support for InputSystem, to make it easier to hook in inputs.
     4. Add Intents.
     5. Improve how custom systems are added to the framework.
@@ -9,7 +7,6 @@
 
 package flaxen.core;
 
-import ash.core.System;
 import ash.core.Entity;
 import ash.core.Node;
 import com.haxepunk.HXP;
@@ -45,15 +42,20 @@ import flaxen.system.ActionSystem;
 	import flaxen.service.ProfileService;
 #end
 
+enum FlaxenSystemGroup { Core; User; Standard; }
+
 class Flaxen extends com.haxepunk.Engine
 {
-	public static inline var DEFAULT_ENTITY_NAME:String = "fEntity"; // entity default name or prefix
+	public static inline var DEFAULT_ENTITY_NAME:String = "fEnt"; // entity default name or prefix
 	public static inline var CONTROL:String = "fControl"; // control entity name prefix
-	public static inline var APPLICATION:String = "fApplication"; // Application mode entity
-	public static inline var GLOBAL_AUDIO_NAME:String = "fGlobalAudio"; // Global audio entity
+	public static inline var APPLICATION:String = "fApp"; // Application mode entity
+	public static inline var GLOBAL_AUDIO_NAME:String = "fGAudio"; // Global audio entity
 
-	private var nextSystemPriority:Int = 0;
-	private var nextId:Int = 0;
+	private var coreSystemId:Int = 0;
+	private var userSystemId:Int = 10000;
+	private var standardSystemId:Int = 20000;
+
+	private var nextEntityId:Int = 0;
 	private var modeSystem:ModeSystem;
 
 	public var ash:ash.core.Engine;
@@ -75,7 +77,7 @@ class Flaxen extends com.haxepunk.Engine
 
 		this.ash = new ash.core.Engine(); // ecs
 		getApp(); // Create entity with Application component
-		initSystems(); // initialize entity component systems
+		addCoreSystems(); // initialize entity component systems
 		HXP.scene = new FlaxenScene(this); // hook Ash into HaxePunk
 
 		// #if PROFILER
@@ -87,30 +89,54 @@ class Flaxen extends com.haxepunk.Engine
 		// #end		
 	}	
 
-	private function initSystems()
+	private function addCoreSystems()
 	{
+		// Core Services
 		modeSystem = new ModeSystem(this);
-		addSystem(modeSystem);
-		// addSystem(new InputSystem(ash, factory));
-		addSystem(new ActionSystem(this));
-		addSystem(new TweeningSystem(this));
-		addSystem(new CameraSystem(this));
-		addSystem(new RenderingSystem(this));
-		addSystem(new AudioSystem(this));
-	}	
+		addSystem(modeSystem, Core);
 
-    public function addSystem(system:System):Void
+		// addSystem(new InputSystem(this), Core);
+
+		// Standard Services
+		addSystem(new CameraSystem(this), Standard);
+		addSystem(new ActionSystem(this), Standard);
+		addSystem(new TweeningSystem(this), Standard);
+		addSystem(new RenderingSystem(this), Standard);
+		addSystem(new AudioSystem(this), Standard);
+	}
+
+	// Systems operate in the order that they are added.
+	// Core systems process first, then user systems, then standard systems.
+	// Unless you have a good reason, you probably want to leave it in the user group.
+    public function addSystem(system:FlaxenSystem, ?group:FlaxenSystemGroup):Void
     {
+    	// Default group
+    	if(group == null)
+    		group = User;
+
+    	// Profiler start log
     	#if PROFILER
     		var name = Type.getClassName(Type.getClass(system));
-    		ash.addSystem(new ProfileSystem(name, true), nextSystemPriority++);
+    		ash.addSystem(new ProfileSystem(name, true), nextPriority(group));
     	#end
 
-        ash.addSystem(system, nextSystemPriority++);
+    	// Add system to ash
+        ash.addSystem(system, nextPriority(group));
 
+        // Profiler end log
     	#if PROFILER
-    		ash.addSystem(new ProfileSystem(name, false), nextSystemPriority++);
+    		ash.addSystem(new ProfileSystem(name, false), nextPriority(group));
     	#end
+    }
+
+    private function nextPriority(?group:FlaxenSystemGroup): Int
+    {
+		return switch(group)
+		{
+			case Core: coreSystemId++; 
+			case User: userSystemId++;
+			case Standard: standardSystemId++; 
+		}
     }
 
     override private function resize()
@@ -129,7 +155,7 @@ class Flaxen extends com.haxepunk.Engine
     // If unique is true, a unique number will be added to the entity name to ensure its uniqueness
 	public function makeEntity(name:String = DEFAULT_ENTITY_NAME, unique:Bool = true): Entity 
 	{
-		var name:String = name + (unique ? Std.string(nextId++) : "");
+		var name:String = name + (unique ? Std.string(nextEntityId++) : "");
 		return new Entity(name);
 	}
 
