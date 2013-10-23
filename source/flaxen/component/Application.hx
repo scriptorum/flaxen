@@ -1,22 +1,29 @@
 package flaxen.component;
 
-// TODO Remove NEXT transition
-
 enum ApplicationModeType<T>
 { 
-	Init; 	// initial mode; initialize as needed, then transition to Play, Menu or whatever mode you want	
-	Always; // not a real mode; used to indicate an entity should survive the transition
-	Custom(value:T); // define your own application modes here
+	// The app starts in this mode; if you're using application modes, initialize this mode
+	// in ModeSystem and then transition to Play, Menu or whatever mode you want.
+	Init; 	
 
-	// These are built-in modes, use them if you like or define your own
-	menu; Play; Credits; Select; Options; Cutscene; Gameover;
+	// This is not an application mode and should not be transitioned to.
+	// When supplied to a Transitional object, it indicates an entity is 
+	// protected and will always survive transitions
+	Always;
+
+	// These are built-in modes, use them if you like or define your own with custom
+	Menu; Play; Credits; Select; Options; Cutscene; Gameover;
+
+	// Define your own application modes here, such as Mode("LoadingScreen")
+	Mode(value:T); 
 } 
+
 typedef ApplicationMode = ApplicationModeType<String>;
 
 class Application
 {
-	public var mode:ApplicationMode;
-	public var initialized:Bool = false;
+	public var nextMode:ApplicationMode;
+	public var currentMode:ApplicationMode;
 
 	public function new()
 	{
@@ -25,8 +32,12 @@ class Application
 
 	public function changeMode(mode:ApplicationMode): Void
 	{
-		this.mode = mode;
-		this.initialized = false;
+		this.nextMode = mode;
+	}
+
+	public function modeInitialized(): Bool
+	{
+		return nextMode == currentMode;
 	}
 }
 
@@ -35,11 +46,11 @@ class Application
 // matches the mode being transitioned to.
 // 
 // To transition the application to a new mode:
-//    var app = flaxen.getApplication();
+//    var app = flaxen.getApp();
 //    app.changeMode(Play); 
 // 
 // For a custom mode:
-//    typedef PlayMode = Custom("PlayMode");
+//    typedef PlayMode = Mode("PlayMode");
 //    app.changeMode(PlayMode);
 //
 // To protect an item from being removed when the mode changes:

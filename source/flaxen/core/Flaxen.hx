@@ -1,3 +1,12 @@
+/*
+    TODO:
+    1. Change ModeSystem to allow custom-defined behaviors when game modes are transitioned.
+    2. Add transition-out-of behaviors as well.
+    3. Add support for InputSystem, to make it easier to hook in inputs.
+    4. Add Intents.
+    5. Improve how custom systems are added to the framework.
+*/
+
 package flaxen.core;
 
 import ash.core.System;
@@ -16,13 +25,15 @@ import flaxen.component.Alpha;
 import flaxen.component.Audio;
 import flaxen.component.Timestamp;
 import flaxen.component.Offset;
+import flaxen.component.CameraFocus;
 import flaxen.node.SoundNode;
 import flaxen.node.TransitionalNode;
+import flaxen.node.CameraFocusNode;
 import flaxen.util.Easing;
-
-// import flaxen.system.InitSystem;
-// import flaxen.system.InputSystem;
 import flaxen.service.InputService;
+import flaxen.service.CameraService;
+import flaxen.system.ModeSystem;
+// import flaxen.system.InputSystem;
 import flaxen.system.RenderingSystem;
 import flaxen.system.CameraSystem;
 import flaxen.system.TweeningSystem;
@@ -62,9 +73,9 @@ class Flaxen extends com.haxepunk.Engine
 		#end
 
 		this.ash = new ash.core.Engine(); // ecs
-		initSystems(); // ash systems
-
-		HXP.scene = new FlaxenScene(this);
+		getApp(); // Create entity with Application component
+		initSystems(); // initialize entity component systems
+		HXP.scene = new FlaxenScene(this); // hook Ash into HaxePunk
 
 		// #if PROFILER
 		// 	ProfileService.init();
@@ -77,7 +88,7 @@ class Flaxen extends com.haxepunk.Engine
 
 	private function initSystems()
 	{
-		// addSystem(new InitSystem(ash, factory));
+		addSystem(new ModeSystem(this));
 		// addSystem(new InputSystem(ash, factory));
 		addSystem(new ActionSystem(this));
 		addSystem(new TweeningSystem(this));
@@ -332,7 +343,7 @@ class Flaxen extends com.haxepunk.Engine
 	 // The application is a universal entity storing the current game mode, and 
 	 // whether or not this mode has been initialized. The application entity
 	 // is protected from removal when transitioning.
-	public function getApplication(): Application
+	public function getApp(): Application
 	{
 		var e = resolveEntity(APPLICATION);
 		var app = e.get(Application);
@@ -386,8 +397,9 @@ class Flaxen extends com.haxepunk.Engine
 
 	public function restartApplicationMode(): Void
 	{
-		var app:Application = getApplication();
-		app.initialized = false;
+		var app:Application = getApp();
+		app.nextMode = app.currentMode;
+		app.currentMode = null;
 	}	
 
 	/*
@@ -428,6 +440,7 @@ class Flaxen extends com.haxepunk.Engine
 
 	/*
 	 * GUI FUNCTIONS
+	 * Move to InputService?
 	 */
 
 	// Entity hit test, does not currently respect the Scale component
@@ -480,6 +493,16 @@ class Flaxen extends com.haxepunk.Engine
 			return false;
 	 			
 	 	return hitTest(e, InputService.mouseX, InputService.mouseY);
+	}	
+
+	// MOVE TO CameraService
+	public function changeCameraFocus(entity:Entity): Void
+	{
+		for(node in ash.getNodeList(CameraFocusNode))
+			node.entity.remove(CameraFocus);
+
+		if(entity != null)
+			entity.add(CameraFocus.instance);			
 	}	
 
 	/*

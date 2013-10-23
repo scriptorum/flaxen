@@ -22,8 +22,8 @@ class CameraSystem extends FlaxenSystem
 		var y:Float = 0;
 
 		// If mode is changing, immediately reset camera to 0,0
-		var app = flaxen.getApplication();
-		if(!app.initialized)
+		var app = flaxen.getApp();
+		if(app.modeInitialized())
 		{
 			HXP.camera.x = targetX = HXP.camera.y = targetY = 0;
 			CameraService.stopAnim();

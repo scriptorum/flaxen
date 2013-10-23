@@ -4,9 +4,7 @@ import flash.net.SharedObject;
 
 class SaveService
 {
-	private static var SO_NAME:String = "reRocket";
-
-	public static function load(): Dynamic
+	public static function load(SO_NAME:String): Dynamic
 	{
 		var so:SharedObject = SharedObject.getLocal(SO_NAME);
 		if(so.data.saveData != null)
@@ -15,14 +13,14 @@ class SaveService
 		return null;
 	}
 
-	public static function save(data:Dynamic): Void
+	public static function save(SO_NAME:String, data:Dynamic): Void
 	{
 		var so:SharedObject = SharedObject.getLocal(SO_NAME);
 		so.setProperty("saveData", haxe.Serializer.run(data));
 		so.flush();
 	}
 
-	public static function clear(): Void
+	public static function clear(SO_NAME:String): Void
 	{
 		var so:SharedObject = SharedObject.getLocal(SO_NAME);
 		so.clear();
