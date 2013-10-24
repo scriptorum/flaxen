@@ -189,11 +189,21 @@ class Flaxen extends com.haxepunk.Engine
 	 * GETTERS and CHECKERS
 	 */  
 
-	// Returns the entity, looks up by name
+	// Returns the entity, looked up by name
 	// Returns null if entity does not exist	
 	public function getEntity(name:String): Entity
 	{
 		return name == null ? null : ash.getEntityByName(name);
+	}
+
+	// Returns the entity, looked up by name
+	// Throws an error if demanded entity does not exist	
+	public function demandEntity(name:String): Entity
+	{
+		var e = getEntity(name);
+		if(e == null)
+			throw "Demanded entity not found " + name;
+		return e;
 	}
 
 	// Returns true if the named entity exists in Ash, otherwise false
@@ -361,6 +371,12 @@ class Flaxen extends com.haxepunk.Engine
 
 	/*
 	 * APPLICATION AND TRANSITION FUNCTIONS
+	 * You can split the application into different modes. The app starts in Default mode.
+	 * Register handlers to be called when transitioning from (stop) or transitioning to
+	 * (start) a mode. Register an input handler for a mode here as well. There can be
+	 * only one start/stop/input handler per mode, but you can also specify the virtual 
+	 * mode Always (or null). The Always handler will be called (always) in every mode, 
+	 * after the mode-specific handler is called.
 	 */
 
 	 // The application is a universal entity storing the current game mode, and 
@@ -379,29 +395,10 @@ class Flaxen extends com.haxepunk.Engine
 		return app;
 	}
 
-	// Transitions to another mode
-	public function transitionTo(mode:ApplicationMode): Void
-	{
-		// Remove all entities, excepting those marked as transitional for this mode
-		for(e in ash.entities)
-		{
-			if(e.has(Transitional))
-			{
-				var transitional:Transitional = e.get(Transitional);
-				if(transitional.isProtected(mode))
-				{
-					if(transitional.destroyComponent)
-						e.remove(Transitional);
-					else 
-						transitional.complete = true;					
-					continue;
-				}
-			}
-
-			ash.removeEntity(e);
-		}
-	}
-
+	// TODO I like this idea, but I don't like how it's implmented.
+	// You can add a Transitional to an entity and specify a kind in it.
+	// This is a classification. You can then use this method to remove all
+	// entities having or lacking specific kind values.
 	public function removeTransitionedEntities(matching:String = null, excluding:String = null)
 	{
 		for(node in ash.getNodeList(TransitionalNode))
@@ -418,42 +415,55 @@ class Flaxen extends com.haxepunk.Engine
 		}
 	}
 
-	public function restartApplicationMode(): Void
+	// Queues up a transition to the new mode; causes the stop handler to execute, 
+	// eliminates unprotected entities, then executes the start handler.
+	public function setMode(mode:ApplicationMode): Void
+	{
+		var app = getApp();
+		app.changeMode(mode);
+	}
+
+	// Queues up a self-transition to the current mode; causes the stop handler to execute, 
+	// eliminates unprotected entities, then executes the start handler.
+	public function restartMode(): Void
 	{
 		var app:Application = getApp();
-		app.nextMode = app.currentMode;
-		app.currentMode = null;
+		setMode(app.curMode);
 	}	
 
 	// Adds a function that is called when an application mode is started
 	// For example, this will log some text to console at game start:
 	// 		setModeStartHandler(Init, function(_) { trace("Hi"); });
-	public function setStartHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
+	public function setStartHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Void
 	{
-		modeSystem.registerStartHandler(mode, handler);
+		modeSystem.registerStartHandler(mode == null ? Always : mode, handler);
 	}
 
 	// Adds a function that is called when an application mode is stopped
 	// This happens before the unprotected entities are removed.
-	public function setStopHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
+	public function setStopHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Void
 	{
-		modeSystem.registerStopHandler(mode, handler);
+		modeSystem.registerStopHandler(mode == null ? Always : mode, handler);
 	}
 
 	// Adds a function that is called regularly only during a specific application mode.
 	// This function should check user inputs and respond appropriately.
-	public function setInputHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
+	public function setInputHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Void
 	{
-		inputSystem.registerHandler(mode, handler);
+		inputSystem.registerHandler(mode == null ? Always : mode, handler);
 	}
 
-	// Adds a function that is called regularly, regardless of the application mode.
-	// This function should check user inputs without respect to the application mode.
-	// The default handler is always called after the specific mode handler is called.
-	public function setDefaultInputHandler(handler:FlaxenHandler): Void
-	{
-		setInputHandler(Always, handler);
-	}
+	// TODO Rename FlaxenHandler to FlaxenFunc or SimpleFunc
+	// Sets up all mode handlers in one shot.
+	// Create a subclass of FlaxenHandler and override the functions you want.
+	// public function setHandler(handlerObj:FlaxenHandler, ?mode:ApplicationMode): Void
+	// {
+	// 	if(mode == null)
+	// 		mode = Always;
+	// 	setStartHandler(handlerObj.start, mode);
+	// 	setStopHandler(handlerObj.start, mode);
+	// 	setInputHandler(handlerObj.start, mode);
+	// }
 
 	/*
 	 * AUDIO FUNCTIONS
@@ -548,7 +558,7 @@ class Flaxen extends com.haxepunk.Engine
 	 	return hitTest(e, InputService.mouseX, InputService.mouseY);
 	}	
 
-	// MOVE TO CameraService
+	// MOVE TO CameraService?
 	public function changeCameraFocus(entity:Entity): Void
 	{
 		for(node in ash.getNodeList(CameraFocusNode))
@@ -563,7 +573,7 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 
 	// Creates a new ActionQueue and a new Entity to hold it
-	// The Entity will be destroyed when the queue completes
+	// This Entity will be destroyed when the queue completes
 	public function addActionQueue(name:String = null): ActionQueue
 	{
 		var e = makeEntity("aq");
@@ -580,7 +590,7 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	// Creates a new Tween and adds a new Entity to hold it
-	// The Entity will be destroyed when the tween completes
+	// This Entity will be destroyed when the tween completes
 	public function addTween(source:Dynamic, target:Dynamic, duration:Float, 
 		easing:EasingFunction = null, autoStart:Bool = true, name:String = null, 
 		parent:String = null): Tween

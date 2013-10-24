@@ -33,6 +33,8 @@ package flaxen.system;
 import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
 import flaxen.component.Application;
+import flaxen.component.Transitional;
+import flaxen.util.Util;
 
 class ModeSystem extends FlaxenSystem
 {
@@ -48,21 +50,45 @@ class ModeSystem extends FlaxenSystem
 	override public function update(time:Float)
 	{
 		var app:Application = flaxen.getApp();
-		while(app.nextMode != app.currentMode)
+		while(app.nextMode != null)
 		{
-			var stopHandler:FlaxenHandler = stopHandlers.get(app.currentMode);
-			if(stopHandler != null)
-				stopHandler(flaxen);
+			// Stop current mode
+			runStopHandler(app.curMode);
+			runStopHandler(Always);
 
-			if(app.currentMode != null)
-				flaxen.transitionTo(app.nextMode);
+			// Current mode can decline the transition by setting nextMode to null
+			if(app.nextMode == null)
+				break;
 
-			app.currentMode = app.nextMode;
+			// Remove all unprotected entities, protect Transitionals for the next mode
+			transitionTo(app.nextMode);
 
-			var startHandler:FlaxenHandler = startHandlers.get(app.currentMode);
-			if(startHandler != null)
-				startHandler(flaxen);
+			// Was current is now previous
+			// Was next is now current
+			app.prevMode = app.curMode;
+			app.curMode = app.nextMode;
+
+			// Run the start handler for the now-current mode
+			runStartHandler(app.curMode);
+			runStartHandler(Always);
+
+			// Next is now nothing
+			app.nextMode = null;
 		}
+	}
+
+	private function runStopHandler(mode:ApplicationMode): Void
+	{
+		var stopHandler:FlaxenHandler = stopHandlers.get(mode);
+		if(stopHandler != null)
+			stopHandler(flaxen);		
+	}
+
+	private function runStartHandler(mode:ApplicationMode): Void
+	{
+		var startHandler:FlaxenHandler = startHandlers.get(mode);
+		if(startHandler != null)
+			startHandler(flaxen);
 	}
 
 	public function registerStartHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
@@ -74,4 +100,30 @@ class ModeSystem extends FlaxenSystem
 	{
 		stopHandlers.set(mode, handler);
 	}
+
+	// Transitions to another mode.
+	// Remove all entities, excepting those that are protected.
+	// An entity is protected if it has a Transitional component marked
+	// "Always" or if the Transitional mode is the same as the mode we're 
+	// transitioning to.
+	public function transitionTo(mode:ApplicationMode): Void
+	{
+		for(e in ash.entities)
+		{
+			if(e.has(Transitional))
+			{
+				var transitional:Transitional = e.get(Transitional);
+				if(transitional.isProtected(mode))
+				{
+					if(transitional.destroyComponent)
+						e.remove(Transitional);
+					else 
+						transitional.complete = true;					
+					continue;
+				}
+			}
+
+			ash.removeEntity(e);
+		}
+	}	
 }

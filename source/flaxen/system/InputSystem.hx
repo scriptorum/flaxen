@@ -25,8 +25,8 @@ class InputSystem extends FlaxenSystem
 	override public function update(_)
 	{
 		var app:Application = flaxen.getApp();
+		updateHandler(app.curMode);
 		updateHandler(Always);
-		updateHandler(app.currentMode);
 	}
 
 	private function updateHandler(mode:ApplicationMode)

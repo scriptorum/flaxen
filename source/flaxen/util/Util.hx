@@ -162,7 +162,7 @@ class Util
     	return result + "}";
     }
 
-    public static function dumpHaxePunk(scene:com.haxepunk.World): String
+    public static function dumpHaxePunk(scene:com.haxepunk.Scene): String
     {
     	var ret = "HAXEPUNK ENTITIES:\n";
     	var arr = new Array<com.haxepunk.Entity>();

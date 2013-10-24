@@ -26,6 +26,7 @@ import flaxen.component.Tween;
 import flaxen.component.Application;
 import flaxen.service.InputService;
 import flaxen.util.Easing;
+import flaxen.util.Util;
 
 class Demo extends Flaxen
 {
@@ -38,11 +39,11 @@ class Demo extends Flaxen
 	{
 		super();
 		//addSystem(MySystem);
-		setStartHandler(Init, startInit);
-		setInputHandler(Init, inputInit);
+		setStartHandler(handleStart);
+		setInputHandler(handleInput);
 	}
 
-	public function startInit(_)
+	public function handleStart(_)
 	{
 		var e:Entity = resolveEntity("logo")
 			.add(new Image("art/flaxen.png"))
@@ -61,11 +62,11 @@ class Demo extends Flaxen
 		e.add(tween);
 	}
 
-	public function inputInit(_)
+	public function handleInput(_)
 	{
 		if(InputService.clicked)
 		{
-			var e = getEntity("logo");
+			var e = demandEntity("logo");
 			var tween = e.get(Tween);
 			var target = { x:tween.target.y, y:tween.target.x }; // swap targets
 			wobble(e, target);
