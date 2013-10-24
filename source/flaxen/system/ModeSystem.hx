@@ -34,17 +34,15 @@ import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
 import flaxen.component.Application;
 
-typedef ModeHandler = Flaxen -> Void;
-
 class ModeSystem extends FlaxenSystem
 {
-	private var startHandlers:Map<ApplicationMode, ModeHandler>;
-	private var stopHandlers:Map<ApplicationMode, ModeHandler>;
+	private var startHandlers:Map<ApplicationMode, FlaxenHandler>;
+	private var stopHandlers:Map<ApplicationMode, FlaxenHandler>;
 
 	override public function init()
 	{
-		startHandlers = new Map<ApplicationMode, ModeHandler>();
-		stopHandlers = new Map<ApplicationMode, ModeHandler>();
+		startHandlers = new Map<ApplicationMode, FlaxenHandler>();
+		stopHandlers = new Map<ApplicationMode, FlaxenHandler>();
 	}
 
 	override public function update(time:Float)
@@ -52,27 +50,27 @@ class ModeSystem extends FlaxenSystem
 		var app:Application = flaxen.getApp();
 		while(app.nextMode != app.currentMode)
 		{
-			var stopHandler:ModeHandler = stopHandlers.get(app.currentMode);
+			var stopHandler:FlaxenHandler = stopHandlers.get(app.currentMode);
 			if(stopHandler != null)
 				stopHandler(flaxen);
 
 			if(app.currentMode != null)
 				flaxen.transitionTo(app.nextMode);
-				
+
 			app.currentMode = app.nextMode;
 
-			var startHandler:ModeHandler = startHandlers.get(app.currentMode);
+			var startHandler:FlaxenHandler = startHandlers.get(app.currentMode);
 			if(startHandler != null)
 				startHandler(flaxen);
 		}
 	}
 
-	public function registerStartHandler(mode:ApplicationMode, handler:ModeHandler): Void
+	public function registerStartHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
 	{
 		startHandlers.set(mode, handler);
 	}
 
-	public function registerStopHandler(mode:ApplicationMode, handler:ModeHandler): Void
+	public function registerStopHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
 	{
 		stopHandlers.set(mode, handler);
 	}

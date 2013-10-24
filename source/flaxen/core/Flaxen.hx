@@ -1,9 +1,3 @@
-/*
-    TODO:
-    3. Add support for InputSystem, to make it easier to hook in inputs.
-    4. Add Intents.
- */
-
 package flaxen.core;
 
 import ash.core.Entity;
@@ -30,7 +24,7 @@ import flaxen.util.Easing;
 import flaxen.service.InputService;
 import flaxen.service.CameraService;
 import flaxen.system.ModeSystem;
-// import flaxen.system.InputSystem;
+import flaxen.system.InputSystem;
 import flaxen.system.RenderingSystem;
 import flaxen.system.CameraSystem;
 import flaxen.system.TweeningSystem;
@@ -43,6 +37,7 @@ import flaxen.system.ActionSystem;
 #end
 
 enum FlaxenSystemGroup { Core; User; Standard; }
+typedef FlaxenHandler = Flaxen -> Void;
 
 class Flaxen extends com.haxepunk.Engine
 {
@@ -57,6 +52,7 @@ class Flaxen extends com.haxepunk.Engine
 
 	private var nextEntityId:Int = 0;
 	private var modeSystem:ModeSystem;
+	private var inputSystem:InputSystem;
 
 	public var ash:ash.core.Engine;
 	
@@ -77,7 +73,7 @@ class Flaxen extends com.haxepunk.Engine
 
 		this.ash = new ash.core.Engine(); // ecs
 		getApp(); // Create entity with Application component
-		addCoreSystems(); // initialize entity component systems
+		addBuiltInSystems(); // initialize entity component systems
 		HXP.scene = new FlaxenScene(this); // hook Ash into HaxePunk
 
 		// #if PROFILER
@@ -89,16 +85,14 @@ class Flaxen extends com.haxepunk.Engine
 		// #end		
 	}	
 
-	private function addCoreSystems()
+	private function addBuiltInSystems()
 	{
-		// Core Services
-		modeSystem = new ModeSystem(this);
-		addSystem(modeSystem, Core);
+		// Core Systems
+		addSystem(modeSystem = new ModeSystem(this), Core);
+		addSystem(inputSystem = new InputSystem(this), Core);
 
-		// addSystem(new InputSystem(this), Core);
-
-		// Standard Services
-		addSystem(new CameraSystem(this), Standard);
+		// Standard Systems
+		addSystem(new CameraSystem(this), Standard); // TODO Maybe this shouldn't be standard
 		addSystem(new ActionSystem(this), Standard);
 		addSystem(new TweeningSystem(this), Standard);
 		addSystem(new RenderingSystem(this), Standard);
@@ -160,6 +154,7 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	// Constructs NEW entity and ADDS it to Ash
+    // If unique is true, a unique number will be added to the entity name to ensure its uniqueness
 	public function newEntity(?name:String, unique:Bool = true): Entity 
 	{
 		return add(makeEntity(name, unique));
@@ -433,16 +428,31 @@ class Flaxen extends com.haxepunk.Engine
 	// Adds a function that is called when an application mode is started
 	// For example, this will log some text to console at game start:
 	// 		setModeStartHandler(Init, function(_) { trace("Hi"); });
-	public function setStartHandler(mode:ApplicationMode, handler:ModeHandler): Void
+	public function setStartHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
 	{
 		modeSystem.registerStartHandler(mode, handler);
 	}
 
 	// Adds a function that is called when an application mode is stopped
 	// This happens before the unprotected entities are removed.
-	public function setStopHandler(mode:ApplicationMode, handler:ModeHandler): Void
+	public function setStopHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
 	{
 		modeSystem.registerStopHandler(mode, handler);
+	}
+
+	// Adds a function that is called regularly only during a specific application mode.
+	// This function should check user inputs and respond appropriately.
+	public function setInputHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
+	{
+		inputSystem.registerHandler(mode, handler);
+	}
+
+	// Adds a function that is called regularly, regardless of the application mode.
+	// This function should check user inputs without respect to the application mode.
+	// The default handler is always called after the specific mode handler is called.
+	public function setDefaultInputHandler(handler:FlaxenHandler): Void
+	{
+		setInputHandler(Always, handler);
 	}
 
 	/*

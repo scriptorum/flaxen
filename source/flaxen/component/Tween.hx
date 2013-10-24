@@ -43,7 +43,8 @@ class Tween
 	// If not autostarted, must call this to run tween
 	public function start()
 	{
-		this.running = true; // set to false immediately to prevent autostart
+		this.running = true;
+		this.elapsed = 0;
 
 		if(Reflect.isObject(target))
 			fields = Reflect.fields(target);
@@ -87,7 +88,6 @@ class Tween
 				duration - elapsed : elapsed);
 			var value = easing(pos, starts[i], ranges[i], duration, optional);
 			Reflect.setProperty(source, props[i], value);
-			// trace("TWEEN Setting prop " + props[i] + " to value " + Reflect.getProperty(source, props[i]));
 		}
 
  		if(elapsed >= duration)

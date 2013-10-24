@@ -1,9 +1,8 @@
 package flaxen.system;
 
-import ash.core.Node;
-import com.haxepunk.utils.Key;
-import com.haxepunk.HXP;
+import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
+import flaxen.component.Application;
 
 //
 // The job of the input system should be to identify markers or controls that indicate
@@ -16,9 +15,35 @@ import flaxen.core.FlaxenSystem;
 //
 class InputSystem extends FlaxenSystem
 {
+	private var handlers:Map<ApplicationMode, FlaxenHandler>;
+
+	override public function init()
+	{
+		handlers = new Map<ApplicationMode, FlaxenHandler>();
+	}
+
 	override public function update(_)
 	{
-		// Check for control or marker enabling this system
-		// Check InputService.pressed to see if button is pressed
+		var app:Application = flaxen.getApp();
+		updateHandler(Always);
+		updateHandler(app.currentMode);
+	}
+
+	private function updateHandler(mode:ApplicationMode)
+	{
+		if(mode == null)
+			return;
+
+		var handler:FlaxenHandler = handlers.get(mode);
+		if(handler != null)
+			handler(flaxen);
+	}
+
+	public function registerHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
+	{
+		if(mode == null)
+			return;
+
+		handlers.set(mode, handler);
 	}
 }
