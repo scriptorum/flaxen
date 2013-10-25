@@ -41,10 +41,10 @@ typedef FlaxenHandler = Flaxen -> Void;
 
 class Flaxen extends com.haxepunk.Engine
 {
-	public static inline var DEFAULT_ENTITY_NAME:String = "fEnt"; // entity default name or prefix
+	public static inline var DEFAULT_ENTITY_NAME:String = "fEntity"; // entity default name or prefix
 	public static inline var CONTROL:String = "fControl"; // control entity name prefix
-	public static inline var APPLICATION:String = "fApp"; // Application mode entity
-	public static inline var GLOBAL_AUDIO_NAME:String = "fGAudio"; // Global audio entity
+	public static inline var APPLICATION:String = "fApplication"; // Application mode entity
+	public static inline var GLOBAL_AUDIO_NAME:String = "fGlobalAudio"; // Global audio entity
 
 	private var coreSystemId:Int = 0;
 	private var userSystemId:Int = 10000;
@@ -56,13 +56,14 @@ class Flaxen extends com.haxepunk.Engine
 
 	public var ash:ash.core.Engine;
 	
-	public function new()
+	public function new(width:Int = 0, height:Int = 0) // leave 0 to match window dimensions
 	{
-		#if FORCE_BUFFER
-			super(0, 0, 60, false, com.haxepunk.RenderMode.BUFFER);
-		#else
-			super();
-		#end
+		this.ash = new ash.core.Engine(); // ecs
+		getApp(); // Create entity with Application component
+		addBuiltInSystems(); // initialize entity component systems
+
+		super(width, height, 60, false,
+			#if FORCE_BUFFER com.haxepunk.RenderMode.BUFFER #else null #end);
 	}
 
 	override public function init()
@@ -71,19 +72,10 @@ class Flaxen extends com.haxepunk.Engine
 			HXP.console.enable();
 		#end
 
-		this.ash = new ash.core.Engine(); // ecs
-		getApp(); // Create entity with Application component
-		addBuiltInSystems(); // initialize entity component systems
 		HXP.scene = new FlaxenScene(this); // hook Ash into HaxePunk
-
-		// #if PROFILER
-		// 	ProfileService.init();
-		// 	var e = new Entity("profileControl");
-		// 	e.add(ProfileControl.instance);
-		// 	e.add(Transitional.Always);
-		// 	ash.addEntity(e);
-		// #end		
 	}	
+
+	public function ready() { } // Override
 
 	private function addBuiltInSystems()
 	{
@@ -174,6 +166,7 @@ class Flaxen extends com.haxepunk.Engine
 	public function add(entity:Entity): Entity
 	{
 		ash.addEntity(entity);
+		// #if debug demandEntity(entity.name); #end // ensure add was successful in debug mode
 		return entity;
 	}
 
@@ -202,7 +195,7 @@ class Flaxen extends com.haxepunk.Engine
 	{
 		var e = getEntity(name);
 		if(e == null)
-			throw "Demanded entity not found " + name;
+			throw "Demanded entity not found: " + name;
 		return e;
 	}
 
@@ -433,7 +426,7 @@ class Flaxen extends com.haxepunk.Engine
 
 	// Adds a function that is called when an application mode is started
 	// For example, this will log some text to console at game start:
-	// 		setModeStartHandler(Init, function(_) { trace("Hi"); });
+	// 		setStartHandler(function(f:Flaxen) { f.newEntity().add(Image("art/img.png")); });
 	public function setStartHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Void
 	{
 		modeSystem.registerStartHandler(mode == null ? Always : mode, handler);
@@ -441,6 +434,7 @@ class Flaxen extends com.haxepunk.Engine
 
 	// Adds a function that is called when an application mode is stopped
 	// This happens before the unprotected entities are removed.
+	// 		setStopHandler(function(_) { trace("Removed"); }, Play);
 	public function setStopHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Void
 	{
 		modeSystem.registerStopHandler(mode == null ? Always : mode, handler);
@@ -448,6 +442,7 @@ class Flaxen extends com.haxepunk.Engine
 
 	// Adds a function that is called regularly only during a specific application mode.
 	// This function should check user inputs and respond appropriately.
+	// 		setInputHandler(function(_) { if(InputSerice.clicked) /* respond */; }, User("MyMode"));
 	public function setInputHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Void
 	{
 		inputSystem.registerHandler(mode == null ? Always : mode, handler);

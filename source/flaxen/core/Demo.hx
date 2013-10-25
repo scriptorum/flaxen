@@ -2,7 +2,7 @@
  *	You don't have to subclass Flaxen if you don't want to:
  *
  *		var flaxen = new Flaxen();
- *	 	flaxen.setStartHandler(Init, function(flaxen:Flaxen)
+ *	 	flaxen.setStartHandler(Default, function(flaxen:Flaxen)
  *	 	{
  *	 		flaxen.newEntity()....
  *		});
@@ -30,26 +30,34 @@ import flaxen.util.Util;
 
 class Demo extends Flaxen
 {
+	private static var logo:String = "logo";
+
 	public static function main()
 	{
-		new Demo();
+		var demo = new Demo();
 	}
 
-	public function new()
+	override public function ready()
 	{
-		super();
-		//addSystem(MySystem);
-		setStartHandler(handleStart);
 		setInputHandler(handleInput);
-	}
 
-	public function handleStart(_)
-	{
-		var e:Entity = resolveEntity("logo")
+		var e:Entity = resolveEntity(logo) // get or create entity
 			.add(new Image("art/flaxen.png"))
 			.add(new Position(HXP.halfWidth, HXP.halfHeight))
 			.add(Offset.center);
+
 		wobble(e, { x:0.8, y:1.2 });
+	}
+
+	public function handleInput(_)
+	{
+		if(InputService.clicked)
+		{
+			var e = demandEntity(logo); // get entity or throw error 
+			var tween = e.get(Tween);
+			var target = { x:tween.target.y, y:tween.target.x }; // swap targets
+			wobble(e, target);
+		}
 	}
 
 	public function wobble(e:Entity, wobbleTarget:Dynamic)
@@ -60,16 +68,5 @@ class Demo extends Flaxen
 
 		e.add(scale);
 		e.add(tween);
-	}
-
-	public function handleInput(_)
-	{
-		if(InputService.clicked)
-		{
-			var e = demandEntity("logo");
-			var tween = e.get(Tween);
-			var target = { x:tween.target.y, y:tween.target.x }; // swap targets
-			wobble(e, target);
-		}
 	}
 }

@@ -56,12 +56,15 @@ class ModeSystem extends FlaxenSystem
 			runStopHandler(app.curMode);
 			runStopHandler(Always);
 
-			// Current mode can decline the transition by setting nextMode to null
+			// Stop handler can decline the transition by setting nextMode to null.
+			// Or it can prevent unprotected entities from being removed by setting
+			// curMode to null.
 			if(app.nextMode == null)
 				break;
 
 			// Remove all unprotected entities, protect Transitionals for the next mode
-			transitionTo(app.nextMode);
+			if(app.curMode != null)
+				removeUnprotected(app.nextMode);
 
 			// Was current is now previous
 			// Was next is now current
@@ -79,16 +82,16 @@ class ModeSystem extends FlaxenSystem
 
 	private function runStopHandler(mode:ApplicationMode): Void
 	{
-		var stopHandler:FlaxenHandler = stopHandlers.get(mode);
-		if(stopHandler != null)
-			stopHandler(flaxen);		
+		var handler:FlaxenHandler = stopHandlers.get(mode);
+		if(handler != null)
+			handler(flaxen);		
 	}
 
 	private function runStartHandler(mode:ApplicationMode): Void
 	{
-		var startHandler:FlaxenHandler = startHandlers.get(mode);
-		if(startHandler != null)
-			startHandler(flaxen);
+		var handler:FlaxenHandler = startHandlers.get(mode);
+		if(handler != null)
+			handler(flaxen);
 	}
 
 	public function registerStartHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
@@ -101,12 +104,11 @@ class ModeSystem extends FlaxenSystem
 		stopHandlers.set(mode, handler);
 	}
 
-	// Transitions to another mode.
 	// Remove all entities, excepting those that are protected.
 	// An entity is protected if it has a Transitional component marked
 	// "Always" or if the Transitional mode is the same as the mode we're 
 	// transitioning to.
-	public function transitionTo(mode:ApplicationMode): Void
+	public function removeUnprotected(mode:ApplicationMode): Void
 	{
 		for(e in ash.entities)
 		{
