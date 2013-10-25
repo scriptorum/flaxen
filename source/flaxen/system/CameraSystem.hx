@@ -8,7 +8,7 @@ import flaxen.component.Position;
 import flaxen.component.Application;
 import flaxen.service.CameraService;
 import flaxen.node.CameraFocusNode;
-import flaxen.util.Util;
+import flaxen.util.MathUtil;
 
 class CameraSystem extends FlaxenSystem
 {
@@ -41,7 +41,7 @@ class CameraSystem extends FlaxenSystem
 	 		break;	 		
 	 	}
 
-		if(Util.diff(x, targetX) >= 0.5 || Util.diff(y, targetY) >= 0.5)
+		if(MathUtil.diff(x, targetX) >= 0.5 || MathUtil.diff(y, targetY) >= 0.5)
 		{
 			targetX = x;
 			targetY = y;

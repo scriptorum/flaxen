@@ -1,7 +1,7 @@
 package flaxen.component;
 
 import flaxen.util.Array2D;
-import flaxen.util.Util;
+import flaxen.util.StringUtil;
 
 class Grid extends Array2D<Int>
 {
@@ -17,9 +17,9 @@ class Grid extends Array2D<Int>
 	{
 		var _x = x;
 		var _y = y;
-		for(line in Util.split(str, eol))
+		for(line in StringUtil.split(str, eol))
 		{
-			for(n in Util.split(line, delimiter))
+			for(n in StringUtil.split(line, delimiter))
 			{
 				if(n != "")
 					set(_x++, _y, Std.parseInt(n));

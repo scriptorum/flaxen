@@ -34,7 +34,6 @@ import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
 import flaxen.component.Application;
 import flaxen.component.Transitional;
-import flaxen.util.Util;
 
 class ModeSystem extends FlaxenSystem
 {

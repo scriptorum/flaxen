@@ -1,16 +1,16 @@
 /*
- *	You don't have to subclass Flaxen if you don't want to:
+ *	You don't have to subclass Flaxen and use ready() if you don't want to:
  *
  *		var flaxen = new Flaxen();
- *	 	flaxen.setStartHandler(Default, function(flaxen:Flaxen)
+ *	 	flaxen.setStartHandler(function(f:Flaxen)
  *	 	{
- *	 		flaxen.newEntity()....
+ *	 		f.newEntity()....
  *		});
  *
  *	If you don't care to use the init system, you can just start creating entities:
  *
- *		var flaxen = new Flaxen();
- *	 	flaxen.newEntity()....
+ *		var f = new Flaxen();
+ *	 	f.newEntity()....
  */
 
 package flaxen.core; 
@@ -26,7 +26,6 @@ import flaxen.component.Tween;
 import flaxen.component.Application;
 import flaxen.service.InputService;
 import flaxen.util.Easing;
-import flaxen.util.Util;
 
 class Demo extends Flaxen
 {

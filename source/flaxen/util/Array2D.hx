@@ -1,6 +1,8 @@
 package flaxen.util;
 
 import flaxen.util.Point;
+import flaxen.util.MathUtil;
+import flaxen.util.ArrayUtil;
 
 class Array2D<T>
 {
@@ -91,7 +93,7 @@ class Array2D<T>
 		for(x in xOff...width + xOff)
 		for(y in yOff...height + yOff)
 		{
-			var v:T = (Std.is(value, Array) ? Util.anyOneOf(value) : value);
+			var v:T = (Std.is(value, Array) ? ArrayUtil.anyOneOf(value) : value);
 			set(x, y, v);
 		}
 		return this;
@@ -107,8 +109,8 @@ class Array2D<T>
 	// If orthogonalOnly is passed, diagonal points are not considered adjacent
 	public function pointsAreAdjacent(x1:Int, y1:Int, x2:Int, y2:Int, orthogonalOnly:Bool = false): Bool
 	{
-		var dx = Util.diff(x1, x2);
-		var dy = Util.diff(y1, y2);
+		var dx = MathUtil.idiff(x1, x2);
+		var dy = MathUtil.idiff(y1, y2);
 
 		if(orthogonalOnly)
 			return ((dx == 1 && dy == 0) || (dx == 0 && dy == 1));
