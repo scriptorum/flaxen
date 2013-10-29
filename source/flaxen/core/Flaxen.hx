@@ -58,13 +58,18 @@ class Flaxen extends com.haxepunk.Engine
 	private var layoutAsPortait:Bool = false;
 
 	public var ash:ash.core.Engine;
-	
+	public var startWidth:Int;
+	public var startHeight:Int;
+
 	public function new(width:Int = 0, height:Int = 0) // leave 0 to match window dimensions
 	{
 		this.layouts = new Map<String,Layout>();
 		this.ash = new ash.core.Engine(); // ecs
 		getApp(); // Create entity with Application component
 		addBuiltInSystems(); // initialize entity component systems
+
+		startWidth = width;
+		startHeight = height;
 
 		super(width, height, 60, false,
 			#if FORCE_BUFFER com.haxepunk.RenderMode.BUFFER #else null #end);
@@ -131,8 +136,27 @@ class Flaxen extends com.haxepunk.Engine
 
     override private function resize()
     {
+    	if(startWidth == 0)
+			startWidth = HXP.stage.stageWidth;
+    	if(startHeight == 0)
+			startHeight = HXP.stage.stageHeight;
+
+    	// fullScaleResize();
     	// nonScalingResize();
     	fluidResize();
+    }
+
+    // Same as the default HaxePunk resize handler
+    // The screen is stretched out to fill the stage
+    public function fullScaleResize()
+    {
+        if (HXP.width == 0) HXP.width = HXP.stage.stageWidth;
+        if (HXP.height == 0) HXP.height = HXP.stage.stageHeight;
+        HXP.windowWidth = HXP.stage.stageWidth;
+        HXP.windowHeight = HXP.stage.stageHeight;
+        HXP.screen.scaleX = HXP.stage.stageWidth / HXP.width;
+        HXP.screen.scaleY = HXP.stage.stageHeight / HXP.height;
+        HXP.resize(HXP.stage.stageWidth, HXP.stage.stageHeight);
     }
 
     public function nonScalingResize()
@@ -146,29 +170,30 @@ class Flaxen extends com.haxepunk.Engine
     {
     	if(HXP.width == 0 || HXP.height == 0)
 	        HXP.resize(HXP.stage.stageWidth, HXP.stage.stageHeight);
-
-	    trace("Stage:" + HXP.stage.stageWidth + "x" + HXP.stage.stageHeight);
-	    trace("Screen:" + HXP.screen.width + "x" + HXP.screen.height);
-	    trace("HXP:" + HXP.width + "x" + HXP.height);
-	    var isPortrait = (HXP.stage.stageHeight >= HXP.stage.stageWidth);
+	  	HXP.windowWidth = HXP.stage.stageWidth;
+        HXP.windowHeight = HXP.stage.stageHeight;
 
 	    // Determine best scaling maintaining aspect ratio
-	    var hdiff = Math.abs(HXP.stage.stageWidth - HXP.width);
-	    var vdiff = Math.abs(HXP.stage.stageHeight - HXP.height);
+	    var hdiff = Math.abs(HXP.stage.stageWidth - startWidth);
+	    var vdiff = Math.abs(HXP.stage.stageHeight - startHeight);
 	    var offset = new Position(0,0);
+	    var isPortrait:Bool;
 	    if(vdiff < hdiff) 
 	    {
-	    	HXP.screen.scaleY = HXP.screen.scaleX = HXP.stage.stageWidth / HXP.screen.width;
-	    	offset.y = (HXP.stage.stageWidth - (HXP.screen.scaleY * HXP.screen.width)) / 2;
+	        HXP.screen.scaleX = 1;
+	        HXP.screen.scaleY = HXP.stage.stageHeight / startHeight;
+	    	offset.x = (HXP.stage.stageHeight - (HXP.screen.scale * startHeight)) / 2;
+	    	isPortrait = false;
 	    }
 	    else
 	    {
-	    	HXP.screen.scaleY = HXP.screen.scaleX = HXP.stage.stageHeight / HXP.screen.height;
-	    	offset.x = (HXP.stage.stageHeight - (HXP.screen.scaleX * HXP.screen.height)) / 2;
+	        HXP.screen.scaleX = HXP.stage.stageWidth / startWidth;
+	        HXP.screen.scaleY = 1;
+	    	offset.y = (HXP.stage.stageWidth - (HXP.screen.scale * startWidth)) / 2;
+	    	isPortrait = true;
 	    }
-	    trace("Diff:" + hdiff + "x" + vdiff);
-	    trace("Scale:" + HXP.screen.scaleX);
-	    trace("Offset:" + offset.x + "x" + offset.y);
+
+	    trace("Offset:" + offset.x + "," + offset.y);
 
         // Determine master offset
         setLayoutOrientation(isPortrait); // Change orientation of all layouts
