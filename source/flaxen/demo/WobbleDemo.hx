@@ -13,7 +13,7 @@
  *	 	f.newEntity()....
  */
 
-package flaxen.core; 
+package flaxen.demo; 
 
 import ash.core.Entity;
 import com.haxepunk.HXP;
@@ -27,13 +27,13 @@ import flaxen.component.Application;
 import flaxen.service.InputService;
 import flaxen.util.Easing;
 
-class Demo extends Flaxen
+class WobbleDemo extends Flaxen
 {
 	private static var logo:String = "logo";
 
 	public static function main()
 	{
-		var demo = new Demo();
+		var demo = new WobbleDemo();
 	}
 
 	override public function ready()

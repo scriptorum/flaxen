@@ -20,7 +20,8 @@ class TextStyle
 	public var leading:Int = 0;
 	public var changed:Bool = true; // must set to true to recognize changed style options
 
-	public function new(color:Int, size:Int, font:String, ?alignment:TextAlign, wordWrap:Bool = false)
+	public function new(color:Int = 0xFFFFFF, size:Int = 14, ?font:String, 
+		?alignment:TextAlign, wordWrap:Bool = false)
 	{
 		this.color = color;
 		this.size = size;

@@ -13,6 +13,7 @@ import flaxen.component.Offset;
 import flaxen.component.Position;
 import flaxen.component.Alpha;
 import flaxen.component.Invisible;
+import flaxen.component.Layout;
 
 import ash.core.Entity;
 
@@ -174,6 +175,13 @@ class View extends com.haxepunk.Entity
 				var oy = (o.asPercentage ? o.y * img.height : o.y);
 				offsetX = ((img == null || img.scaleX == 1) ? ox : ox * img.scaleX);
 				offsetY = ((img == null || img.scaleY == 1) ? oy : oy * img.scaleY);
+			}
+
+			if(hasComponent(Layout))
+			{
+				var o = getComponent(Layout);
+				offsetX += o.current.x;
+				offsetY += o.current.y;
 			}
 
 			var pos = getComponent(Position);

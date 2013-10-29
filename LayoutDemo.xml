@@ -19,10 +19,11 @@
     <source path="source" />
     <set name="BUILD_DIR" value="export" /> 
 
-    <app title="Flaxen Demo" file="FlaxenDemo" main="flaxen.core.Demo" company="Inscrutable Games" swf-version="11.2"/>
-    <app preloader="inscrutablegames.Preloader" />
+    <app title="Flaxen Demo" file="FlaxenDemo" main="flaxen.demo.LayoutDemo" company="Inscrutable Games" swf-version="11.2"/>
 
-    <window fps="60" resizable="false" background="0x000000" orientation="landscape"/>
+    <app preloader="inscrutablegames.Preloader" if="flash"/>
+
+    <window resizable="true" background="0x000000" orientation="landscape"/>
     <window width="640" height="480" unless="mobile" />
     <window fullscreen="true" if="mobile" />
 </project>

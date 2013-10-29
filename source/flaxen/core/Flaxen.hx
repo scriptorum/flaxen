@@ -17,9 +17,11 @@ import flaxen.component.Audio;
 import flaxen.component.Timestamp;
 import flaxen.component.Offset;
 import flaxen.component.CameraFocus;
+import flaxen.component.Layout;
 import flaxen.node.SoundNode;
 import flaxen.node.TransitionalNode;
 import flaxen.node.CameraFocusNode;
+import flaxen.node.LayoutNode;
 import flaxen.util.Easing;
 import flaxen.service.InputService;
 import flaxen.service.CameraService;
@@ -49,15 +51,17 @@ class Flaxen extends com.haxepunk.Engine
 	private var coreSystemId:Int = 0;
 	private var userSystemId:Int = 10000;
 	private var standardSystemId:Int = 20000;
-
 	private var nextEntityId:Int = 0;
 	private var modeSystem:ModeSystem;
 	private var inputSystem:InputSystem;
+	private var layouts:Map<String,Layout>;
+	private var layoutAsPortait:Bool = false;
 
 	public var ash:ash.core.Engine;
 	
 	public function new(width:Int = 0, height:Int = 0) // leave 0 to match window dimensions
 	{
+		this.layouts = new Map<String,Layout>();
 		this.ash = new ash.core.Engine(); // ecs
 		getApp(); // Create entity with Application component
 		addBuiltInSystems(); // initialize entity component systems
@@ -127,10 +131,87 @@ class Flaxen extends com.haxepunk.Engine
 
     override private function resize()
     {
+    	// nonScalingResize();
+    	fluidResize();
+    }
+
+    public function nonScalingResize()
+    {
         HXP.screen.scaleX = HXP.screen.scaleY = 1;
-    	var width = (HXP.width <= 0 ? HXP.stage.stageWidth : HXP.width);
-    	var height = (HXP.height <= 0 ? HXP.stage.stageHeight : HXP.height);
-        HXP.resize(width, height);
+    	if(HXP.width == 0 || HXP.height == 0)
+	        HXP.resize(HXP.stage.stageWidth, HXP.stage.stageHeight);
+    }
+
+    public function fluidResize()
+    {
+    	if(HXP.width == 0 || HXP.height == 0)
+	        HXP.resize(HXP.stage.stageWidth, HXP.stage.stageHeight);
+
+	    trace("Stage:" + HXP.stage.stageWidth + "x" + HXP.stage.stageHeight);
+	    trace("Screen:" + HXP.screen.width + "x" + HXP.screen.height);
+	    trace("HXP:" + HXP.width + "x" + HXP.height);
+	    var isPortrait = (HXP.stage.stageHeight >= HXP.stage.stageWidth);
+
+	    // Determine best scaling maintaining aspect ratio
+	    var hdiff = Math.abs(HXP.stage.stageWidth - HXP.width);
+	    var vdiff = Math.abs(HXP.stage.stageHeight - HXP.height);
+	    var offset = new Position(0,0);
+	    if(vdiff < hdiff) 
+	    {
+	    	HXP.screen.scaleY = HXP.screen.scaleX = HXP.stage.stageWidth / HXP.screen.width;
+	    	offset.y = (HXP.stage.stageWidth - (HXP.screen.scaleY * HXP.screen.width)) / 2;
+	    }
+	    else
+	    {
+	    	HXP.screen.scaleY = HXP.screen.scaleX = HXP.stage.stageHeight / HXP.screen.height;
+	    	offset.x = (HXP.stage.stageHeight - (HXP.screen.scaleX * HXP.screen.height)) / 2;
+	    }
+	    trace("Diff:" + hdiff + "x" + vdiff);
+	    trace("Scale:" + HXP.screen.scaleX);
+	    trace("Offset:" + offset.x + "x" + offset.y);
+
+        // Determine master offset
+        setLayoutOrientation(isPortrait); // Change orientation of all layouts
+    }
+
+    /*
+     * LAYOUT METHODS
+     * If you add a Layout to an entity which also has a Position, that Position 
+     * will be interpreted as relative to the Layout.
+     */
+
+	public function newLayout(name:String, portaitX:Float, portraitY:Float, 
+		landscapeX:Float, landscapeY:Float): Layout
+	{
+		var l = new Layout(name, new Position(portaitX, portraitY), new Position(landscapeX, landscapeY));
+		trace("Creating new layout " + name + ", screen dim:" + HXP.width + "x" + HXP.height);
+		l.setOrientation(HXP.height >= HXP.width);
+		return addLayout(l);
+	}
+
+	// Registers a new layout. Make sure you set Layout.current to portrait or landscape to start.
+    public function addLayout(layout:Layout): Layout
+    {
+    	if(layouts.get(layout.name) != null)
+    		throw "Layout " + layout.name + " already exists";
+	 	layouts.set (layout.name, layout);
+    	return layout;
+    }
+
+    public function getLayout(name:String): Layout
+    {
+    	var layout:Layout = layouts.get(name);
+    	if(layout == null)
+    		throw "Layout " + name + " does not exist";
+    	return layout;
+    }
+
+    // Swaps the current layout with the alternate layout
+    // Usually this is because the screen orientation has changed
+    public function setLayoutOrientation(portraitOrientation:Bool): Void
+    {
+    	for(node in ash.getNodeList(LayoutNode))
+    		node.layout.setOrientation(portraitOrientation);
     }
 
     /*

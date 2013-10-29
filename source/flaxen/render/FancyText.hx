@@ -2,6 +2,7 @@ package flaxen.render;
 
 import com.haxepunk.graphics.Text;
 import com.haxepunk.graphics.Graphiclist;
+import com.haxepunk.HXP;
 import flash.text.TextFormatAlign;
 
 #if (flash || js)
@@ -18,12 +19,12 @@ class FancyText extends Graphiclist
 	private var font:String;
 
 	public function new(str:String, x:Float = 0, y:Float = 0, size:Int = 14, color:Int = 0xFFFFFF, 
-		font:String = "font/aesymatt.ttf", width:Int = 0, height:Int = 0, 
+		?font:String, width:Int = 0, height:Int = 0, 
 		alignment:String = "left", wordWrap:Bool = false, scrollFactor:Float = 1, leading:Int = 0, 
 		shadowOffset:Int = 2, shadowColor:Int = 0x000000)
 	{
 		super();
-		this.font = font;
+		this.font = (font == null ? HXP.defaultFont : font);
 		var ftAlign:FTAlign = stringToFTAlign(alignment);
 		texts = new Array<Text>();
 		if(shadowOffset != 0)
