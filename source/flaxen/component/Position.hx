@@ -11,10 +11,11 @@ class Position
 		this.y = y;
 	}
 
-	public function add(x:Float, y:Float)
+	public function add(x:Float, y:Float): Position
 	{
 		this.x += x;
 		this.y += y;
+		return this;
 	}
 
 	public function clone(): Position

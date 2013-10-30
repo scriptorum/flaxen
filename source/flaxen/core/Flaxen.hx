@@ -1,3 +1,13 @@
+/*
+	TODO 
+		o Fix base not flipping correctly.
+		o Fix backdrop not repeating fully -- maybe not a real problem but a side effect?
+		o In TextView, font pitch must be scaled to match
+		o In TextView, Size dimensions must be scaled to match -- is that the case?
+		  It looks like the Size is incorrect for centering, but I'm not sure that makes 
+		  SENSE - maybe this is another side effect of the font pitch non-scaling.
+*/
+
 package flaxen.core;
 
 import ash.core.Entity;
@@ -58,8 +68,8 @@ class Flaxen extends com.haxepunk.Engine
 	private var layoutAsPortait:Bool = false;
 
 	public var ash:ash.core.Engine;
-	public var startWidth:Int;
-	public var startHeight:Int;
+	public var baseWidth:Int;
+	public var baseHeight:Int;
 
 	public function new(width:Int = 0, height:Int = 0) // leave 0 to match window dimensions
 	{
@@ -68,8 +78,8 @@ class Flaxen extends com.haxepunk.Engine
 		getApp(); // Create entity with Application component
 		addBuiltInSystems(); // initialize entity component systems
 
-		startWidth = width;
-		startHeight = height;
+		baseWidth = width;
+		baseHeight = height;
 
 		super(width, height, 60, false,
 			#if FORCE_BUFFER com.haxepunk.RenderMode.BUFFER #else null #end);
@@ -136,10 +146,10 @@ class Flaxen extends com.haxepunk.Engine
 
     override private function resize()
     {
-    	if(startWidth == 0)
-			startWidth = HXP.stage.stageWidth;
-    	if(startHeight == 0)
-			startHeight = HXP.stage.stageHeight;
+    	if(baseWidth == 0)
+			baseWidth = HXP.stage.stageWidth;
+    	if(baseHeight == 0)
+			baseHeight = HXP.stage.stageHeight;
 
     	// fullScaleResize();
     	// nonScalingResize();
@@ -170,33 +180,49 @@ class Flaxen extends com.haxepunk.Engine
     {
     	if(HXP.width == 0 || HXP.height == 0)
 	        HXP.resize(HXP.stage.stageWidth, HXP.stage.stageHeight);
+
 	  	HXP.windowWidth = HXP.stage.stageWidth;
         HXP.windowHeight = HXP.stage.stageHeight;
 
-	    // Determine best scaling maintaining aspect ratio
-	    var hdiff = Math.abs(HXP.stage.stageWidth - startWidth);
-	    var vdiff = Math.abs(HXP.stage.stageHeight - startHeight);
+	    // Determine best scale-maintaining aspect ratio
+	    var pSlope = Math.min(baseWidth, baseHeight) / Math.max(baseWidth, baseHeight);
+	    var lSlope = Math.max(baseWidth, baseHeight) / Math.min(baseWidth, baseHeight);
+	    var sSlope = HXP.stage.stageWidth / HXP.stage.stageHeight;
+	    var pSuitablility = Math.abs(sSlope - pSlope);
+	    var lSuitablility = Math.abs(sSlope - lSlope);
+	    var isPortrait:Bool = (pSuitablility < lSuitablility);
+	    adjustScreen(isPortrait);
+
+        HXP.screen.scaleX = HXP.screen.scaleY = 
+        	Math.min(HXP.stage.stageWidth / baseWidth, HXP.stage.stageHeight / baseHeight);
+
 	    var offset = new Position(0,0);
-	    var isPortrait:Bool;
-	    if(vdiff < hdiff) 
-	    {
-	        HXP.screen.scaleX = 1;
-	        HXP.screen.scaleY = HXP.stage.stageHeight / startHeight;
-	    	offset.x = (HXP.stage.stageHeight - (HXP.screen.scale * startHeight)) / 2;
-	    	isPortrait = false;
-	    }
+	    if(isPortrait)
+	    	offset.y = (HXP.stage.stageHeight / HXP.screen.scaleY - baseHeight) / 2;
 	    else
-	    {
-	        HXP.screen.scaleX = HXP.stage.stageWidth / startWidth;
-	        HXP.screen.scaleY = 1;
-	    	offset.y = (HXP.stage.stageWidth - (HXP.screen.scale * startWidth)) / 2;
-	    	isPortrait = true;
-	    }
+	    	offset.x = (HXP.stage.stageWidth / HXP.screen.scaleX - baseWidth) / 2;
 
 	    trace("Offset:" + offset.x + "," + offset.y);
+	    trace("ScreenScale:" + HXP.screen.scaleX + "x" + HXP.screen.scaleY);
+    	trace("Start:" + baseWidth + "x" + baseHeight);
+    	trace("pSlope:" + pSlope + " lSlope:" + lSlope + " sSlope:" + sSlope);
+    	trace("Portrait? " + (isPortrait ? "YES" : "NO"));
+    	trace("Stage:" + HXP.stage.stageWidth + "x" + HXP.stage.stageHeight);
 
         // Determine master offset
-        setLayoutOrientation(isPortrait); // Change orientation of all layouts
+        setLayoutOrientation(isPortrait, offset); // Change orientation of all layouts
+    }
+
+    private function adjustScreen(isPortrait:Bool)
+    {
+    	var wide = baseWidth > baseHeight;
+    	if((isPortrait && wide) || (!isPortrait && !wide))
+    	{
+	    	var tmp = baseWidth;
+	    	baseWidth = baseHeight;
+	    	baseHeight = tmp;
+    	}
+    	HXP.resize(baseWidth, baseHeight);
     }
 
     /*
@@ -210,7 +236,7 @@ class Flaxen extends com.haxepunk.Engine
 	{
 		var l = new Layout(name, new Position(portaitX, portraitY), new Position(landscapeX, landscapeY));
 		trace("Creating new layout " + name + ", screen dim:" + HXP.width + "x" + HXP.height);
-		l.setOrientation(HXP.height >= HXP.width);
+		l.setOrientation(HXP.height >= HXP.width, null);
 		return addLayout(l);
 	}
 
@@ -233,10 +259,10 @@ class Flaxen extends com.haxepunk.Engine
 
     // Swaps the current layout with the alternate layout
     // Usually this is because the screen orientation has changed
-    public function setLayoutOrientation(portraitOrientation:Bool): Void
+    public function setLayoutOrientation(portraitOrientation:Bool, layoutOffset:Position): Void
     {
     	for(node in ash.getNodeList(LayoutNode))
-    		node.layout.setOrientation(portraitOrientation);
+    		node.layout.setOrientation(portraitOrientation, layoutOffset);    		
     }
 
     /*

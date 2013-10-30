@@ -17,8 +17,10 @@ class Layout
 	}
 
 	// You must call setOrientation
-	public function setOrientation(portraitOrientation:Bool)
+	public function setOrientation(portraitOrientation:Bool, layoutOffset:Position)
 	{
 		current = (portraitOrientation ? portrait : landscape);
+		if(layoutOffset != null)
+			current = current.clone().add(layoutOffset.x, layoutOffset.y);
 	}
 }
