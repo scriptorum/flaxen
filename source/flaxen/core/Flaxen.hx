@@ -3,6 +3,7 @@
 		o Report to HaxePunk GitHub: Backdrop not repeating fully after resize (also caused by scaling)
 		o Report to HaxePunk GitHub: Text font size is not scaled on CPP targets
 		o Report to HaxePunk GitHub: Text width/height is not scaled on CPP targets
+		o Fix layout at boot does not apply proper offset
 */
 
 package flaxen.core;

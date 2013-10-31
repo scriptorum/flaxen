@@ -27,16 +27,14 @@ class BackdropView extends View
 
 		// Rebuild backdrop after scale change detected. This is a HACK to fix a bug in
 		// HaxePunk. Backdrop should detect when a screen resize occurs but it does not.
-		else if(curWidth != HXP.screen.width || curHeight != HXP.screen.width)
-		{
-			curWidth = HXP.screen.width;
-			curHeight = HXP.screen.height;
+		else if(curWidth != HXP.screen.width || curHeight != HXP.screen.height)
 			setBackdrop(image);
-		}
 	}
 
 	private function setBackdrop(image:Image)
 	{
+		curWidth = HXP.screen.width; // HAXEPUNK FIX
+		curHeight = HXP.screen.height; // HAXEPUNK FIX
 		curImage = image;
 		graphic = new Backdrop(image.path);
 	}
