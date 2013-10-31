@@ -1,8 +1,12 @@
 /*
 	TODO 
-		o Report to HaxePunk GitHub: Backdrop not repeating fully after resize (also caused by scaling)
-		o Report to HaxePunk GitHub: Text font size is not scaled on CPP targets
-		o Report to HaxePunk GitHub: Text width/height is not scaled on CPP targets
+		o The screen occasionally ends abruptly on resize. It seems to happen
+		  somewhat randomly. If you switch to fullscreen (F) and back it goes away.
+		  I so far can only reproduce it on Flash.
+
+		o I'd rather use CTRL/CMD-ENTER to toggle fullscreen. Right now, Flash 
+		  requires ESC to leave fullscreen mode. Also, I'm triggering on the F
+		  key instead the desired key combo.
 */
 
 package flaxen.core;
@@ -184,8 +188,11 @@ class Flaxen extends com.haxepunk.Engine
 	  	HXP.windowWidth = HXP.stage.stageWidth;
         HXP.windowHeight = HXP.stage.stageHeight;
 
+        // trace("Stage:" + HXP.stage.stageWidth + "x" + HXP.stage.stageHeight);
+
         // Determine tall or wide layout
 	    layoutOrientation = (HXP.stage.stageWidth < HXP.stage.stageHeight ? Portrait : Landscape); 
+        // trace("Orientation:" + layoutOrientation);
 	    checkScreenOrientation();
 
 	    // Determine best-fit scaling 
@@ -193,15 +200,16 @@ class Flaxen extends com.haxepunk.Engine
 	    var hScale = HXP.stage.stageHeight / baseHeight;
 	    var scale = Math.min(wScale, hScale);
         HXP.screen.scaleX = HXP.screen.scaleY = scale;
+        // trace("Scale:" + scale);
 
         // Center all layouts on screen
 	    layoutOffset = new Position(0,0);
 	    if(scale == hScale)
 	    	layoutOffset.x = (HXP.stage.stageWidth / HXP.screen.scaleY - baseWidth) / 2;
 	    else layoutOffset.y = (HXP.stage.stageHeight / HXP.screen.scaleX - baseHeight) / 2;
+        // trace("Offset:" + layoutOffset.x + "," + layoutOffset.y);
 
-        // Apply current layout orientation and master offset
-        setOrientation(); // Change orientation of all layouts
+        updateLayouts(); // Update orientation and offset for all layouts
     }
 
     private function checkScreenOrientation()
@@ -214,6 +222,7 @@ class Flaxen extends com.haxepunk.Engine
 	    	baseHeight = tmp;
     	}
     	HXP.resize(baseWidth, baseHeight);
+    	// trace("Base:" + baseWidth + "x" + baseHeight);
     }
 
     /*
@@ -249,7 +258,7 @@ class Flaxen extends com.haxepunk.Engine
 
     // Swaps the current layout with the alternate layout
     // Usually this is because the screen orientation has changed
-    public function setOrientation(): Void
+    public function updateLayouts(): Void
     {
     	for(node in ash.getNodeList(LayoutNode))
     		node.layout.setOrientation(layoutOrientation, layoutOffset);    		

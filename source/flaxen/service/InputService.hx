@@ -14,7 +14,6 @@ class InputService
 		Input.mouseReleased = false;
 		Input.mousePressed = false;
 		Input.lastKey = 0;
-		Input.define(debug, [Key.TAB]);
 	}
 
 	public static function onRightClick(cb:Dynamic->Void)

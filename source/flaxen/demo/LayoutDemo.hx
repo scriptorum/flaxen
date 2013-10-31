@@ -2,6 +2,7 @@ package flaxen.demo;
 
 import ash.core.Entity;
 import com.haxepunk.HXP;
+import com.haxepunk.utils.Key;
 import flaxen.core.Flaxen;
 import flaxen.component.Image;
 import flaxen.component.Position;
@@ -63,7 +64,14 @@ class LayoutDemo extends Flaxen
 				.add(new Position(0,60)).add(new Size(160, 160));
 		}
 
-		trace("Ready finished");
+		setInputHandler(function(_)
+		{
+			if(InputService.lastKey() == Key.F)
+			{
+				HXP.fullscreen = !HXP.fullscreen;
+				InputService.clearLastKey();
+			}
+		});
 	}
 
 	public function wobble(e:Entity, wobbleTarget:Dynamic)
