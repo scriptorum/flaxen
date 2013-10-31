@@ -5,11 +5,13 @@ import flaxen.component.Alpha;
 import flaxen.component.Size;
 import flaxen.render.FancyText;
 import flash.text.TextFormatAlign;
+import com.haxepunk.HXP;
 
 class TextView extends View
 {
 	private var curWidth:Int = 0;
 	private var curHeight:Int = 0;
+	private var curScale:Float = 1.0;
 	private var curMessage:String;
 	private var curStyle:TextStyle;
 	private var display:FancyText;
@@ -26,9 +28,10 @@ class TextView extends View
 		if(graphic == null || forceNew || curStyle.changed)
 		{
 			// TODO Support ScrollFactor
-			graphic = display = new FancyText(curMessage, 0, 0, curStyle.size, curStyle.color, 
-				curStyle.font, curWidth, curHeight, Std.string(curStyle.alignment), 
-				curStyle.wordWrap, 1, curStyle.leading, curStyle.shadowOffset, curStyle.shadowColor); 
+			graphic = display = new FancyText(curMessage, 0, 0, Std.int(curStyle.size * curScale), 
+				curStyle.color, curStyle.font, Std.int(curWidth * curScale), Std.int(curHeight * curScale), 
+				Std.string(curStyle.alignment), curStyle.wordWrap, 1, curStyle.leading, 
+				curStyle.shadowOffset, curStyle.shadowColor);
 			curStyle.changed = false;			
 		}
 
@@ -79,6 +82,17 @@ class TextView extends View
 				updateDisplay = true;
 			}
 			else curMessage = "";
+
+			// HACK Because HaxePunk does not properly scale text on CPP targets
+			#if !flash
+				var scale = (HXP.screen.fullScaleX + HXP.screen.fullScaleY) / 2;
+				if(scale != curScale)
+				{
+					curScale = scale;
+					updateDisplay = true;
+					forceNew = true;
+				}
+			#end
 
 			// If any changes, update text object
 			if(updateDisplay)

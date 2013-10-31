@@ -24,8 +24,8 @@
     <app preloader="inscrutablegames.Preloader" if="flash"/>
 
     <window resizable="true" background="0x7b6758" orientation="landscape"/>
-<!--     <window width="1280" height="240 " unless="mobile" />-->    
-    <window width="640" height="480" unless="mobile" />    
+     <window width="1280" height="240 " unless="mobile" />    
+    <!-- <window width="640" height="480" unless="mobile" />     -->
     <window fullscreen="true" if="mobile" />
 </project>
 
