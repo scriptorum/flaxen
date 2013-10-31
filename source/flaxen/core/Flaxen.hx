@@ -3,7 +3,6 @@
 		o Report to HaxePunk GitHub: Backdrop not repeating fully after resize (also caused by scaling)
 		o Report to HaxePunk GitHub: Text font size is not scaled on CPP targets
 		o Report to HaxePunk GitHub: Text width/height is not scaled on CPP targets
-		o Fix layout at boot does not apply proper offset
 */
 
 package flaxen.core;
@@ -63,11 +62,12 @@ class Flaxen extends com.haxepunk.Engine
 	private var modeSystem:ModeSystem;
 	private var inputSystem:InputSystem;
 	private var layouts:Map<String,Layout>;
-	private var layoutAsPortait:Bool = false;
 
 	public var ash:ash.core.Engine;
 	public var baseWidth:Int;
 	public var baseHeight:Int;
+	public var layoutOrientation:Orientation;
+	public var layoutOffset:Position;
 
 	public function new(width:Int = 0, height:Int = 0) // leave 0 to match window dimensions
 	{
@@ -185,8 +185,8 @@ class Flaxen extends com.haxepunk.Engine
         HXP.windowHeight = HXP.stage.stageHeight;
 
         // Determine tall or wide layout
-	    var isPortrait:Bool = (HXP.stage.stageWidth < HXP.stage.stageHeight);
-	    adjustScreen(isPortrait);
+	    layoutOrientation = (HXP.stage.stageWidth < HXP.stage.stageHeight ? Portrait : Landscape); 
+	    checkScreenOrientation();
 
 	    // Determine best-fit scaling 
 	    var wScale = HXP.stage.stageWidth / baseWidth;
@@ -195,19 +195,19 @@ class Flaxen extends com.haxepunk.Engine
         HXP.screen.scaleX = HXP.screen.scaleY = scale;
 
         // Center all layouts on screen
-	    var offset = new Position(0,0);
+	    layoutOffset = new Position(0,0);
 	    if(scale == hScale)
-	    	offset.x = (HXP.stage.stageWidth / HXP.screen.scaleY - baseWidth) / 2;
-	    else offset.y = (HXP.stage.stageHeight / HXP.screen.scaleX - baseHeight) / 2;
+	    	layoutOffset.x = (HXP.stage.stageWidth / HXP.screen.scaleY - baseWidth) / 2;
+	    else layoutOffset.y = (HXP.stage.stageHeight / HXP.screen.scaleX - baseHeight) / 2;
 
         // Apply current layout orientation and master offset
-        setLayoutOrientation(isPortrait, offset); // Change orientation of all layouts
+        setOrientation(); // Change orientation of all layouts
     }
 
-    private function adjustScreen(isPortrait:Bool)
+    private function checkScreenOrientation()
     {
-    	var wide = baseWidth > baseHeight;
-    	if((isPortrait && wide) || (!isPortrait && !wide))
+    	var newOrientation:Orientation = (baseWidth > baseHeight ? Landscape : Portrait);
+    	if(layoutOrientation != newOrientation)
     	{
 	    	var tmp = baseWidth;
 	    	baseWidth = baseHeight;
@@ -226,7 +226,7 @@ class Flaxen extends com.haxepunk.Engine
 		landscapeX:Float, landscapeY:Float): Layout
 	{
 		var l = new Layout(name, new Position(portaitX, portraitY), new Position(landscapeX, landscapeY));
-		l.setOrientation(HXP.height >= HXP.width, null);
+		l.setOrientation(layoutOrientation, layoutOffset);
 		return addLayout(l);
 	}
 
@@ -249,10 +249,10 @@ class Flaxen extends com.haxepunk.Engine
 
     // Swaps the current layout with the alternate layout
     // Usually this is because the screen orientation has changed
-    public function setLayoutOrientation(portraitOrientation:Bool, layoutOffset:Position): Void
+    public function setOrientation(): Void
     {
     	for(node in ash.getNodeList(LayoutNode))
-    		node.layout.setOrientation(portraitOrientation, layoutOffset);    		
+    		node.layout.setOrientation(layoutOrientation, layoutOffset);    		
     }
 
     /*

@@ -2,25 +2,30 @@ package flaxen.component;
 
 // A layout can be used in addition to position to establish the 0,0 point
 // Changing a layout would then move (as a group) all entities using that layout.
-// Master Layout represents the position of the main.
+
+enum Orientation { Landscape; Portrait; }
+
 class Layout
 {
 	public var name:String;
 	public var current:Position;
 	public var portrait:Position;
 	public var landscape:Position;
+	public var orientation:Orientation;
+
 	public function new(name:String, portrait:Position, landscape:Position)
 	{
 		this.name = name;
-		this.current = this.portrait = portrait;
-		this.landscape = landscape;
+		this.portrait = portrait;
+		this.current = this.landscape = landscape;
+		this.orientation = Landscape;
 	}
 
 	// You must call setOrientation
-	public function setOrientation(portraitOrientation:Bool, layoutOffset:Position)
+	public function setOrientation(orientation:Orientation, ?offset:Position)
 	{
-		current = (portraitOrientation ? portrait : landscape);
-		if(layoutOffset != null)
-			current = current.clone().add(layoutOffset.x, layoutOffset.y);
+		current = (orientation == Portrait ? portrait : landscape);
+		if(offset != null)
+			current = current.clone().add(offset.x, offset.y);
 	}
 }
