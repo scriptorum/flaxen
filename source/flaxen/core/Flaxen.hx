@@ -1,11 +1,8 @@
 /*
 	TODO 
-		o Fix base not flipping correctly.
 		o Fix backdrop not repeating fully -- maybe not a real problem but a side effect?
-		o In TextView, font pitch must be scaled to match
-		o In TextView, Size dimensions must be scaled to match -- is that the case?
-		  It looks like the Size is incorrect for centering, but I'm not sure that makes 
-		  SENSE - maybe this is another side effect of the font pitch non-scaling.
+		o In TextView on CPP, font pitch must be scaled to match - works on Flash
+		o In TextView on CPP, Size dimensions must be scaled to match - works on Flash
 */
 
 package flaxen.core;
@@ -83,6 +80,8 @@ class Flaxen extends com.haxepunk.Engine
 
 		super(width, height, 60, false,
 			#if FORCE_BUFFER com.haxepunk.RenderMode.BUFFER #else null #end);
+
+		// HXP.screen.smoothing = true;		
 	}
 
 	override public function init()
@@ -184,32 +183,23 @@ class Flaxen extends com.haxepunk.Engine
 	  	HXP.windowWidth = HXP.stage.stageWidth;
         HXP.windowHeight = HXP.stage.stageHeight;
 
-	    // Determine best scale-maintaining aspect ratio
-	    var pSlope = Math.min(baseWidth, baseHeight) / Math.max(baseWidth, baseHeight);
-	    var lSlope = Math.max(baseWidth, baseHeight) / Math.min(baseWidth, baseHeight);
-	    var sSlope = HXP.stage.stageWidth / HXP.stage.stageHeight;
-	    var pSuitablility = Math.abs(sSlope - pSlope);
-	    var lSuitablility = Math.abs(sSlope - lSlope);
-	    var isPortrait:Bool = (pSuitablility < lSuitablility);
+        // Determine tall or wide layout
+	    var isPortrait:Bool = (HXP.stage.stageWidth < HXP.stage.stageHeight);
 	    adjustScreen(isPortrait);
 
-        HXP.screen.scaleX = HXP.screen.scaleY = 
-        	Math.min(HXP.stage.stageWidth / baseWidth, HXP.stage.stageHeight / baseHeight);
+	    // Determine best-fit scaling 
+	    var wScale = HXP.stage.stageWidth / baseWidth;
+	    var hScale = HXP.stage.stageHeight / baseHeight;
+	    var scale = Math.min(wScale, hScale);
+        HXP.screen.scaleX = HXP.screen.scaleY = scale;
 
+        // Center all layouts on screen
 	    var offset = new Position(0,0);
-	    if(isPortrait)
-	    	offset.y = (HXP.stage.stageHeight / HXP.screen.scaleY - baseHeight) / 2;
-	    else
-	    	offset.x = (HXP.stage.stageWidth / HXP.screen.scaleX - baseWidth) / 2;
+	    if(scale == hScale)
+	    	offset.x = (HXP.stage.stageWidth / HXP.screen.scaleY - baseWidth) / 2;
+	    else offset.y = (HXP.stage.stageHeight / HXP.screen.scaleX - baseHeight) / 2;
 
-	    trace("Offset:" + offset.x + "," + offset.y);
-	    trace("ScreenScale:" + HXP.screen.scaleX + "x" + HXP.screen.scaleY);
-    	trace("Start:" + baseWidth + "x" + baseHeight);
-    	trace("pSlope:" + pSlope + " lSlope:" + lSlope + " sSlope:" + sSlope);
-    	trace("Portrait? " + (isPortrait ? "YES" : "NO"));
-    	trace("Stage:" + HXP.stage.stageWidth + "x" + HXP.stage.stageHeight);
-
-        // Determine master offset
+        // Apply current layout orientation and master offset
         setLayoutOrientation(isPortrait, offset); // Change orientation of all layouts
     }
 
@@ -235,7 +225,6 @@ class Flaxen extends com.haxepunk.Engine
 		landscapeX:Float, landscapeY:Float): Layout
 	{
 		var l = new Layout(name, new Position(portaitX, portraitY), new Position(landscapeX, landscapeY));
-		trace("Creating new layout " + name + ", screen dim:" + HXP.width + "x" + HXP.height);
 		l.setOrientation(HXP.height >= HXP.width, null);
 		return addLayout(l);
 	}

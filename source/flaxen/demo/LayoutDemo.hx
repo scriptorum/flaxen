@@ -22,7 +22,7 @@ class LayoutDemo extends Flaxen
 
 	public static function main()
 	{
-		var LayoutDemo = new LayoutDemo();
+		var LayoutDemo = new LayoutDemo(640, 480);
 	}
 
 	override public function ready()
