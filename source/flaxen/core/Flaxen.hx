@@ -1,8 +1,8 @@
 /*
 	TODO 
-		o Fix backdrop not repeating fully -- maybe not a real problem but a side effect?
-		o In TextView on CPP, font pitch must be scaled to match - works on Flash
-		o In TextView on CPP, Size dimensions must be scaled to match - works on Flash
+		o Report to HaxePunk GitHub: Backdrop not repeating fully after resize (also caused by scaling)
+		o Report to HaxePunk GitHub: Text font size is not scaled on CPP targets
+		o Report to HaxePunk GitHub: Text width/height is not scaled on CPP targets
 */
 
 package flaxen.core;

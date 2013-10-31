@@ -11,6 +11,8 @@ class TextView extends View
 {
 	private var curWidth:Int = 0;
 	private var curHeight:Int = 0;
+	private var curScaleX:Float = 1.0;
+	private var curScaleY:Float = 1.0;
 	private var curScale:Float = 1.0;
 	private var curMessage:String;
 	private var curStyle:TextStyle;
@@ -85,10 +87,11 @@ class TextView extends View
 
 			// HACK Because HaxePunk does not properly scale text on CPP targets
 			#if !flash
-				var scale = (HXP.screen.fullScaleX + HXP.screen.fullScaleY) / 2;
-				if(scale != curScale)
+				if(curScaleX != HXP.screen.fullScaleX || curScaleY != HXP.screen.fullScaleY)
 				{
-					curScale = scale;
+					curScaleX = HXP.screen.fullScaleX;
+					curScaleY = HXP.screen.fullScaleY;
+					curScale = (curScaleX + curScaleY) / 2;
 					updateDisplay = true;
 					forceNew = true;
 				}

@@ -3,14 +3,41 @@ package flaxen.render;
 import flaxen.component.Image;
 
 import com.haxepunk.graphics.Backdrop;
+import com.haxepunk.HXP;
 
 class BackdropView extends View
 {
+	private var curImage:Image;
+	private var curWidth:Float = 0; // HAXEPUNK FIX
+	private var curHeight:Float = 0; // HAXEPUNK FIX
+
 	override public function begin()
 	{
-		// trace("Placing backdrop entity at layer " + this.layer);
+		nodeUpdate();
+	}
+
+	override public function nodeUpdate()
+	{
+		super.nodeUpdate();
+
+		// Image is required component, will always be there if we're at the point
 		var image = getComponent(Image);
-		var backdrop = new Backdrop(image.path);
-		graphic = backdrop;
+		if(image != curImage)
+			setBackdrop(image);
+
+		// Rebuild backdrop after scale change detected. This is a HACK to fix a bug in
+		// HaxePunk. Backdrop should detect when a screen resize occurs but it does not.
+		else if(curWidth != HXP.screen.width || curHeight != HXP.screen.width)
+		{
+			curWidth = HXP.screen.width;
+			curHeight = HXP.screen.height;
+			setBackdrop(image);
+		}
+	}
+
+	private function setBackdrop(image:Image)
+	{
+		curImage = image;
+		graphic = new Backdrop(image.path);
 	}
 }
