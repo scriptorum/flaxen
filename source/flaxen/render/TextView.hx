@@ -83,7 +83,7 @@ class TextView extends View
 				curMessage = text.message;
 				updateDisplay = true;
 			}
-			else curMessage = "";
+			else curMessage = ""; // TODO Should this be removed?
 
 			// HACK Because HaxePunk does not properly scale text on CPP targets
 			#if !flash

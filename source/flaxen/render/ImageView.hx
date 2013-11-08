@@ -1,3 +1,4 @@
+
 package flaxen.render;
 
 import flash.geom.Rectangle;
@@ -15,6 +16,7 @@ class ImageView extends View
 
 	override public function begin()
 	{
+		nodeUpdate();
 	}
 
 	private function setTile()

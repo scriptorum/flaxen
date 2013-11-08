@@ -39,10 +39,10 @@ class RenderingSystem extends FlaxenSystem
 	{
 		updateViews(BackdropNode, BackdropView);
 		updateViews(GridNode, GridView);
+		updateViews(BitmapTextNode, BitmapTextView); // must update before ImageNode, since it's a superset of that
 		updateViews(ImageNode, ImageView);
 		updateViews(AnimationNode, AnimationView);
 		updateViews(TextNode, TextView);
-		updateViews(BitmapTextNode, BitmapTextView);
 		updateViews(EmitterNode, EmitterView);
 	}
 
@@ -61,7 +61,6 @@ class RenderingSystem extends FlaxenSystem
 				HXP.scene.add(view);
 				display = new Display(view);
 				entity.add(display);
-				// trace("Adding a display node to entity " + entity.name);
 	 		}
 	 		else display = entity.get(Display);
 

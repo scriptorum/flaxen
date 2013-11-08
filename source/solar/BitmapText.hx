@@ -41,7 +41,6 @@ class BitmapText extends Canvas
 	
 	public function new(font:Dynamic, letterWidth:Int, letterHeight:Int,  charCode:Int = 32)
 	{
-		trace("font:" + font + " size:" + letterWidth + "x" + letterHeight);
 		// load the font
 		setFont(font, letterWidth, letterHeight, charCode);
 		
@@ -61,45 +60,42 @@ class BitmapText extends Canvas
 			_blit = false;
 			_font = cast(font, TileAtlas);
 		}
+		else if (HXP.renderMode.has(RenderMode.HARDWARE))
+		{
+			_blit = false;
+			_font = new TileAtlas(font, _letterWidth, _letterHeight);
+		}
 		else
 		{
-			if (HXP.renderMode.has(RenderMode.HARDWARE))
+			if (Std.is(font, BitmapData))
 			{
-				_blit = false;
-				_font = new TileAtlas(font, _letterWidth, _letterHeight);
+				_blit = true;
+				_set = font;
 			}
 			else
 			{
-				if (Std.is(font, BitmapData))
+				_blit = true;
+				_set = HXP.getBitmap(font);
+			}
+			
+			// reset array
+			_letterRect = [];
+			
+			// build font glyphs
+			var pos:Point = new Point(0, 0);
+			var charCode:Int = 0;
+			
+			while(pos.y < _set.height)
+			{
+				while(pos.x < _set.width)
 				{
-					_blit = true;
-					_set = font;
+					_letterRect[charCode] = new Rectangle(pos.x, pos.y, _letterWidth, _letterHeight);
+			
+					pos.x += _letterWidth;
+					charCode++;
 				}
-				else
-				{
-					_blit = true;
-					_set = HXP.getBitmap(font);
-				}
-				
-				// reset array
-				_letterRect = [];
-				
-				// build font glyphs
-				var pos:Point = new Point(0, 0);
-				var charCode:Int = 0;
-				
-				while(pos.y < _set.height)
-				{
-					while(pos.x < _set.width)
-					{
-						_letterRect[charCode] = new Rectangle(pos.x, pos.y, _letterWidth, _letterHeight);
-				
-						pos.x += _letterWidth;
-						charCode++;
-					}
-					pos.y += _letterHeight;
-					pos.x = 0;
-				}
+				pos.y += _letterHeight;
+				pos.x = 0;
 			}
 		}
 		
@@ -142,6 +138,7 @@ class BitmapText extends Canvas
 	
 	public function setText(text:String, align:String = '')
 	{
+		trace("Setting text:" + text);
 		_text = text;
 		_textLines = _text.split("\n");
 		_autoWidth = 0;
@@ -180,6 +177,12 @@ class BitmapText extends Canvas
 	
 	private function updateBuffer()
 	{
+		if(_textLines == null)
+			_textLines = new Array<String>();
+
+		trace("letter:" + _letterWidth + "x" + _letterHeight);
+		trace("_autoWidth:" + _autoWidth);
+		trace("_lineGap:" + _lineGap);
 		// this is all pretty much copied wholesale from the canvas constructor
 		_buffers = new Array<BitmapData>();
 
@@ -187,6 +190,7 @@ class BitmapText extends Canvas
 		_height = _textLines.length * (_letterHeight + _lineGap);
 		_refWidth = Math.ceil(_width / _maxWidth);
 		_refHeight = Math.ceil(_height / _maxHeight);
+		trace("Ref dim:"  + _refWidth + "x" + _refHeight + " max:" + _maxWidth + "x" + _maxHeight);
 		_ref = HXP.createBitmap(_refWidth, _refHeight);
 		var x:Int = 0, y:Int = 0, w:Int, h:Int, i:Int = 0,
 			ww:Int = _width % _maxWidth,
@@ -241,6 +245,7 @@ class BitmapText extends Canvas
 	
 	public override function render(target:BitmapData, point:Point, camera:Point)
 	{
+
 		if(_blit)
 			super.render(target, point, camera);
 		else

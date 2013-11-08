@@ -23,6 +23,6 @@ class BitmapTextDemo extends Flaxen
 		var e:Entity = newEntity()
 			.add(new Image("art/impact20yellow.png"))
 			.add(new Position(0, HXP.halfHeight - 10))
-			.add(new Text("Hi there! 1234", TextStyle.createBitmap(new Size(20,20))));
+			.add(new Text("AAABBBCCC Hi there! 1234", TextStyle.createBitmap(new Size(10,30))));
 	}
 }

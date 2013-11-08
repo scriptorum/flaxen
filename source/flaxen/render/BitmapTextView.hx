@@ -18,6 +18,7 @@ class BitmapTextView extends View
 
 	override public function begin()
 	{
+		trace("Bitmap text view created");
 		nodeUpdate();
 	}
 
@@ -28,15 +29,15 @@ class BitmapTextView extends View
 		if(graphic == null || forceNew || curStyle.changed)
 		{
 			var img:Image = getComponent(Image);
-			display = new BitmapText(img.path, Std.int(curStyle.charSize.width), 
+			graphic = display = new BitmapText(img.path, Std.int(curStyle.charSize.width), 
 				Std.int(curStyle.charSize.height));
 			display.setAlign(Std.string(curStyle.alignment));
 			display.setLineGap(curStyle.leading);
 			curStyle.changed = false;			
 		}
 
-		// Update text message
-		else display.setText(curMessage);
+		// Update/set text message
+		display.setText(curMessage);
 	}
 
 	override public function nodeUpdate()
@@ -55,6 +56,7 @@ class BitmapTextView extends View
 				throw "Cannot create BitmapTextView with a null text style";
 			if(style != curStyle || style.changed)
 			{
+				trace("BitmapText style changed");
 				curStyle = style;
 				updateDisplay = true;
 			}
@@ -67,6 +69,7 @@ class BitmapTextView extends View
 				var sh = Math.round(size.height);
 				if(sw != curWidth || sh != curHeight)
 				{
+					trace("BitmapText size changed");
 					curWidth = sw;
 					curHeight = sh;
 					updateDisplay = true;
@@ -78,10 +81,10 @@ class BitmapTextView extends View
 			// Check for text message change
 			if(text.message != curMessage)
 			{
+				trace("BitmapText message changed from " + curMessage + " to " + text.message);
 				curMessage = text.message;
 				updateDisplay = true;
 			}
-			else curMessage = "";
 
 			// If any changes, update text object
 			if(updateDisplay)
