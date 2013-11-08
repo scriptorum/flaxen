@@ -2,12 +2,14 @@ package flaxen.system;
 
 import ash.core.Node;
 import com.haxepunk.HXP;
+import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
 import flaxen.render.ImageView;
 import flaxen.render.AnimationView;
 import flaxen.render.BackdropView;
 import flaxen.render.GridView;
 import flaxen.render.TextView;
+import flaxen.render.BitmapTextView;
 import flaxen.render.EmitterView;
 import flaxen.render.View;
 
@@ -18,6 +20,11 @@ import flaxen.component.Display;
 
 class RenderingSystem extends FlaxenSystem
 {
+	public function new(f:Flaxen)
+	{ 
+		super(f); 
+	}
+
 	override public function init()
 	{
 		ash.getNodeList(DisplayNode).nodeRemoved.add(displayNodeRemoved);
@@ -35,6 +42,7 @@ class RenderingSystem extends FlaxenSystem
 		updateViews(ImageNode, ImageView);
 		updateViews(AnimationNode, AnimationView);
 		updateViews(TextNode, TextView);
+		updateViews(BitmapTextNode, BitmapTextView);
 		updateViews(EmitterNode, EmitterView);
 	}
 

@@ -1,19 +1,6 @@
-/*
-	TODO 
-		o The screen occasionally ends abruptly on resize. It seems to happen
-		  somewhat randomly. If you switch to fullscreen (F) and back it goes away.
-		  I so far can only reproduce it on Flash.
-
-		o I'd rather use CTRL/CMD-ENTER to toggle fullscreen. Right now, Flash 
-		  requires ESC to leave fullscreen mode. Also, I'm triggering on the F
-		  key instead the desired key combo.
-*/
-
 package flaxen.core;
 
-import ash.core.Entity;
-import ash.core.Node;
-import com.haxepunk.HXP;
+import flaxen.core.FlaxenScene;
 import flaxen.component.Control;
 import flaxen.component.ActionQueue;
 import flaxen.component.Tween;
@@ -43,6 +30,9 @@ import flaxen.system.CameraSystem;
 import flaxen.system.TweeningSystem;
 import flaxen.system.AudioSystem;
 import flaxen.system.ActionSystem;
+import ash.core.Entity;
+import ash.core.Node;
+import com.haxepunk.HXP;
 
 #if PROFILER
 	import flaxen.system.ProfileSystem;

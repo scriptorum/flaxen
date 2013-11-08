@@ -1,3 +1,14 @@
+/*
+	TODO 
+		o The screen backdrop occasionally ends abruptly on resize. It seems to happen
+		  somewhat randomly. If you switch to fullscreen (F) and back it goes away.
+		  I so far can only reproduce it on Flash.
+
+		o I'd rather use CTRL/CMD-ENTER to toggle fullscreen. Right now, Flash 
+		  requires ESC to leave fullscreen mode. Also, I'm triggering on the F
+		  key instead the desired key combo.
+*/
+
 package flaxen.demo; 
 
 import ash.core.Entity;

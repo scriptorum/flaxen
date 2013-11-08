@@ -17,6 +17,11 @@ class InputSystem extends FlaxenSystem
 {
 	private var handlers:Map<ApplicationMode, FlaxenHandler>;
 
+	public function new(f:Flaxen)
+	{ 
+		super(f); 
+	}
+
 	override public function init()
 	{
 		handlers = new Map<ApplicationMode, FlaxenHandler>();

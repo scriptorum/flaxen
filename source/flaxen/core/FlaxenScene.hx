@@ -1,19 +1,19 @@
 package flaxen.core;
 
+import flaxen.core.Flaxen;
 import ash.core.Engine;
 import com.haxepunk.HXP;
 import com.haxepunk.Scene;
-import flaxen.core.Flaxen;
 
 class FlaxenScene extends Scene
 {
-	private var flaxen:Flaxen;
-	private var ash:Engine;
+	public var flaxen:Flaxen;
+	public var ash:Engine;
 
-	public function new(flaxen:Flaxen)
+	public function new(f:Flaxen)
 	{
-		this.flaxen = flaxen;
-		this.ash = flaxen.ash;
+		this.flaxen = f;
+		this.ash = f.ash;
 		super();
 	}
 
@@ -27,4 +27,7 @@ class FlaxenScene extends Scene
 		ash.update(HXP.elapsed); // Update Ash (entity system)
 		super.update(); // Update HaxePunk (game library)
 	}
+
+	//override public function focusGained() { } 
+	//override public function focusGained() { } 
 }

@@ -1,6 +1,7 @@
 package flaxen.system;
 
 import ash.core.Node;
+import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
 import flaxen.component.Position;
 import flaxen.component.Tween;
@@ -12,6 +13,11 @@ class TweenNode extends Node<TweenNode>
 
 class TweeningSystem extends FlaxenSystem
 {
+	public function new(f:Flaxen)
+	{ 
+		super(f); 
+	}
+
 	override public function update(time:Float)
 	{
 	 	for(node in ash.getNodeList(TweenNode))

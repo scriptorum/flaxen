@@ -1,22 +1,20 @@
 package flaxen.render;
 
+import solar.BitmapText;
 import flaxen.component.Text;
 import flaxen.component.Alpha;
 import flaxen.component.Size;
-import flaxen.render.FancyText;
+import flaxen.component.Image;
 import flash.text.TextFormatAlign;
 import com.haxepunk.HXP;
 
-class TextView extends View
+class BitmapTextView extends View
 {
 	private var curWidth:Int = 0;
 	private var curHeight:Int = 0;
-	private var curScaleX:Float = 1.0;
-	private var curScaleY:Float = 1.0;
-	private var curScale:Float = 1.0;
 	private var curMessage:String;
 	private var curStyle:TextStyle;
-	private var display:FancyText;
+	private var display:BitmapText;
 
 	override public function begin()
 	{
@@ -29,16 +27,16 @@ class TextView extends View
 		// Create new text
 		if(graphic == null || forceNew || curStyle.changed)
 		{
-			// TODO Support ScrollFactor
-			graphic = display = new FancyText(curMessage, 0, 0, Std.int(curStyle.size * curScale), 
-				curStyle.color, curStyle.font, Std.int(curWidth * curScale), Std.int(curHeight * curScale), 
-				Std.string(curStyle.alignment), curStyle.wordWrap, 1, curStyle.leading, 
-				curStyle.shadowOffset, curStyle.shadowColor);
+			var img:Image = getComponent(Image);
+			display = new BitmapText(img.path, Std.int(curStyle.charSize.width), 
+				Std.int(curStyle.charSize.height));
+			display.setAlign(Std.string(curStyle.alignment));
+			display.setLineGap(curStyle.leading);
 			curStyle.changed = false;			
 		}
 
 		// Update text message
-		else display.setString(curMessage);
+		else display.setText(curMessage);
 	}
 
 	override public function nodeUpdate()
@@ -54,7 +52,7 @@ class TextView extends View
 			// Check for style change, provide style default
 			var style = text.style;
 			if(style == null)
-				style = TextStyle.create();
+				throw "Cannot create BitmapTextView with a null text style";
 			if(style != curStyle || style.changed)
 			{
 				curStyle = style;
@@ -85,18 +83,6 @@ class TextView extends View
 			}
 			else curMessage = "";
 
-			// HACK Because HaxePunk does not properly scale text on CPP targets
-			#if !flash
-				if(curScaleX != HXP.screen.fullScaleX || curScaleY != HXP.screen.fullScaleY)
-				{
-					curScaleX = HXP.screen.fullScaleX;
-					curScaleY = HXP.screen.fullScaleY;
-					curScale = (curScaleX + curScaleY) / 2;
-					updateDisplay = true;
-					forceNew = true;
-				}
-			#end
-
 			// If any changes, update text object
 			if(updateDisplay)
 				setText(forceNew);
@@ -105,8 +91,8 @@ class TextView extends View
 			if(hasComponent(Alpha))
 			{
 				var alpha:Float = getComponent(Alpha).value;
-				if(alpha != display.getAlpha())
-					display.setAlpha(alpha);
+				if(alpha != display.alpha)
+					display.alpha = alpha;
 			}
 		}
 		else if(display != null)

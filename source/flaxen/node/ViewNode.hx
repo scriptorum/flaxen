@@ -43,6 +43,13 @@ class TextNode extends Node<TextNode>
 	public var text:Text;
 }
 
+class BitmapTextNode extends Node<BitmapTextNode>
+{
+	public var position:Position;
+	public var text:Text;
+	public var image:Image;
+}
+
 class EmitterNode extends Node<EmitterNode>
 {
 	public var position:Position;

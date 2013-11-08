@@ -1,16 +1,18 @@
 package flaxen.system;
 
-import flash.media.SoundChannel;
-import flash.media.SoundTransform;
-import flash.events.Event;
-import openfl.Assets;
-import ash.core.Node;
-import ash.core.Entity;
+import flaxen.core.Flaxen;
+import flaxen.core.FlaxenSystem;
+import flaxen.core.FlaxenSystem;
 import flaxen.component.Audio;
 import flaxen.component.Sound;
 import flaxen.component.Timestamp;
 import flaxen.node.SoundNode;
-import flaxen.core.FlaxenSystem;
+import ash.core.Node;
+import ash.core.Entity;
+import openfl.Assets;
+import flash.media.SoundChannel;
+import flash.media.SoundTransform;
+import flash.events.Event;
 
 class AudioNode extends Node<AudioNode>
 {
@@ -20,6 +22,11 @@ class AudioNode extends Node<AudioNode>
 
 class AudioSystem extends FlaxenSystem
 {
+	public function new(f:Flaxen)
+	{ 
+		super(f); 
+	}
+
 	override public function init()
 	{
 		ash.getNodeList(AudioNode).nodeRemoved.add(audioNodeRemoved);

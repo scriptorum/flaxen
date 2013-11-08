@@ -40,6 +40,11 @@ class ModeSystem extends FlaxenSystem
 	private var startHandlers:Map<ApplicationMode, FlaxenHandler>;
 	private var stopHandlers:Map<ApplicationMode, FlaxenHandler>;
 
+	public function new(f:Flaxen)
+	{ 
+		super(f); 
+	}
+
 	override public function init()
 	{
 		startHandlers = new Map<ApplicationMode, FlaxenHandler>();

@@ -3,11 +3,18 @@ package flaxen.system;
 import ash.core.Engine;
 import ash.core.System;
 
+import flaxen.core.Flaxen;
+import flaxen.core.FlaxenSystem;
 import flaxen.node.MovementNode;
 import flaxen.component.Velocity;
 
 class MovementSystem extends FlaxenSystem
 {
+	public function new(f:Flaxen)
+	{ 
+		super(f); 
+	}
+
 	override public function update(time:Float)
 	{
 	 	for(node in ash.getNodeList(MovementNode))

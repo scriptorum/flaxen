@@ -2,6 +2,8 @@
 package flaxen.system;
 
 import com.haxepunk.HXP;
+import flaxen.core.Flaxen;
+import flaxen.core.FlaxenSystem;
 import flaxen.core.FlaxenSystem;
 import flaxen.component.CameraFocus;
 import flaxen.component.Position;
@@ -15,6 +17,11 @@ class CameraSystem extends FlaxenSystem
 	private var targetX:Float = 0;
 	private var targetY:Float = 0;
 	private var i:Int = 0;
+
+	public function new(f:Flaxen)
+	{ 
+		super(f); 
+	}
 
 	override public function update(_)
 	{
