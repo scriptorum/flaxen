@@ -67,7 +67,6 @@ class BitmapText extends Image
 
 		updateGlyphs();
 		setTextSuper(text, false);
-
 		super(content);
 	}
 
@@ -93,7 +92,6 @@ class BitmapText extends Image
 			else addLine(line);
 		}
 
-trace("Lines:" + lines + " bitmapDim:" + fontBitmap.width + "x" + fontBitmap.height);
 		contentHeight = lines.length * fontBitmap.height + 
 			(lines.length > 0 ? (lines.length - 1) * (fontBitmap.height + leading) : 0);
 
@@ -101,10 +99,7 @@ trace("Lines:" + lines + " bitmapDim:" + fontBitmap.width + "x" + fontBitmap.hei
 
 		if(updateSuper)
 		{
-			trace("Content:" + content + " Rect:" + content.rect);
 	    	setBitmapSource(content);
-	    	trace("Source:" + _source);
-	    	trace("SourceRect:" + _sourceRect);
 	    	updateBuffer();
 		}
 
@@ -155,13 +150,11 @@ trace("Lines:" + lines + " bitmapDim:" + fontBitmap.width + "x" + fontBitmap.hei
 		var addKerning = false;
 		for(ch in text.split(""))
 		{
-			trace("Char" + ch + " Width:" + getCharWidth(ch) + " Kerning:" + kerning);
 			width += getCharWidth(ch);			
 			if(addKerning)
 				width += kerning;
 			else addKerning = true;
 		}
-		trace("Text:" + text + " width:" + width);
 		return width;
 	}
 
@@ -175,7 +168,7 @@ trace("Lines:" + lines + " bitmapDim:" + fontBitmap.width + "x" + fontBitmap.hei
 		if(glyph == null)
 		{
 			#if flaxenDebug
-				trace("Region " + ch + " not found");
+				trace("Glyph " + ch + " not found");
 			#end
 			return 0;
 		}
@@ -238,10 +231,10 @@ trace("Lines:" + lines + " bitmapDim:" + fontBitmap.width + "x" + fontBitmap.hei
     {
     	if(contentWidth < 1) contentWidth = 1;
     	if(contentHeight < 1) contentHeight = 1;
-    	trace("Updating content with dim:" + contentWidth + "x" + contentHeight);
     	content = HXP.createBitmap(contentWidth, contentHeight, true);
+
     	HXP.point.x = 0;
-    	HXP.point.y = 0;
+    	HXP.point.y = 0;    
     	for(line in lines)
     	{
     		for(ch in line.split(""))

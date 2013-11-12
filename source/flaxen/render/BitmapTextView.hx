@@ -18,7 +18,6 @@ class BitmapTextView extends View
 
 	override public function begin()
 	{
-		trace("Bitmap text view created");
 		nodeUpdate();
 	}
 
@@ -56,7 +55,6 @@ class BitmapTextView extends View
 				throw "Cannot create BitmapTextView with a null text style";
 			if(style != curStyle || style.changed)
 			{
-				trace("BitmapText style changed");
 				curStyle = style;
 				updateDisplay = true;
 			}
@@ -69,7 +67,6 @@ class BitmapTextView extends View
 				var sh = Math.round(size.height);
 				if(sw != curWidth || sh != curHeight)
 				{
-					trace("BitmapText size changed");
 					curWidth = sw;
 					curHeight = sh;
 					updateDisplay = true;
@@ -81,7 +78,6 @@ class BitmapTextView extends View
 			// Check for text message change
 			if(text.message != curMessage)
 			{
-				trace("BitmapText message changed from " + curMessage + " to " + text.message);
 				curMessage = text.message;
 				updateDisplay = true;
 			}
