@@ -180,9 +180,6 @@ class BitmapText extends Canvas
 		if(_textLines == null)
 			_textLines = new Array<String>();
 
-		trace("letter:" + _letterWidth + "x" + _letterHeight);
-		trace("_autoWidth:" + _autoWidth);
-		trace("_lineGap:" + _lineGap);
 		// this is all pretty much copied wholesale from the canvas constructor
 		_buffers = new Array<BitmapData>();
 
@@ -190,7 +187,6 @@ class BitmapText extends Canvas
 		_height = _textLines.length * (_letterHeight + _lineGap);
 		_refWidth = Math.ceil(_width / _maxWidth);
 		_refHeight = Math.ceil(_height / _maxHeight);
-		trace("Ref dim:"  + _refWidth + "x" + _refHeight + " max:" + _maxWidth + "x" + _maxHeight);
 		_ref = HXP.createBitmap(_refWidth, _refHeight);
 		var x:Int = 0, y:Int = 0, w:Int, h:Int, i:Int = 0,
 			ww:Int = _width % _maxWidth,

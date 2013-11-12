@@ -1,10 +1,10 @@
 package flaxen.render;
 
-import solar.BitmapText;
 import flaxen.component.Text;
 import flaxen.component.Alpha;
 import flaxen.component.Size;
 import flaxen.component.Image;
+import flaxen.render.BitmapText;
 import flash.text.TextFormatAlign;
 import com.haxepunk.HXP;
 
@@ -29,15 +29,15 @@ class BitmapTextView extends View
 		if(graphic == null || forceNew || curStyle.changed)
 		{
 			var img:Image = getComponent(Image);
-			graphic = display = new BitmapText(img.path, Std.int(curStyle.charSize.width), 
-				Std.int(curStyle.charSize.height));
-			display.setAlign(Std.string(curStyle.alignment));
-			display.setLineGap(curStyle.leading);
+			graphic = display = new BitmapText(img.path, 0, 0, Left, curMessage, 
+				curStyle.leading); // curStyle.kerning
+			// display.setAlign(Std.string(curStyle.alignment));
+			// display.setLineGap(curStyle.leading);
 			curStyle.changed = false;			
 		}
 
 		// Update/set text message
-		display.setText(curMessage);
+		// display.setText(curMessage);
 	}
 
 	override public function nodeUpdate()
@@ -94,8 +94,8 @@ class BitmapTextView extends View
 			if(hasComponent(Alpha))
 			{
 				var alpha:Float = getComponent(Alpha).value;
-				if(alpha != display.alpha)
-					display.alpha = alpha;
+				// if(alpha != display.alpha)
+				// 	display.alpha = alpha;
 			}
 		}
 		else if(display != null)
