@@ -58,7 +58,8 @@ class BitmapText extends Image
 	// Supply your own charset to indicate the characters in your fontBitmap text image and their order
 	public static var ASCII_CHAR_SET:String = 
 		"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-	public static var SPACE_EM_DIVISOR:Int = 3; // Space is 1/3rd width of the "em" character
+	private static var SPACE_EM_DIVISOR:Int = 3; // Space is 1/3rd width of the "em" character
+	private static var SPACE_CHAR:String = " ";
 
 	private var emChar:String; // defines the em character, usually M
 	private var charSet:String; // characters that map to the bitmap font
@@ -179,10 +180,6 @@ class BitmapText extends Image
 		var lineWidth = getTextWidth(line);
 		lineWidths.push(lineWidth); // needed for calculating right/center offset
 
-		trace("width:" + lineWidth + " line:" + line);
-		if(lineWidth > contentWidth)
-			trace(" *** NEW BEST");
-
 		// Determine content width
 		if(lineWidth > contentWidth)
 			contentWidth = lineWidth;
@@ -193,7 +190,7 @@ class BitmapText extends Image
 		var lineWidth = 0;
 		var line:String = "";
 		var lines = new Array<String>();
-		for(word in StringUtil.split(text, " ").iterator())
+		for(word in StringUtil.split(text, SPACE_CHAR).iterator())
 		{	
 			var wordWidth = getTextWidth(word);
 			if(lineWidth == 0)  // first word of text
@@ -203,14 +200,13 @@ class BitmapText extends Image
 			}
 			else if(lineWidth + spaceWidth + wordWidth > maxWidth) // wordWrap line
 			{
-				trace("Word wrapping " + word + " at " + lineWidth + " to stay under " + maxWidth + " ww:" + wordWidth + " sw:" + spaceWidth);
 				lines.push(line);
 				line = word;
 				lineWidth = wordWidth;
 			}
 			else // Add word to line, no word wrap
 			{
-				line += " " + word;
+				line += SPACE_CHAR + word;
 				lineWidth += spaceWidth + wordWidth;
 			}
 		}
@@ -227,7 +223,7 @@ class BitmapText extends Image
 		for(ch in text.split(""))
 		{
 			width += getCharWidth(ch);
-			if(ch == " ")
+			if(ch == SPACE_CHAR)
 				charIndex = 0;
 			if(charIndex++ >= 2) // skip kerning for spaces and the first character of each word
 				width += kerning;
@@ -238,7 +234,7 @@ class BitmapText extends Image
 	// Gets the width of the specific character, does not include kerning
 	public function getCharWidth(ch:String): Int
 	{
-		if(ch == " ")
+		if(ch == SPACE_CHAR)
 			return spaceWidth;
 
 		var glyph:Rectangle = getGlyph(ch);
@@ -322,24 +318,30 @@ class BitmapText extends Image
     			default: 0;
     		};
 
+    		var charIndex:Int = 1;
     		for(ch in lines[i].split(""))
     		{
-    			if(ch == " ")
+    			if(ch == SPACE_CHAR)
     			{
-    				HXP.point.x += spaceWidth; // Do not add kerning, it's baked in
-    				continue;
+    				HXP.point.x += spaceWidth; // Do not add kerning to spaces
+    				charIndex = 1;
     			}
+    			else
+    			{
+    				if(charIndex++ >= 2)
+    					HXP.point.x += kerning;
 
-    			var glyph:Rectangle = getGlyph(ch);
-    			// TODO This doesn't appear to support source alpha, ruining negative
-    			// leading. Descenders just disappear.
-    			content.copyPixels(fontBitmap, glyph, HXP.point);
-    			HXP.point.x += glyph.width + kerning; // Non-space glyphs need kerning now
+	    			// TODO This doesn't appear to support source alpha, hurting negative
+	    			// leading and kerning. Descenders just disappear.
+	    			var glyph:Rectangle = getGlyph(ch);
+	    			content.copyPixels(fontBitmap, glyph, HXP.point);
+
+    				HXP.point.x += glyph.width;
+    			}
     		}
+
     		HXP.point.y += fontBitmap.height + leading;
     	}
-
-    	trace("Contents:" + contentWidth + "x" + contentHeight);
     }
 
     public override function render(target:BitmapData, point:Point, camera:Point)
