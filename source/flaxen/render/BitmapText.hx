@@ -152,7 +152,7 @@ class BitmapText extends Image
 
 		// Determine content height
 		contentHeight = lines.length * fontBitmap.height + 
-			(lines.length > 0 ? (lines.length - 1) * (fontBitmap.height + leading) : 0);
+			(lines.length > 1 ? (lines.length - 1) * leading : 0);
 
 		// Enforce size constraints
 		if(maxWidth > 0 && maxWidth < contentWidth)
