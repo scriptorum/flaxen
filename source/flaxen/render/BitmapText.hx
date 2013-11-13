@@ -16,16 +16,18 @@
 //	 width/ - If nonzero, specifies the maximum dimensions of the text box. Width is 
 //   height   required if wordWrap is enabled. If zero, the dimensions are adjusted to 
 //			  fit the text.
-//    align - Specifies left/center/right alignment and whether to use line word-wordWrapping.
-//			  If word-wrapping, width/height must be supplied non-zero. Left alignment
-// 			  uses a registration mark in the upper left corner of the text box. 
-//            Center/Right change the registration point to the upper-middle/upper-right 
-//            of the box.
+//    align - Specifies horizontal alignment and the horizontal registration point.
+// 			  For example, Center puts the registeration point in the center of the text
+//			  box, so x should specify where you want that center to be.
+//   valign - Specifies vertical alignment and the vertical registration point.
+// wordWrap - Specifies whether to wrap long lines to fit into the text box. Requires width.
+//			  If word-wrapping, width/height must be supplied non-zero.
 //     text - The text message to put on the screen. This message can be changed with 
 // 			  setText(). The text can have \n characters in it to indicate multiple lines.
-// baseline - Defines the baseline offset. Normally the registration point is at the top of the
-//		      text box. A positive baseline alters the Y value downward, generally
-//            to align it with the baseline of the text on the first line.
+// baseline - Defines the baseline offset, only used if valign is set to Baseline. 
+//			  Normally the registration point is at the top of the text box. A positive 
+// 			  baseline Y alters the vertical position up Y pixels from the bottom of the
+//  		  text box, for the intended purpose of aligning with the text baseline.
 //	leading - Horizontal padding in between lines. Can be positive or negative.
 //  kerning - Vertical padding in between characters. Can be positive or negative.
 //  charSet - The list of characters found in the bitmap font image from left to right.
@@ -73,14 +75,17 @@ class BitmapText extends Image
 	private var lines:Array<String>;
 	private var lineWidths:Array<Int>;
 	private var align:TextAlign;
+	private var valign:VerticalTextAlign;
 	private var baseline:Int; 
 	private var fontBitmap:BitmapData; // font fontBitmap
 	private var content:BitmapData; // content fontBitmap
 	private var glyphs:Map<String,Rectangle>;
 
-	public function new(image:Dynamic, x:Int = 0, y:Int = 0, width:Int = 0, height:Int = 0, 
-		?text:String, ?align:TextAlign, wordWrap:Bool = false, baseline:Int = 0, 
-		leading:Int = 0, kerning:Int = 0, ?charSet:String, emChar:String = "M")
+	public function new(image:Dynamic, x:Int = 0, y:Int = 0, ?text:String, 
+		width:Int = 0, height:Int = 0, wordWrap:Bool = false, 
+		?align:TextAlign, ?valign:VerticalTextAlign, 
+		leading:Int = 0, kerning:Int = 0, baseline:Int = 0, 
+		?charSet:String, emChar:String = "M")
 	{
 		this.emChar = emChar;
 		this.charSet = (charSet == null ? ASCII_CHAR_SET : charSet);
@@ -90,6 +95,7 @@ class BitmapText extends Image
 		this.wordWrap = wordWrap;
 		this.text = (text == null ? "" : text);
 		this.align = (align == null ? Left : align);
+		this.valign = (valign == null ? Top : valign);
 
 		if(width < 0 || height < 0)
 			throw "Text dimensions must be positive or zero";
@@ -255,11 +261,13 @@ class BitmapText extends Image
 				else if(blankLine)
 				{
 					seekingCharStart = true;
-					var glyphWidth = x - startX;
+					var glyphWidth = x - startX; // Glyph width without kerning
 					glyphs.set(ch, new Rectangle(startX, 0, glyphWidth, fontBitmap.height));
 
+					// Determine space width ... bake kerning into value
 					if(ch == emChar)
-						spaceWidth = Std.int(Math.max(1, glyphWidth / SPACE_EM_DIVISOR));
+						spaceWidth = Std.int(Math.max(1, 
+							(glyphWidth + kerning) / SPACE_EM_DIVISOR));
 
 					break; // Move to next character
 				}
@@ -292,13 +300,13 @@ class BitmapText extends Image
     		{
     			if(ch == " ")
     			{
-    				HXP.point.x += spaceWidth + kerning;
+    				HXP.point.x += spaceWidth; // Do not add kerning, it's baked in
     				continue;
     			}
 
     			var glyph:Rectangle = getGlyph(ch);
     			content.copyPixels(fontBitmap, glyph, HXP.point);
-    			HXP.point.x += glyph.width + kerning;
+    			HXP.point.x += glyph.width + kerning; // Non-space glyphs need kerning now
     		}
     		HXP.point.y += fontBitmap.height + leading;
     	}

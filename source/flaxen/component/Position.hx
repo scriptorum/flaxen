@@ -1,5 +1,7 @@
 package flaxen.component;
 
+import com.haxepunk.HXP;
+
 class Position
 {
 	public var x:Float;
@@ -58,5 +60,15 @@ class Position
 		var dx = pos.x - x;
 		var dy = pos.y - y;
 		return Math.sqrt(dx * dx + dy * dy);
+	}
+
+	public static function center(): Position
+	{
+		return new Position(HXP.halfWidth, HXP.halfHeight);
+	}
+
+	public static function zero(): Position
+	{
+		return new Position(0, 0);
 	}
 }

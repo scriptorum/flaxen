@@ -1,4 +1,7 @@
+
 package flaxen.component;
+
+import com.haxepunk.HXP;
 
 class Size
 {
@@ -14,5 +17,10 @@ class Size
 	public function clone(): Size
 	{
 		return new Size(width, height);
+	}
+
+	public static function screen(): Size
+	{
+		return new Size(HXP.width, HXP.height);
 	}
 }

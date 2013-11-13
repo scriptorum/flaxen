@@ -60,7 +60,7 @@ class TextView extends View
 			// Check for style change, provide style default
 			var style = text.style;
 			if(style == null)
-				style = TextStyle.create();
+				style = TextStyle.createTextStyle();
 			if(style != curStyle || style.changed)
 			{
 				curStyle = style;

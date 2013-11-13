@@ -1,6 +1,7 @@
 package flaxen.render.view;
 
 import flaxen.common.TextAlign;
+import flaxen.core.Log;
 import flaxen.component.Alpha;
 import flaxen.component.Image;
 import flaxen.component.Size;
@@ -38,9 +39,9 @@ class BitmapTextView extends View
 				height = Std.int(size.height);
 			}
 
-			graphic = display = new BitmapText(img.path, 0, 0, width, height,
-				curMessage, curStyle.align, curStyle.wordWrap, curStyle.baseline,
-				curStyle.leading, curStyle.kerning, curStyle.charSet, curStyle.emChar);
+			graphic = display = new BitmapText(img.path, 0, 0, curMessage, width, height, 
+				curStyle.wordWrap, curStyle.align, curStyle.leading, curStyle.kerning, 
+				curStyle.baseline, curStyle.charSet, curStyle.emChar);
 
 			curStyle.changed = false;			
 		}
@@ -62,7 +63,7 @@ class BitmapTextView extends View
 			// Check for style change, provide style default
 			var style = text.style;
 			if(style == null)
-				throw "Cannot create BitmapTextView with a null text style";
+				Log.error("Cannot create BitmapTextView with a null text style");
 			if(style != curStyle || style.changed)
 			{
 				curStyle = style;
@@ -95,14 +96,6 @@ class BitmapTextView extends View
 			// If any changes, update text object
 			if(updateDisplay)
 				setText(forceNew);
-
-			// Update alpha/transparency
-			if(hasComponent(Alpha))
-			{
-				var alpha:Float = getComponent(Alpha).value;
-				// if(alpha != display.alpha)
-				// 	display.alpha = alpha;
-			}
 		}
 		else if(display != null)
 		{
@@ -111,9 +104,9 @@ class BitmapTextView extends View
 		}
 	}
 
-	// BitmapTextView is a subclass of Image, and we don't want the superclass
-	// to apply automatic scaling based on Size, because we're using Size to mean
-	// the shape of the bitmap text box.
+	// BitmapTextView uses BitmapText which is a subclass of Image. We don't want the 
+	// our superclass View to apply automatic scaling based on Size, because we're using 
+	// Size to mean the shape of the bitmap text box.
 	override private function useSizeForImageScaling()
 	{ 
 		return false; 

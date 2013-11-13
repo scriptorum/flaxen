@@ -12,6 +12,7 @@ class TextStyle
 	public var shadowOffset:Int = 2;
 
 	// These options work only for Bitmap Text
+	public var valign:VerticalTextAlign;
 	public var baseline:Int;
 	public var kerning:Int;
 	public var charSet:String; 
@@ -27,7 +28,8 @@ class TextStyle
 	{		
 	}
 
-	public static function create(color:Int = 0xFFFFFF, size:Int = 14, ?font:String, 
+	// Convenience method for creating a new TextStyle for regular Text
+	public static function createTextStyle(color:Int = 0xFFFFFF, size:Int = 14, ?font:String, 
 		?align:TextAlign, wordWrap:Bool = false, leading:Int = 0)
 	{
 		var style = new TextStyle();
@@ -40,12 +42,15 @@ class TextStyle
 		return style;
 	}
 
-	public static function createBitmap(?align:TextAlign, wordWrap:Bool = false, 
+	// Convenience method for creating a new TextStyle for BitmapText
+	public static function createBitmapTextStyle(wordWrap:Bool = false, 
+		?align:TextAlign, ?valign:VerticalTextAlign, 
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0,
 		?charSet:String, emChar:String = "M")
 	{
 		var style = new TextStyle();
 		style.align = (align == null ?  TextAlign.Left : align);
+		style.valign = (valign == null ?  VerticalTextAlign.Top : valign);
 		style.wordWrap = wordWrap;
 		style.leading = leading;
 		style.kerning = kerning;
@@ -69,4 +74,20 @@ class Text
 		this.message = message;
 		this.style = style;
 	}
+
+	public static function createText(message:String, color:Int = 0xFFFFFF, size:Int = 14, 
+		?font:String, ?align:TextAlign, wordWrap:Bool = false, leading:Int = 0)
+	{
+		return new Text(message, TextStyle.createTextStyle(color, size, font, align, 
+			wordWrap, leading));
+	}
+
+	public static function createBitmapText(message:String, wordWrap:Bool = false, 
+		?align:TextAlign, ?valign:VerticalTextAlign, leading:Int = 0, kerning:Int = 0, 
+		baseline:Int = 0, ?charSet:String, emChar:String = "M")
+	{
+		return new Text(message, TextStyle.createBitmapTextStyle(wordWrap, align, valign,
+			leading, kerning, baseline, charSet, emChar));
+	}
+
 }
