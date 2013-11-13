@@ -1,42 +1,41 @@
-// BitmapText
-// Also see the the work of solar:
-//  http://dl.dropboxusercontent.com/u/28629176/gamedev/crappyretrogame/hw_bmptext/BitmapText.hx
-//  http://forum.haxepunk.com/index.php?topic=334.0
-//
-// TODO:
-//  * Add caching of rects so you don't have to rescan font bitmap every time you add new text
-//  * Add vertical alignment support rather than assuming Top; eliminate baseline?
-//
-// USAGE:
-//    image - The bitmap font image. This should be a graphic with a one-line string,
-//			  containing all the characters of the charSet, with at least one vertical
-//			  line of blank space between each character.
-//	    x/y - The registration point for the text (i.e., the upper left corner for
-// 			  Left justification and baseline = 0).
-//	 width/ - If nonzero, specifies the maximum dimensions of the text box. Width is 
-//   height   required if wordWrap is enabled. If zero, the dimensions are adjusted to 
-//			  fit the text.
-//    align - Specifies horizontal alignment and the horizontal registration point.
-// 			  For example, Center puts the registeration point in the center of the text
-//			  box, so x should specify where you want that center to be.
-//   valign - Specifies vertical alignment and the vertical registration point.
-// wordWrap - Specifies whether to wrap long lines to fit into the text box. Requires width.
-//			  If word-wrapping, width/height must be supplied non-zero.
-//     text - The text message to put on the screen. This message can be changed with 
-// 			  setText(). The text can have \n characters in it to indicate multiple lines.
-// baseline - Defines the baseline offset, only used if valign is set to Baseline. 
-//			  Normally the registration point is at the top of the text box. A positive 
-// 			  baseline Y alters the vertical position up Y pixels from the bottom of the
-//  		  text box, for the intended purpose of aligning with the text baseline.
-//	leading - Horizontal padding in between lines. Can be positive or negative.
-//  kerning - Vertical padding in between characters. Can be positive or negative.
-//  charSet - The list of characters found in the bitmap font image from left to right.
-//            Omit space.
-//   emChar - Defines the em character, which should be the widest character in the charSet.
-//            Usually this is the letter M. This field is only used to calculate the width
-//            of a space caracter (one third of the em character's width).
-//
+/*
+	BitmapText
+	Also see the the work of solar:
+	 http://dl.dropboxusercontent.com/u/28629176/gamedev/crappyretrogame/hw_bmptext/BitmapText.hx
+	 http://forum.haxepunk.com/index.php?topic=334.0
 
+	TODO:
+	 * Add caching of rects so you don't have to rescan font bitmap every time you add new text
+	 * Add HorizontalTextAlign.Full support
+
+
+	CONSTRUCTOR:
+		image -	The bitmap font image. This should be a graphic with a one-line string,
+			  	containing all the characters of the charSet, with at least one vertical
+				line of blank space between each character.
+		  x/y - The registration point for the text (i.e., the upper left corner for
+				Left justification and baseline = 0).
+ width/height - If nonzero, specifies the maximum dimensions of the text box. If zero, 
+ 				the dimensions are adjusted to fit the text.
+	   halign - Specifies horizontal alignment and registration point. Defaults to Left.
+	   			Center and Right require non-zero width.
+	   valign - Specifies vertical alignment and registration point. Defaults to Top. 
+	   			Center and Bottom require non-zero height. Baseline requires positive baseline.
+	 wordWrap - Specifies whether to wrap long lines to fit into the text box. Requires 
+	 			non-zero width.
+	     text - The text message to show. This message can be changed with setText(). 
+	     		Newline (\n) characters in the text causes a line break.
+	 baseline - Defines the baseline offset. Only used if valign is set to Baseline. 
+				A positive value B sets the vertical registration point to B pixels up 
+				from the bottom of the text box. This is really the "descender height."
+	  leading - Horizontal padding in between lines. Can be zero, positive, or negative.
+	  kerning - Vertical padding in between characters. Can be zero, positive, or negative.
+	  charSet - The list of characters found in the bitmap font image from left to right.
+				You should not include the "space" character.
+	   emChar -	Defines the em character, which should be the widest character in the charSet.
+				Usually this is the letter M. This field is only used to calculate the width
+				of a space caracter (one third of the em character's width).
+*/
 
 package flaxen.render;
 
@@ -65,16 +64,16 @@ class BitmapText extends Image
 	private var charSet:String; // characters that map to the bitmap font
 	private var kerning:Int; // extra +/- space between characters
 	private var leading:Int; // extra +/- space between lines
-	private var contentWidth:Int = 0;
-	private var contentHeight:Int = 0;
-	private var fixedWidth:Bool;
-	private var fixedHeight:Bool;
+	private var contentWidth:Int; // The final size of the text box
+	private var contentHeight:Int;
+	private var maxWidth:Int; // The max size of the text box (or 0 for no limit)
+	private var maxHeight:Int;
 	private var wordWrap:Bool = false;
 	private var spaceWidth:Int = 10; // If no emChar provided, this is just a crappy default
 	private var text:String;
 	private var lines:Array<String>;
 	private var lineWidths:Array<Int>;
-	private var align:TextAlign;
+	private var halign:HorizontalTextAlign;
 	private var valign:VerticalTextAlign;
 	private var baseline:Int; 
 	private var fontBitmap:BitmapData; // font fontBitmap
@@ -83,41 +82,50 @@ class BitmapText extends Image
 
 	public function new(image:Dynamic, x:Int = 0, y:Int = 0, ?text:String, 
 		width:Int = 0, height:Int = 0, wordWrap:Bool = false, 
-		?align:TextAlign, ?valign:VerticalTextAlign, 
+		?halign:HorizontalTextAlign, ?valign:VerticalTextAlign, 
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0, 
 		?charSet:String, emChar:String = "M")
 	{
-		this.emChar = emChar;
-		this.charSet = (charSet == null ? ASCII_CHAR_SET : charSet);
-		this.kerning = kerning;
-		this.leading = leading;
-		this.baseline = baseline;
-		this.wordWrap = wordWrap;
-		this.text = (text == null ? "" : text);
-		this.align = (align == null ? Left : align);
-		this.valign = (valign == null ? Top : valign);
-
-		if(width < 0 || height < 0)
-			throw "Text dimensions must be positive or zero";
-		contentWidth = width;
-		contentHeight = height;
-		fixedWidth = width > 0;
-		fixedHeight = height > 0;
-		if(wordWrap && !fixedWidth)
-			throw "Word Wrap requires a positive width";
-		this.x = x;
-		this.y = y;
-
 		_blit = !HXP.renderMode.has(RenderMode.HARDWARE);
 		glyphs = new Map<String,Rectangle>();
 		fontBitmap = (Std.is(image, BitmapData) ? image : HXP.getBitmap(image));
 		if(fontBitmap == null)
 			throw "Cannot parse null fontBitmap";
 
+		this.text = (text == null ? "" : text);
+
+		if(width < 0 || height < 0)
+			Log.error("Text dimensions must be positive or zero");
+		maxWidth = width;
+		maxHeight = height;
+		this.wordWrap = wordWrap;
+		this.halign = (halign == null ? Left : halign);
+		this.valign = (valign == null ? Top : valign);
+
+		if(wordWrap && width == 0)
+			Log.error("Word Wrap requires a positive width");
+		if((halign == Center || halign == Right || halign == Full) && width == 0)
+			Log.error(Std.string(halign) + " horizontal alignment requires a positive width");
+		if((valign == Center || valign == Bottom) && height == 0)
+			Log.error(Std.string(valign) + " vertical alignment requires a positive height");
+		if(valign == Baseline && baseline < 0)
+			Log.error("Baseline cannot be negative");
+		if(valign == Baseline && baseline == 0)
+			Log.warn("Baseline ineffective; should be a positive value");
+
+		this.emChar = emChar;
+		this.charSet = (charSet == null ? ASCII_CHAR_SET : charSet);
+		this.kerning = kerning;
+		this.leading = leading;
+		this.baseline = baseline;
+
 		updateGlyphs();
 		setTextSuper(text, false);
 
-		super(content);
+		super(content); // Can't call super until we've created the content bitmap
+
+		this.x = x;
+		this.y = y;
 	}
 
 	public function setText(text:String): BitmapText
@@ -130,7 +138,7 @@ class BitmapText extends Image
 		this.text = text;
 		lines = new Array<String>();
 		lineWidths = new Array<Int>();
-		if(!fixedWidth) contentWidth = 0;	
+		contentWidth = 0;	
 
 		for(line in StringUtil.split(text, "\n").iterator())
 		{
@@ -142,12 +150,20 @@ class BitmapText extends Image
 			else addLine(line);
 		}
 
-		if(!fixedHeight)
-			contentHeight = lines.length * fontBitmap.height + 
-				(lines.length > 0 ? (lines.length - 1) * (fontBitmap.height + leading) : 0);
+		// Determine content height
+		contentHeight = lines.length * fontBitmap.height + 
+			(lines.length > 0 ? (lines.length - 1) * (fontBitmap.height + leading) : 0);
 
+		// Enforce size constraints
+		if(maxWidth > 0 && maxWidth < contentWidth)
+			contentWidth = maxWidth;
+		if(maxHeight > 0 && maxHeight < contentHeight)
+			contentHeight = maxHeight;
+
+		// Recreate content bitmap
 		updateContent();
 
+		// If post-constructor, force parent Image to update as well
 		if(updateSuper)
 		{
 	    	setBitmapSource(content);
@@ -161,9 +177,15 @@ class BitmapText extends Image
 	{
 		this.lines.push(line);
 		var lineWidth = getTextWidth(line);
-		if(!fixedWidth && lineWidth > contentWidth)
-			contentWidth = lineWidth;
 		lineWidths.push(lineWidth); // needed for calculating right/center offset
+
+		trace("width:" + lineWidth + " line:" + line);
+		if(lineWidth > contentWidth)
+			trace(" *** NEW BEST");
+
+		// Determine content width
+		if(lineWidth > contentWidth)
+			contentWidth = lineWidth;
 	}
 
 	public function applyWordWrap(text:String): Array<String>
@@ -179,8 +201,9 @@ class BitmapText extends Image
 				line = word;
 				lineWidth = wordWidth;
 			}
-			else if(lineWidth + spaceWidth + wordWidth > contentWidth) // wordWrap line
+			else if(lineWidth + spaceWidth + wordWidth > maxWidth) // wordWrap line
 			{
+				trace("Word wrapping " + word + " at " + lineWidth + " to stay under " + maxWidth + " ww:" + wordWidth + " sw:" + spaceWidth);
 				lines.push(line);
 				line = word;
 				lineWidth = wordWidth;
@@ -195,16 +218,19 @@ class BitmapText extends Image
 		return lines;
 	}
 
+	// Gets the kerned width of a single line of text
+	// Does not properly handle newlines
 	public function getTextWidth(text:String): Int
 	{
 		var width = 0;
-		var addKerning = false;
+		var charIndex:Int = 1;
 		for(ch in text.split(""))
 		{
-			width += getCharWidth(ch);			
-			if(addKerning)
+			width += getCharWidth(ch);
+			if(ch == " ")
+				charIndex = 0;
+			if(charIndex++ >= 2) // skip kerning for spaces and the first character of each word
 				width += kerning;
-			else addKerning = true;
 		}
 		return width;
 	}
@@ -230,6 +256,7 @@ class BitmapText extends Image
 		return glyphs.get(ch);
 	}
 
+	// Scan bitmap font image to determine size and position of each glyph/character
 	public function updateGlyphs()
 	{
 		var seekingCharStart:Bool = true;
@@ -264,10 +291,9 @@ class BitmapText extends Image
 					var glyphWidth = x - startX; // Glyph width without kerning
 					glyphs.set(ch, new Rectangle(startX, 0, glyphWidth, fontBitmap.height));
 
-					// Determine space width ... bake kerning into value
+					// Determine space width ... no kerning for space
 					if(ch == emChar)
-						spaceWidth = Std.int(Math.max(1, 
-							(glyphWidth + kerning) / SPACE_EM_DIVISOR));
+						spaceWidth = Std.int(Math.max(1, glyphWidth / SPACE_EM_DIVISOR));
 
 					break; // Move to next character
 				}
@@ -286,10 +312,10 @@ class BitmapText extends Image
     	// TODO clear old bitmap if size hasn't changed
     	content = HXP.createBitmap(contentWidth, contentHeight, true);
 
-    	HXP.point.y = 0;    
+    	HXP.point.y = 0;
     	for(i in 0...lines.length)
     	{
-    		HXP.point.x = switch(align)
+    		HXP.point.x = switch(halign)
     		{
     			case Right: contentWidth - lineWidths[i];
     			case Center: (contentWidth - lineWidths[i]) / 2;
@@ -305,23 +331,34 @@ class BitmapText extends Image
     			}
 
     			var glyph:Rectangle = getGlyph(ch);
+    			// TODO This doesn't appear to support source alpha, ruining negative
+    			// leading. Descenders just disappear.
     			content.copyPixels(fontBitmap, glyph, HXP.point);
     			HXP.point.x += glyph.width + kerning; // Non-space glyphs need kerning now
     		}
     		HXP.point.y += fontBitmap.height + leading;
     	}
+
+    	trace("Contents:" + contentWidth + "x" + contentHeight);
     }
 
     public override function render(target:BitmapData, point:Point, camera:Point)
     {
-    	// Adjust registration point for center/right alignment
-    	if(align == Center)
+    	// Adjust horizontal registration point
+    	if(halign == Center)
     		point.x -= contentWidth / 2;
-    	else if(align == Right)
-    		point.x -= contentWidth;    	
+    	else if(halign == Right)
+    		point.x -= contentWidth; 
 
-    	// Adjsut baseline
-    	point.y -= baseline;
+    	// Adjust vertical registration point
+    	if(valign == Center)
+    		point.y -= contentHeight / 2;
+    	else if(valign == Bottom)
+    		point.y -= contentHeight;
+    	else if(valign == Baseline)
+    		point.y -= (contentHeight + baseline);
+
+    	// trace("Render point:" + point.x + "," + point.y);	
 
     	// Pthbthth
     	super.render(target, point, camera);

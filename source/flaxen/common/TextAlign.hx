@@ -1,12 +1,12 @@
 
 package flaxen.common;
 
-enum TextAlign
+enum HorizontalTextAlign
 { 
 	Left; 
 	Center; 
 	Right;
-	Justify;
+	Full;
 }
 
 enum VerticalTextAlign
