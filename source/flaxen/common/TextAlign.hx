@@ -1,3 +1,4 @@
+
 package flaxen.common;
 
 enum TextAlign
@@ -6,4 +7,12 @@ enum TextAlign
 	Center; 
 	Right;
 	Justify;
+}
+
+enum VerticalTextAlign
+{
+	Top;
+	Center;
+	Bottom;
+	Baseline;
 }

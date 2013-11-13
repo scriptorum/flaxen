@@ -138,8 +138,6 @@ class BitmapText extends Image
 			contentHeight = lines.length * fontBitmap.height + 
 				(lines.length > 0 ? (lines.length - 1) * (fontBitmap.height + leading) : 0);
 
-		trace("FixedHeight:" + (fixedHeight ? "Y" :"N") + " contentHeight:" + contentHeight);
-
 		updateContent();
 
 		if(updateSuper)
@@ -278,14 +276,19 @@ class BitmapText extends Image
     	if(contentHeight < 1) contentHeight = 1;
 
     	// TODO clear old bitmap if size hasn't changed
-    	trace("Creating new bitmap with dimensions:" + contentWidth + "x" + contentHeight);
     	content = HXP.createBitmap(contentWidth, contentHeight, true);
 
-    	HXP.point.x = 0;
     	HXP.point.y = 0;    
-    	for(line in lines)
+    	for(i in 0...lines.length)
     	{
-    		for(ch in line.split(""))
+    		HXP.point.x = switch(align)
+    		{
+    			case Right: contentWidth - lineWidths[i];
+    			case Center: (contentWidth - lineWidths[i]) / 2;
+    			default: 0;
+    		};
+
+    		for(ch in lines[i].split(""))
     		{
     			if(ch == " ")
     			{
@@ -297,20 +300,22 @@ class BitmapText extends Image
     			content.copyPixels(fontBitmap, glyph, HXP.point);
     			HXP.point.x += glyph.width + kerning;
     		}
-    		HXP.point.x = 0;
     		HXP.point.y += fontBitmap.height + leading;
     	}
     }
 
     public override function render(target:BitmapData, point:Point, camera:Point)
     {
-    	// Adjust registration point for center/right alignment and baseline offset
+    	// Adjust registration point for center/right alignment
     	if(align == Center)
     		point.x -= contentWidth / 2;
     	else if(align == Right)
-    		point.x -= contentHeight;
-    	this.y -= baseline;
+    		point.x -= contentWidth;    	
 
+    	// Adjsut baseline
+    	point.y -= baseline;
+
+    	// Pthbthth
     	super.render(target, point, camera);
     }
 }
