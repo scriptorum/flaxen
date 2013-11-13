@@ -1,9 +1,12 @@
+
+
 package flaxen.render;
 
 import com.haxepunk.graphics.Text;
 import com.haxepunk.graphics.Graphiclist;
 import com.haxepunk.HXP;
 import flash.text.TextFormatAlign;
+import flaxen.core.Log;
 
 #if (flash || js)
 typedef FTAlign = TextFormatAlign;
@@ -91,7 +94,7 @@ class FancyText extends Graphiclist
 				case "justify": return flash.text.TextFormatAlign.JUSTIFY;
 			}
 
-			warn("FancyText Unsupported alignment:" + alignment);
+			Log.warn("FancyText Unsupported alignment:" + alignment);
 			return flash.text.TextFormatAlign.LEFT;
 		#else
 			return alignment;

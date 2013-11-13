@@ -125,7 +125,7 @@ class BitmapText extends Image
 
 		super(content); // Can't call super until we've created the content bitmap
 
-		this.x = x;
+		this.x = x; // Can't set position until super is called
 		this.y = y;
 	}
 
@@ -220,7 +220,7 @@ class BitmapText extends Image
 	{
 		var width = 0;
 		var charIndex:Int = 1;
-		for(ch in text.split(""))
+		for(ch in StringUtil.split(text,"").iterator())
 		{
 			width += getCharWidth(ch);
 			if(ch == SPACE_CHAR)
@@ -240,7 +240,7 @@ class BitmapText extends Image
 		var glyph:Rectangle = getGlyph(ch);
 		if(glyph == null)
 		{
-			Log.warn("Glyph " + ch + " not found");
+			Log.warn("Glyph '" + ch + "'' not found (code:" + ch.charCodeAt(0) + ")");
 			return 0;
 		}
 
@@ -334,9 +334,11 @@ class BitmapText extends Image
 	    			// TODO This doesn't appear to support source alpha, hurting negative
 	    			// leading and kerning. Descenders just disappear.
 	    			var glyph:Rectangle = getGlyph(ch);
-	    			content.copyPixels(fontBitmap, glyph, HXP.point);
-
-    				HXP.point.x += glyph.width;
+	    			if(glyph != null)
+	    			{
+	    				content.copyPixels(fontBitmap, glyph, HXP.point);
+    					HXP.point.x += glyph.width;
+    				}
     			}
     		}
 
@@ -359,8 +361,6 @@ class BitmapText extends Image
     		point.y -= contentHeight;
     	else if(valign == Baseline)
     		point.y -= (contentHeight + baseline);
-
-    	// trace("Render point:" + point.x + "," + point.y);	
 
     	// Pthbthth
     	super.render(target, point, camera);
