@@ -1,14 +1,6 @@
 package flaxen.component;
 
-import com.haxepunk.HXP;
-
-enum TextAlign
-{ 
-	center; 
-	justify;
-	left; 
-	right;
-}
+import flaxen.common.TextAlign;
 
 class TextStyle 
 {
@@ -18,14 +10,17 @@ class TextStyle
 	public var font:String;
 	public var shadowColor:Int = 0x000000;
 	public var shadowOffset:Int = 2;
-	public var leading:Int = 0;
-	public var wordWrap:Bool; // requires a Size component TODO:Support BitmapText
 
 	// These options work only for Bitmap Text
-	public var charSize:Size; // size of each character
+	public var baseline:Int;
+	public var kerning:Int;
+	public var charSet:String; 
+	public var emChar:String;
 
 	// These options work for both BitmapText and TTF Text
-	public var alignment:TextAlign;
+	public var align:TextAlign;
+	public var leading:Int = 0;
+	public var wordWrap:Bool; // requires a Size component
 	public var changed:Bool = true; // must set to true to recognize changed style options
 
 	public function new()
@@ -33,29 +28,34 @@ class TextStyle
 	}
 
 	public static function create(color:Int = 0xFFFFFF, size:Int = 14, ?font:String, 
-		?alignment:TextAlign, wordWrap:Bool = false)
+		?align:TextAlign, wordWrap:Bool = false)
 	{
 		var style = new TextStyle();
 		style.color = color;
 		style.size = size;
-		style.font = (font == null ? HXP.defaultFont : font);
-		style.alignment = (alignment == null ?  TextAlign.left : alignment);
+		style.font = font;
+		style.align = (align == null ?  TextAlign.Left : align);
 		style.wordWrap = wordWrap;
 		return style;
 	}
 
-	public static function createBitmap(charSize:Size, ?alignment:TextAlign, wordWrap:Bool = false)
+	public static function createBitmap(?align:TextAlign, wordWrap:Bool = false, 
+		baseline:Int = 0, kerning:Int = 0, ?charSet:String, emChar:String = "M")
 	{
 		var style = new TextStyle();
-		style.alignment = (alignment == null ?  TextAlign.left : alignment);
+		style.align = (align == null ?  TextAlign.Left : align);
 		style.wordWrap = wordWrap;
-		style.charSize = charSize;
+		style.baseline = baseline;
+		style.kerning = kerning;
+		style.charSet = charSet;
+		style.emChar = emChar;
 		return style;
 	}
 
 }
 
-// For BitmapText supply an Image component as well
+// For BitmapText supply an Image component as well; Size component may also be used to 
+// fix text box dimensions or do word wrapping
 class Text
 {
 	public var message:String;

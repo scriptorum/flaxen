@@ -1,7 +1,7 @@
 //
 // I'm still not happy with the way transformation points/position points work here.
 //
-package flaxen.render;
+package flaxen.render.view;
 
 import flaxen.component.Layer;
 import flaxen.component.ScrollFactor;
@@ -90,19 +90,22 @@ class View extends com.haxepunk.Entity
 		if(img != null)
 		{
 			// Update specified size
-			if(hasComponent(Size))
+			if(useSizeForImageScaling())
 			{
-				var size = getComponent(Size);
-				if(currentSize == null || size.width != currentSize.width || size.height != currentSize.height)
+				if(hasComponent(Size))
 				{
-					scaleChanged = true;
-					currentSize = size.clone();
+					var size = getComponent(Size);
+					if(currentSize == null || size.width != currentSize.width || size.height != currentSize.height)
+					{
+						scaleChanged = true;
+						currentSize = size.clone();
+					}
 				}
-			}
-			else if(currentSize != null)
-			{				
-				scaleChanged = true;
-				currentSize = null;
+				else if(currentSize != null)
+				{				
+					scaleChanged = true;
+					currentSize = null;
+				}
 			}
  
 			// Update scaling
@@ -195,4 +198,11 @@ class View extends com.haxepunk.Entity
 			}
 		}
 	}
+
+	// Override to supply a custom use for the Size component instead of image scaling
+	// Only needed for Image subclasses that don't want automatic scaling from Size
+	private function useSizeForImageScaling()
+	{ 
+		return true; 
+	} 
 }

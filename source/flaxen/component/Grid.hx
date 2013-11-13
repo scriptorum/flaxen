@@ -1,6 +1,7 @@
+
 package flaxen.component;
 
-import flaxen.util.Array2D;
+import flaxen.common.Array2D;
 import flaxen.util.StringUtil;
 
 class Grid extends Array2D<Int>

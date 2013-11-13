@@ -1,6 +1,6 @@
-package flaxen.util;
+package flaxen.common;
 
-import flaxen.util.Point;
+import flaxen.common.Point;
 import flaxen.util.MathUtil;
 import flaxen.util.ArrayUtil;
 

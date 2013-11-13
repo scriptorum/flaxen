@@ -1,20 +1,22 @@
-package flaxen.render;
+package flaxen.render.view;
 
 import flaxen.component.Text;
 import flaxen.component.Alpha;
 import flaxen.component.Size;
-import flaxen.component.Image;
-import flaxen.render.BitmapText;
+import flaxen.render.FancyText;
 import flash.text.TextFormatAlign;
 import com.haxepunk.HXP;
 
-class BitmapTextView extends View
+class TextView extends View
 {
 	private var curWidth:Int = 0;
 	private var curHeight:Int = 0;
+	private var curScaleX:Float = 1.0;
+	private var curScaleY:Float = 1.0;
+	private var curScale:Float = 1.0;
 	private var curMessage:String;
 	private var curStyle:TextStyle;
-	private var display:BitmapText;
+	private var display:FancyText;
 
 	override public function begin()
 	{
@@ -27,16 +29,17 @@ class BitmapTextView extends View
 		// Create new text
 		if(graphic == null || forceNew || curStyle.changed)
 		{
-			var img:Image = getComponent(Image);
-			graphic = display = new BitmapText(img.path, 0, 0, Left, curMessage, 
-				curStyle.leading); // curStyle.kerning
-			// display.setAlign(Std.string(curStyle.alignment));
-			// display.setLineGap(curStyle.leading);
+			// TODO Support ScrollFactor
+			graphic = display = new FancyText(curMessage, 0, 0, Std.int(curStyle.size * curScale), 
+				curStyle.color, (curStyle.font == null ? HXP.defaultFont : curStyle.font), 
+				Std.int(curWidth * curScale), Std.int(curHeight * curScale), 
+				Std.string(curStyle.align), curStyle.wordWrap, 1, curStyle.leading,
+				curStyle.shadowOffset, curStyle.shadowColor);
 			curStyle.changed = false;			
 		}
 
-		// Update/set text message
-		// display.setText(curMessage);
+		// Update text message
+		else display.setString(curMessage);
 	}
 
 	override public function nodeUpdate()
@@ -52,7 +55,7 @@ class BitmapTextView extends View
 			// Check for style change, provide style default
 			var style = text.style;
 			if(style == null)
-				throw "Cannot create BitmapTextView with a null text style";
+				style = TextStyle.create();
 			if(style != curStyle || style.changed)
 			{
 				curStyle = style;
@@ -81,6 +84,19 @@ class BitmapTextView extends View
 				curMessage = text.message;
 				updateDisplay = true;
 			}
+			else curMessage = ""; // TODO Should this be removed?
+
+			// HACK Because HaxePunk does not properly scale text on CPP targets
+			#if !flash
+				if(curScaleX != HXP.screen.fullScaleX || curScaleY != HXP.screen.fullScaleY)
+				{
+					curScaleX = HXP.screen.fullScaleX;
+					curScaleY = HXP.screen.fullScaleY;
+					curScale = (curScaleX + curScaleY) / 2;
+					updateDisplay = true;
+					forceNew = true;
+				}
+			#end
 
 			// If any changes, update text object
 			if(updateDisplay)
@@ -90,8 +106,8 @@ class BitmapTextView extends View
 			if(hasComponent(Alpha))
 			{
 				var alpha:Float = getComponent(Alpha).value;
-				// if(alpha != display.alpha)
-				// 	display.alpha = alpha;
+				if(alpha != display.getAlpha())
+					display.setAlpha(alpha);
 			}
 		}
 		else if(display != null)

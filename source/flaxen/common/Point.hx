@@ -1,4 +1,4 @@
-package flaxen.util;
+package flaxen.common;
 
 // 2D integer point
 class Point

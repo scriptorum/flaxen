@@ -1,7 +1,7 @@
 package flaxen.component;
 
 import ash.core.Engine;
-import flaxen.util.Easing;
+import flaxen.common.Easing;
 
 enum TweenLoop { None; Forward; Backward; Both; BothBackward; }
 

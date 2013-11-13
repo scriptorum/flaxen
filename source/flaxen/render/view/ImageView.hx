@@ -1,5 +1,4 @@
-
-package flaxen.render;
+package flaxen.render.view;
 
 import flash.geom.Rectangle;
 

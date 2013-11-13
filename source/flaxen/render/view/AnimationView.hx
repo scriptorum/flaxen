@@ -1,4 +1,4 @@
-package flaxen.render;
+package flaxen.render.view;
 
 import com.haxepunk.HXP;
 import com.haxepunk.graphics.Spritemap;

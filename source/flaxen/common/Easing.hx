@@ -1,4 +1,4 @@
-package flaxen.util;
+package flaxen.common;
 
 typedef EasingFunction = Float->Float->Float->Float->Float->Float;
 

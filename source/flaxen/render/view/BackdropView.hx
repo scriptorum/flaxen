@@ -1,4 +1,4 @@
-package flaxen.render;
+package flaxen.render.view;
 
 import flaxen.component.Image;
 

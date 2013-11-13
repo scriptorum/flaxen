@@ -1,8 +1,9 @@
 package flaxen.component;
 
-import flaxen.render.View;
+import flaxen.render.view.View;
 
-// Wraps a HaxePunk entity
+// Contains a View, which wraps a HaxePunk entity
+
 class Display
 {
 	public var view:View;
