@@ -28,7 +28,7 @@ class TextStyle
 	}
 
 	public static function create(color:Int = 0xFFFFFF, size:Int = 14, ?font:String, 
-		?align:TextAlign, wordWrap:Bool = false)
+		?align:TextAlign, wordWrap:Bool = false, leading:Int = 0)
 	{
 		var style = new TextStyle();
 		style.color = color;
@@ -36,17 +36,20 @@ class TextStyle
 		style.font = font;
 		style.align = (align == null ?  TextAlign.Left : align);
 		style.wordWrap = wordWrap;
+		style.leading = leading;
 		return style;
 	}
 
 	public static function createBitmap(?align:TextAlign, wordWrap:Bool = false, 
-		baseline:Int = 0, kerning:Int = 0, ?charSet:String, emChar:String = "M")
+		leading:Int = 0, kerning:Int = 0, baseline:Int = 0,
+		?charSet:String, emChar:String = "M")
 	{
 		var style = new TextStyle();
 		style.align = (align == null ?  TextAlign.Left : align);
 		style.wordWrap = wordWrap;
-		style.baseline = baseline;
+		style.leading = leading;
 		style.kerning = kerning;
+		style.baseline = baseline;
 		style.charSet = charSet;
 		style.emChar = emChar;
 		return style;

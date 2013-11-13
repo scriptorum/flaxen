@@ -91,7 +91,7 @@ class FancyText extends Graphiclist
 				case "justify": return flash.text.TextFormatAlign.JUSTIFY;
 			}
 
-			trace("FancyText Unsupported alignment:" + alignment);
+			warn("FancyText Unsupported alignment:" + alignment);
 			return flash.text.TextFormatAlign.LEFT;
 		#else
 			return alignment;

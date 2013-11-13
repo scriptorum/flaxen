@@ -5,6 +5,7 @@
 //
 // TODO:
 //  * Add caching of rects so you don't have to rescan font bitmap every time you add new text
+//  * Add vertical alignment support rather than assuming Top; eliminate baseline?
 //
 // USAGE:
 //    image - The bitmap font image. This should be a graphic with a one-line string,
@@ -38,6 +39,7 @@
 package flaxen.render;
 
 import flaxen.util.StringUtil;
+import flaxen.core.Log;
 import flaxen.common.TextAlign;
 import flash.display.BitmapData;
 import flash.geom.ColorTransform;
@@ -210,9 +212,7 @@ class BitmapText extends Image
 		var glyph:Rectangle = getGlyph(ch);
 		if(glyph == null)
 		{
-			#if flaxenDebug
-				trace("Glyph " + ch + " not found");
-			#end
+			Log.warn("Glyph " + ch + " not found");
 			return 0;
 		}
 

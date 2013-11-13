@@ -1,3 +1,8 @@
+/*
+  TODO
+   - Add flaxen.core.Log.warning, error, log, and others
+*/
+
 package flaxen.demo; 
 
 import ash.core.Entity;

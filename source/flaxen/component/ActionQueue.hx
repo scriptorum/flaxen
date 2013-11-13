@@ -363,7 +363,7 @@ class ActionLog extends Action
 
 	override public function execute(): Bool
 	{
-		trace(message);
+		flaxen.core.Log.log(message);
 		return true;
 	}
 

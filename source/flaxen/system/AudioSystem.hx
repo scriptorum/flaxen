@@ -1,6 +1,7 @@
 package flaxen.system;
 
 import flaxen.core.Flaxen;
+import flaxen.core.Log;
 import flaxen.core.FlaxenSystem;
 import flaxen.core.FlaxenSystem;
 import flaxen.component.Audio;
@@ -80,7 +81,7 @@ class AudioSystem extends FlaxenSystem
 		}
 
 		if(sound.destroyEntity || sound.destroyComponent)
-		if(channel == null) trace("WTF!");
+		if(channel == null) Log.warn("WTF!");
 			channel.addEventListener (Event.SOUND_COMPLETE, function(_) {
 				sound.complete = true;
 			});			
@@ -98,7 +99,7 @@ class AudioSystem extends FlaxenSystem
 			return;
 		}
 
-		trace("Sound failure for " + sound.file + " (" + msg + ")");
+		Log.warn("Sound failure for " + sound.file + " (" + msg + ")");
 		ash.removeEntity(entity);
 	}
 

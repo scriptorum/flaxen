@@ -1,6 +1,7 @@
 package flaxen.service;
 
 import com.haxepunk.HXP;
+import flaxen.core.Log;
 
 class Profile
 {
@@ -84,7 +85,7 @@ class ProfileService
 		for(profile in stats)
 			totalTime += profile.totalTime;
 		
-		trace("PROFILE:");
+		Log.log("PROFILE:");
 		for(name in stats.keys())
 			logProfile(name, totalTime);
 	}
@@ -92,7 +93,7 @@ class ProfileService
 	public static function logProfile(name:String, totalTime:Int)
 	{
 		var profile = stats.get(name);
-		trace(name + ": " + 
+		Log.log(name + ": " + 
 			format(profile.totalTime / 1000) + 
 			" sec overall (" + format(profile.totalTime / totalTime * 100)  +  "%), " + profile.totalCalls + 
 			" calls, " + 

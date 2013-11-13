@@ -1,3 +1,8 @@
+/*
+  TODO:
+    - Change the registration point to work just like in BitmapText, so when 
+      so for center alignment you specify the center point.
+*/
 package flaxen.render.view;
 
 import flaxen.component.Text;

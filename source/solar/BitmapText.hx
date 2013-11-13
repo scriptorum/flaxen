@@ -138,7 +138,6 @@ class BitmapText extends Canvas
 	
 	public function setText(text:String, align:String = '')
 	{
-		trace("Setting text:" + text);
 		_text = text;
 		_textLines = _text.split("\n");
 		_autoWidth = 0;
