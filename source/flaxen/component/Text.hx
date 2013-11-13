@@ -19,7 +19,7 @@ class TextStyle
 	public var emChar:String;
 
 	// These options work for both BitmapText and TTF Text
-	public var align:HorizontalTextAlign;
+	public var halign:HorizontalTextAlign;
 	public var leading:Int = 0;
 	public var wordWrap:Bool; // requires a Size component
 	public var changed:Bool = true; // must set to true to recognize changed style options
@@ -30,13 +30,13 @@ class TextStyle
 
 	// Convenience method for creating a new TextStyle for regular Text
 	public static function createTextStyle(color:Int = 0xFFFFFF, size:Int = 14, ?font:String, 
-		?align:HorizontalTextAlign, wordWrap:Bool = false, leading:Int = 0)
+		?halign:HorizontalTextAlign, wordWrap:Bool = false, leading:Int = 0)
 	{
 		var style = new TextStyle();
 		style.color = color;
 		style.size = size;
 		style.font = font;
-		style.align = (align == null ?  HorizontalTextAlign.Left : align);
+		style.halign = (halign == null ?  HorizontalTextAlign.Left : halign);
 		style.wordWrap = wordWrap;
 		style.leading = leading;
 		return style;
@@ -44,12 +44,12 @@ class TextStyle
 
 	// Convenience method for creating a new TextStyle for BitmapText
 	public static function createBitmapTextStyle(wordWrap:Bool = false, 
-		?align:HorizontalTextAlign, ?valign:VerticalTextAlign, 
+		?halign:HorizontalTextAlign, ?valign:VerticalTextAlign, 
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0,
 		?charSet:String, emChar:String = "M")
 	{
 		var style = new TextStyle();
-		style.align = (align == null ?  HorizontalTextAlign.Left : align);
+		style.halign = (halign == null ?  HorizontalTextAlign.Left : halign);
 		style.valign = (valign == null ?  VerticalTextAlign.Top : valign);
 		style.wordWrap = wordWrap;
 		style.leading = leading;
@@ -84,7 +84,7 @@ class Text
 
 	public static function createBitmapText(message:String, wordWrap:Bool = false, 
 		?align:HorizontalTextAlign, ?valign:VerticalTextAlign, leading:Int = 0, kerning:Int = 0, 
-		baseline:Int = 0, ?charSet:String, emChar:String = "M")
+		baseline:Int = 0, ?charSet:String, ?emChar:String)
 	{
 		return new Text(message, TextStyle.createBitmapTextStyle(wordWrap, align, valign,
 			leading, kerning, baseline, charSet, emChar));

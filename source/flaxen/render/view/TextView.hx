@@ -40,7 +40,7 @@ class TextView extends View
 			graphic = display = new FancyText(curMessage, 0, 0, Std.int(curStyle.size * curScale), 
 				curStyle.color, (curStyle.font == null ? HXP.defaultFont : curStyle.font), 
 				Std.int(curWidth * curScale), Std.int(curHeight * curScale), 
-				Std.string(curStyle.align), curStyle.wordWrap, 1, curStyle.leading,
+				Std.string(curStyle.halign), curStyle.wordWrap, 1, curStyle.leading,
 				curStyle.shadowOffset, curStyle.shadowColor);
 			curStyle.changed = false;			
 		}

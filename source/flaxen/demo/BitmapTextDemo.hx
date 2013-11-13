@@ -23,27 +23,22 @@ class BitmapTextDemo extends Flaxen
 		var demo = new BitmapTextDemo();
 	}
 
-/*
-   Left Align Size Tests:
-      Size 0, 0 -> No clipping
-      Size X, 0 -> Clip to X, no vert clipping
-      Size 0, Y -> Clip to Y, no horiz clipping
-
-*/
 	override public function ready()
 	{
-		// var e:Entity = newEntity()
-		// 	.add(new Image("art/impact20yellow.png"))
-		// 	.add(Position.center())
-		// 	.add(Size.screen())
-		// 	.add(Text.createBitmapText("AAABBBCCC Hi there! 1234\n\nI'm typing a really long line Note: In the example above, a case statement reads '65, 90'. This is an example where a case expects to match either of the two (or several) values, listed as delimited by comma(s). Switches in Haxe are different from traditional switches: all cases are separate expressions so after one case expression is executed the switch block is automatically exited. As a consequence, break can't be used in a switch and the position of the default case is not important. On some platforms, switches on constant values (especially constant integers) might be optimized for better speed. Switches can also be used on enums with different semantics. It will be explained later in this document.", 
-		// 		true, Center, Center, -4, -2));
+		var e:Entity = newEntity()
+			.add(new Image("art/impact20yellow.png"))
+			.add(new Position(640, 0))
+			.add(new Size(320, 240))
+			.add(Text.createBitmapText("AAABBBCCC Hi there! 1234\n\nI'm typing a really long line Note: In the example above, a case statement reads '65, 90'. This is an example where a case expects to match either of the two (or several) values, listed as delimited by comma(s). Switches in Haxe are different from traditional switches: all cases are separate expressions so after one case expression is executed the switch block is automatically exited. As a consequence, break can't be used in a switch and the position of the default case is not important. On some platforms, switches on constant values (especially constant integers) might be optimized for better speed. Switches can also be used on enums with different semantics. It will be explained later in this document.", 
+				true, Right, Top, -4, -2));
 
-var e = new com.haxepunk.Entity();
-e.graphic = new flaxen.render.BitmapText("art/impact20yellow.png", 320, 240,
-	"AAABBBCCC Hi there! 1234\n\nI'm typing a really long line Note: In the example above, a case statement reads '65, 90'. This is an example where a case expects to match either of the two (or several) values, listed as delimited by comma(s). Switches in Haxe are different from traditional switches: all cases are separate expressions so after one case expression is executed the switch block is automatically exited. As a consequence, break can't be used in a switch and the position of the default case is not important. On some platforms, switches on constant values (especially constant integers) might be optimized for better speed. Switches can also be used on enums with different semantics. It will be explained later in this document.", 	
-	0, 0, false, Center, Center);
-HXP.scene.add(e);
+		// var e = new com.haxepunk.Entity();
+		// e.x = 320;
+		// e.y = 240;
+		// e.graphic = new flaxen.render.BitmapText("art/impact20yellow.png", 0, 0,
+		// 	"AAABBBCCC Hi there! 1234\n\nI'm typing a really long line Note: In the example above, a case statement reads '65, 90'. This is an example where a case expects to match either of the two (or several) values, listed as delimited by comma(s). Switches in Haxe are different from traditional switches: all cases are separate expressions so after one case expression is executed the switch block is automatically exited. As a consequence, break can't be used in a switch and the position of the default case is not important. On some platforms, switches on constant values (especially constant integers) might be optimized for better speed. Switches can also be used on enums with different semantics. It will be explained later in this document.", 	
+		// 	640, 480, true, Center, Center, -4, -2);
+		// HXP.scene.add(e);
 
 	}
 }
