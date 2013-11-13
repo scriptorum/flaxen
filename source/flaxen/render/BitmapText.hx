@@ -42,15 +42,12 @@ import flaxen.util.StringUtil;
 import flaxen.core.Log;
 import flaxen.common.TextAlign;
 import flash.display.BitmapData;
-import flash.geom.ColorTransform;
-import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import com.haxepunk.HXP;
 import com.haxepunk.RenderMode;
 import com.haxepunk.graphics.Image;
-import com.haxepunk.graphics.atlas.TextureAtlas;
-import com.haxepunk.graphics.atlas.AtlasRegion;
+import com.haxepunk.graphics.atlas.Atlas;
 
 class BitmapText extends Image
 {
@@ -90,7 +87,6 @@ class BitmapText extends Image
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0, 
 		?charSet:String, emChar:String = "M")
 	{
-		_blit = !HXP.renderMode.has(RenderMode.HARDWARE);
 		glyphs = new Map<String,Rectangle>();
 		fontBitmap = (Std.is(image, BitmapData) ? image : HXP.getBitmap(image));
 		if(fontBitmap == null)
@@ -166,8 +162,14 @@ class BitmapText extends Image
 		// If post-constructor, force parent Image to update as well
 		if(updateSuper)
 		{
-	    	setBitmapSource(content);
-	    	updateBuffer();
+			if (_blit)
+	    	{
+	    		createBuffer();
+	    		setBitmapSource(content);
+	    		updateBuffer();
+	    	}
+	    	else
+				setAtlasRegion(Atlas.loadImageAsRegion(content));
 		}
 
 		return this;
