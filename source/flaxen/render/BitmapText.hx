@@ -15,12 +15,11 @@
 				line of blank space between each character.
 		  x/y - The registration point for the text (i.e., the upper left corner for
 				Left justification and baseline = 0).
- width/height - If nonzero, specifies the maximum dimensions of the text box. If zero, 
- 				the dimensions are adjusted to fit the text.
+ width/height - If nonzero, specifies the maximum dimensions of the text box. Clips text
+ 				that exceeds max. If zero, the dimensions are adjusted to fit the text.
 	   halign - Specifies horizontal alignment and registration point. Defaults to Left.
-	   			Center and Right require non-zero width.
 	   valign - Specifies vertical alignment and registration point. Defaults to Top. 
-	   			Center and Bottom require non-zero height. Baseline requires positive baseline.
+	   			Baseline requires positive baseline.
 	 wordWrap - Specifies whether to wrap long lines to fit into the text box. Requires 
 	 			non-zero width.
 	     text - The text message to show. This message can be changed with setText(). 
@@ -56,10 +55,14 @@ import com.haxepunk.graphics.atlas.AtlasRegion;
 class BitmapText extends Image
 {
 	// Supply your own charset to indicate the characters in your fontBitmap text image and their order
-	public static var ASCII_CHAR_SET:String = 
+	public static inline var ASCII_CHAR_SET:String = 
 		"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-	private static var SPACE_EM_DIVISOR:Int = 3; // Space is 1/3rd width of the "em" character
-	private static var SPACE_CHAR:String = " ";
+	private static inline var SPACE_EM_DIVISOR:Int = 3; // Space is 1/3rd width of the "em" character
+	private static inline var SPACE_CHAR:String = " ";
+	private static inline var FLASH8_DIM_LIMIT:Int = 2880; // Flash 8 w/h
+	private static inline var FLASH_DIM_LIMIT:Int = 8191; // Flash 9 or later w/h
+	private static inline var FLASH_SIZE_LIMIT:Int = 16777215; // Flash 9 or later total size
+	private static inline var FLASH_SAFE_DIM:Int = 4096; // Flash 9 or later total w/h
 
 	private var emChar:String; // defines the em character, usually M
 	private var charSet:String; // characters that map to the bitmap font
@@ -105,10 +108,6 @@ class BitmapText extends Image
 
 		if(wordWrap && width == 0)
 			Log.error("Word Wrap requires a positive width");
-		if((halign == Center || halign == Right || halign == Full) && width == 0)
-			Log.error(Std.string(halign) + " horizontal alignment requires a positive width");
-		if((valign == Center || valign == Bottom) && height == 0)
-			Log.error(Std.string(valign) + " vertical alignment requires a positive height");
 		if(valign == Baseline && baseline < 0)
 			Log.error("Baseline cannot be negative");
 		if(valign == Baseline && baseline == 0)
@@ -304,6 +303,22 @@ class BitmapText extends Image
     {
     	if(contentWidth < 1) contentWidth = 1;
     	if(contentHeight < 1) contentHeight = 1;
+
+    	// Limit bitmap dimensions based on Flash size limitations
+    	#if flash
+	        #if flash8
+	        	if(contentWidth > FLASH8_DIM_LIMIT) contentWidth = FLASH8_DIM_LIMIT;
+	        	if(contentHeight > FLASH8_DIM_LIMIT) contentHeight = FLASH8_DIM_LIMIT;
+	        #else
+	        	// TODO Check size limit first; if failed, calc longest dimension, 
+	        	// reduce that to FLASH_DIM_LIMIT and scale other dim so that size
+	        	// stays under FLASH_SIZE_LIMIT
+	        	if(contentWidth > FLASH_DIM_LIMIT) contentWidth = FLASH_DIM_LIMIT;
+	        	if(contentHeight > FLASH_DIM_LIMIT) contentHeight = FLASH_DIM_LIMIT;
+	        	if(contentWidth * contentHeight > FLASH_SIZE_LIMIT) 
+		        	contentWidth = contentHeight = FLASH_SAFE_DIM;
+	        #end
+		#end
 
     	// TODO clear old bitmap if size hasn't changed
     	content = HXP.createBitmap(contentWidth, contentHeight, true);
