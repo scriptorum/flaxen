@@ -353,7 +353,7 @@ class BitmapText extends Image
 	    			var glyph:Rectangle = getGlyph(ch);
 	    			if(glyph != null)
 	    			{
-	    				content.copyPixels(fontBitmap, glyph, HXP.point);
+	    				content.copyPixels(fontBitmap, glyph, HXP.point, null, null, true);
     					HXP.point.x += glyph.width;
     				}
     			}
