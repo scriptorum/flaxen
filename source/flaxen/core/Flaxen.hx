@@ -1,3 +1,13 @@
+/*
+  TODO
+   	- Maybe change input system to UpdateSystem, and let people choose if they want to use it
+     	for input, update, or provide their own systems
+	- ADD newSingleton()
+	- RETHINK Flaxen GETTERS/ADDERS
+	- Change order of alignments to valign,halign? (Top,Left looks more natural than the reverse)
+	- Consider separation of TextStyle from Text, use as separate component
+*/
+
 package flaxen.core;
 
 import flaxen.common.Easing;

@@ -16,3 +16,5 @@ enum VerticalTextAlign
 	Bottom;
 	Baseline;
 }
+
+// Consider adding RegistrationPoint that references a 3x3 grid

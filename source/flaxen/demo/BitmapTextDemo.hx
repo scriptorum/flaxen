@@ -1,11 +1,3 @@
-/*
-  TODO
-   - Maybe change input system to UpdateSystem, and let people choose if they want to use it
-     for input, update, or provide their own systems
-	 // TODO ADD newSingleton()
-	 // RETHINK Flaxen GETTERS/ADDERS
-*/
-
 package flaxen.demo; 
 
 import ash.core.Entity;
@@ -31,8 +23,11 @@ class BitmapTextDemo extends Flaxen
 	{
 		var e:Entity = newEntity("demo", false)
 			.add(new Image("art/impact20yellow.png"))
-			.add(Position.center())
 			.add(Size.screen())
+			// .add(Position.bottom())
+			// .add(Text.createBitmapText("Here's a wee bit of text.\n{And this line clips at the baseline!}", 
+			// 	false, Center, Baseline, 0, 0, 5));
+			.add(Position.center())
 			.add(Text.createBitmapText("AAABBBCCC Hi there! 1234\n\nI'm typing a {really} long line Note: In the example above, a case statement reads '65, 90'. This is an example where a case expects to match either of the two (or several) values, listed as delimited by comma(s). Switches in Haxe are different from traditional switches: all cases are separate expressions so after one case expression is executed the switch block is automatically exited. As a consequence, break can't be used in a switch and the position of the default case is not important. On some platforms, switches on constant values (especially constant integers) might be optimized for better speed. Switches can also be used on enums with different semantics. It will be explained later in this document.", 
 				true, Center, Center, -4, -2));
 

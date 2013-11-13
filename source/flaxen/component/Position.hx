@@ -1,3 +1,4 @@
+
 package flaxen.component;
 
 import com.haxepunk.HXP;
@@ -62,13 +63,57 @@ class Position
 		return Math.sqrt(dx * dx + dy * dy);
 	}
 
-	public static function center(): Position
+	//
+	// Some convenience methods
+	//
+
+	public static inline function zero(): Position
+	{
+		return topLeft();
+	}
+
+	public static inline function topLeft(): Position
+	{
+		return new Position(0, 0);
+	}
+
+	public static inline function top(): Position
+	{
+		return new Position(HXP.halfWidth, 0);
+	}
+
+	public static inline function topRight(): Position
+	{
+		return new Position(HXP.width, 0);
+	}
+
+	public static inline function left(): Position
+	{
+		return new Position(0, HXP.halfHeight);
+	}
+
+	public static inline function center(): Position
 	{
 		return new Position(HXP.halfWidth, HXP.halfHeight);
 	}
 
-	public static function zero(): Position
+	public static inline function right(): Position
 	{
-		return new Position(0, 0);
+		return new Position(HXP.height, HXP.halfHeight);
+	}
+
+	public static inline function bottomLeft(): Position
+	{
+		return new Position(0, HXP.height);
+	}
+
+	public static inline function bottom(): Position
+	{
+		return new Position(HXP.halfWidth, HXP.height);
+	}
+
+	public static inline function bottomRight(): Position
+	{
+		return new Position(HXP.width, HXP.height);
 	}
 }

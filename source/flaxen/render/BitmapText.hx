@@ -377,7 +377,7 @@ class BitmapText extends Image
     	else if(valign == Bottom)
     		point.y -= contentHeight;
     	else if(valign == Baseline)
-    		point.y -= (contentHeight + baseline);
+    		point.y -= (contentHeight - baseline);
 
     	// Pthbthth
     	super.render(target, point, camera);
