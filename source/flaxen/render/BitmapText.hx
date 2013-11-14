@@ -2,9 +2,9 @@
 	BitmapText
 
 	TODO:
-	 - Add caching of rects so you don't have to rescan font bitmap every time you add new text
-	   Or separate out BitmapFont class from BitmapText
 	 - Add HorizontalTextAlign.Full support
+	 - Move glyph creation and style characteristics to BitmapFont class. Allow 
+	   user to pass that in for the font in addition to path/BitmapData.
 
 	HaxePunk Example:
 		var t = "I'm typing a really long line! ";
@@ -15,10 +15,7 @@
 		HXP.scene.add(e);
 
 	ALSO SEE:
-	 - Solar has also put together a bitmap text class you might like. His is probably
-	   faster for throwing out one line of text and works monospaced. Mine supports word 
-	   wrapping, vertical alignment, variable character widths, and arbitrary character sets.
-
+	 - Solar has also put together his own bitmap text class you might like:
 	 	http://dl.dropboxusercontent.com/u/28629176/gamedev/crappyretrogame/hw_bmptext/BitmapText.hx
 	 	http://forum.haxepunk.com/index.php?topic=334.0
 */
@@ -47,6 +44,7 @@ class BitmapText extends Image
 	private static inline var FLASH_DIM_LIMIT:Int = 8191; // Flash 9 or later w/h
 	private static inline var FLASH_SIZE_LIMIT:Int = 16777215; // Flash 9 or later total size
 	private static inline var FLASH_SAFE_DIM:Int = 4096; // Flash 9 or later total w/h
+	private static var fontCache:Map<BitmapData, Map<String, Rectangle>>; // font cache
 
 	private var space:Dynamic; // defines the em character, usually M; could also be width in px
 	private var charSet:String; // characters that map to the bitmap font
@@ -57,7 +55,7 @@ class BitmapText extends Image
 	private var maxWidth:Int; // The max size of the text box (or 0 for no limit)
 	private var maxHeight:Int;
 	private var wordWrap:Bool = false;
-	private var spaceWidth:Int = 10; // If em character not in charSet, this is a crappy default
+	private var spaceWidth:Int = 0; // Width of space char, or all chars if monospace
 	private var monospace:Bool;
 	private var text:String;
 	private var lines:Array<String>;
@@ -108,7 +106,6 @@ class BitmapText extends Image
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0, 
 		space:Dynamic = "M", monospace:Bool = false, ?charSet:String)
 	{
-		glyphs = new Map<String,Rectangle>();
 		fontBitmap = (Std.is(image, BitmapData) ? image : HXP.getBitmap(image));
 		if(fontBitmap == null)
 			throw "Cannot parse null fontBitmap";
@@ -278,50 +275,70 @@ class BitmapText extends Image
 	}
 
 	// Scan bitmap font image to determine size and position of each glyph/character
-	public function updateGlyphs()
+	private function updateGlyphs()
 	{
-		var seekingCharStart:Bool = true;
-		var startX:Int = 0; // start of letter
-		var x:Int = 0;
-		for(ch in charSet.split(""))
-		{	
-			while(x < fontBitmap.width)
-			{
-				var blankLine:Bool = true;
-				for(y in 0...fontBitmap.height)
+		// Initialize font cache
+		if(fontCache == null)
+			fontCache = new Map<BitmapData, Map<String, Rectangle>>();
+
+		// Look for fontBitmap in font cache
+		else glyphs = fontCache.get(fontBitmap); 
+
+		// New font cache or glyphs not found in cache, generate new font glyphs
+		if(glyphs == null)
+		{
+			// Create new set of character glyphs and add to font cache
+			glyphs = new Map<String,Rectangle>();
+			fontCache.set(fontBitmap, glyphs);
+
+			// Populate glyphs with 
+			var seekingCharStart:Bool = true;
+			var startX:Int = 0; // start of letter
+			var x:Int = 0;
+			for(ch in charSet.split(""))
+			{	
+				while(x < fontBitmap.width)
 				{
-					var pix = fontBitmap.getPixel32(x,y);
-					if((pix >> 24) != 0)
+					var blankLine:Bool = true;
+					for(y in 0...fontBitmap.height)
 					{
-						blankLine = false;
-						break;						
+						var pix = fontBitmap.getPixel32(x,y);
+						if((pix >> 24) != 0)
+						{
+							blankLine = false;
+							break;						
+						}
 					}
-				}
 
-				if(seekingCharStart)
-				{
-					if(!blankLine)
+					if(seekingCharStart)
 					{
-						startX = x;
-						seekingCharStart = false;
+						if(!blankLine)
+						{
+							startX = x;
+							seekingCharStart = false;
+						}
 					}
+					else if(blankLine)
+					{
+						seekingCharStart = true;
+						var glyphWidth = x - startX; // Glyph width without kerning
+						glyphs.set(ch, new Rectangle(startX, 0, glyphWidth, fontBitmap.height));
+						break; // Move to next character
+					}
+
+					x++;
 				}
-				else if(blankLine)
-				{
-					seekingCharStart = true;
-					var glyphWidth = x - startX; // Glyph width without kerning
-					glyphs.set(ch, new Rectangle(startX, 0, glyphWidth, fontBitmap.height));
-
-					// Determine space width ... no kerning applied
-					if(Std.is(space, String) && ch == space)
-						spaceWidth = (monospace ? glyphWidth : 
-							Std.int(Math.max(1, glyphWidth / SPACE_EM_DIVISOR)));
-
-					break; // Move to next character
-				}
-
-				x++;
 			}
+
+			// Store glyphs in font cache
+			fontCache.set(fontBitmap, glyphs);
+		}
+
+		// Determine space width if none was specified
+		if(Std.is(space, String))
+		{
+			var w = getCharWidth(space);
+			spaceWidth = (monospace ? w : Std.int(Math.max(1, w / SPACE_EM_DIVISOR)));
 		}
 
 		if(spaceWidth <= 0)
@@ -336,7 +353,7 @@ class BitmapText extends Image
 	}	
 
 	// Draw text onto content buffer which gets passed to Image
-    public function updateContent()
+    private function updateContent()
     {
     	if(contentWidth < 1) contentWidth = 1;
     	if(contentHeight < 1) contentHeight = 1;
@@ -383,8 +400,6 @@ class BitmapText extends Image
     				if(charIndex++ >= 2)
     					HXP.point.x += kerning;
 
-	    			// TODO This doesn't appear to support source alpha, hurting negative
-	    			// leading and kerning. Descenders just disappear.
 	    			var glyph:Rectangle = getGlyph(ch);
 	    			if(glyph != null)
 	    			{

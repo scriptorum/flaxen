@@ -14,6 +14,11 @@ class Position
 		this.y = y;
 	}
 
+	public function subtract(x:Float, y:Float): Position
+	{
+		return add(-x, -y);
+	}
+
 	public function add(x:Float, y:Float): Position
 	{
 		this.x += x;
