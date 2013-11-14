@@ -31,9 +31,11 @@
 	  kerning - Vertical padding in between characters. Can be zero, positive, or negative.
 	  charSet - The list of characters found in the bitmap font image from left to right.
 				You should not include the "space" character.
-	   emChar -	Defines the em character, which should be the widest character in the charSet.
-				Usually this is the letter M. This field is only used to calculate the width
-				of a space caracter (one third of the em character's width).
+	    space -	Defines the space width. Either supply an integer width, or supply a 
+	            character. If a character is supplied, the space width will be one third of 
+	            the width of that character (the em character). Defaults to M which is 
+	            generally the widest character. If M is not in the charSet, you should change 
+	            this.
 */
 
 package flaxen.render;
@@ -61,7 +63,7 @@ class BitmapText extends Image
 	private static inline var FLASH_SIZE_LIMIT:Int = 16777215; // Flash 9 or later total size
 	private static inline var FLASH_SAFE_DIM:Int = 4096; // Flash 9 or later total w/h
 
-	private var emChar:String; // defines the em character, usually M
+	private var space:Dynamic; // defines the em character, usually M; could also be width in px
 	private var charSet:String; // characters that map to the bitmap font
 	private var kerning:Int; // extra +/- space between characters
 	private var leading:Int; // extra +/- space between lines
@@ -70,7 +72,7 @@ class BitmapText extends Image
 	private var maxWidth:Int; // The max size of the text box (or 0 for no limit)
 	private var maxHeight:Int;
 	private var wordWrap:Bool = false;
-	private var spaceWidth:Int = 10; // If no emChar provided, this is just a crappy default
+	private var spaceWidth:Int = 10; // If em character not in charSet, this is a crappy default
 	private var text:String;
 	private var lines:Array<String>;
 	private var lineWidths:Array<Int>;
@@ -85,7 +87,7 @@ class BitmapText extends Image
 		width:Int = 0, height:Int = 0, wordWrap:Bool = false, 
 		?halign:HorizontalTextAlign, ?valign:VerticalTextAlign, 
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0, 
-		?charSet:String, emChar:String = "M")
+		space:Dynamic = "M", ?charSet:String)
 	{
 		glyphs = new Map<String,Rectangle>();
 		fontBitmap = (Std.is(image, BitmapData) ? image : HXP.getBitmap(image));
@@ -109,14 +111,16 @@ class BitmapText extends Image
 		if(valign == Baseline && baseline == 0)
 			Log.warn("Baseline ineffective; should be a positive value");
 
-		this.emChar = emChar;
+		this.space = space;
+		if(Std.is(space, Int))
+			spaceWidth = cast space;
 		this.charSet = (charSet == null ? ASCII_CHAR_SET : charSet);
 		this.kerning = kerning;
 		this.leading = leading;
 		this.baseline = baseline;
 
 		updateGlyphs();
-		setTextSuper(text, false);
+		setTextInternal(text, false);
 
 		super(content); // Can't call super until we've created the content bitmap
 
@@ -126,10 +130,10 @@ class BitmapText extends Image
 
 	public function setText(text:String): BitmapText
 	{
-		return setTextSuper(text, true);
+		return setTextInternal(text, true);
 	}
 
-	private function setTextSuper(text:String, updateSuper:Bool): BitmapText
+	private function setTextInternal(text:String, updateSuper:Bool): BitmapText
 	{
 		this.text = text;
 		lines = new Array<String>();
@@ -288,8 +292,8 @@ class BitmapText extends Image
 					var glyphWidth = x - startX; // Glyph width without kerning
 					glyphs.set(ch, new Rectangle(startX, 0, glyphWidth, fontBitmap.height));
 
-					// Determine space width ... no kerning for space
-					if(ch == emChar)
+					// Determine space width ... no kerning applied
+					if(Std.is(space, String) && ch == space)
 						spaceWidth = Std.int(Math.max(1, glyphWidth / SPACE_EM_DIVISOR));
 
 					break; // Move to next character

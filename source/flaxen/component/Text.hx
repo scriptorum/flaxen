@@ -16,7 +16,7 @@ class TextStyle
 	public var baseline:Int;
 	public var kerning:Int;
 	public var charSet:String; 
-	public var emChar:String;
+	public var space:Dynamic;
 
 	// These options work for both BitmapText and TTF Text
 	public var halign:HorizontalTextAlign;
@@ -46,7 +46,7 @@ class TextStyle
 	public static function createBitmapTextStyle(wordWrap:Bool = false, 
 		?halign:HorizontalTextAlign, ?valign:VerticalTextAlign, 
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0,
-		?charSet:String, emChar:String = "M")
+		?space:Dynamic, ?charSet:String)
 	{
 		var style = new TextStyle();
 		style.halign = (halign == null ?  HorizontalTextAlign.Left : halign);
@@ -56,7 +56,7 @@ class TextStyle
 		style.kerning = kerning;
 		style.baseline = baseline;
 		style.charSet = charSet;
-		style.emChar = emChar;
+		style.space = space;
 		return style;
 	}
 
@@ -84,10 +84,10 @@ class Text
 
 	public static function createBitmapText(message:String, wordWrap:Bool = false, 
 		?align:HorizontalTextAlign, ?valign:VerticalTextAlign, leading:Int = 0, kerning:Int = 0, 
-		baseline:Int = 0, ?charSet:String, ?emChar:String)
+		baseline:Int = 0, ?space:Dynamic, ?charSet:String)
 	{
 		return new Text(message, TextStyle.createBitmapTextStyle(wordWrap, align, valign,
-			leading, kerning, baseline, charSet, emChar));
+			leading, kerning, baseline, space, charSet));
 	}
 
 }
