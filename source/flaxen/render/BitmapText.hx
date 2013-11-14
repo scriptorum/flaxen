@@ -1,41 +1,27 @@
-/*
+/**
 	BitmapText
-	Also see the the work of solar:
-	 http://dl.dropboxusercontent.com/u/28629176/gamedev/crappyretrogame/hw_bmptext/BitmapText.hx
-	 http://forum.haxepunk.com/index.php?topic=334.0
 
 	TODO:
-	 * Add caching of rects so you don't have to rescan font bitmap every time you add new text
-	 * Add HorizontalTextAlign.Full support
+	 - Add caching of rects so you don't have to rescan font bitmap every time you add new text
+	   Or separate out BitmapFont class from BitmapText
+	 - Add HorizontalTextAlign.Full support
+	 - Add monospace font support
 
+	HaxePunk Example:
+		var t = "I'm typing a really long line! ";
+		var e = new com.haxepunk.Entity(320, 240);
+		e.graphic = new flaxen.render.BitmapText("art/impact20yellow.png", 0, 0,
+			"AAABBBCCC Hi there!" + t + t + t + t + t + t + t + t + t + t, 	
+			640, 480, true, Center, Center, -4, -2);
+		HXP.scene.add(e);
 
-	CONSTRUCTOR:
-		image -	The bitmap font image. This should be a graphic with a one-line string,
-			  	containing all the characters of the charSet, with at least one vertical
-				line of blank space between each character.
-		  x/y - The registration point for the text (i.e., the upper left corner for
-				Left justification and baseline = 0).
- width/height - If nonzero, specifies the maximum dimensions of the text box. Clips text
- 				that exceeds max. If zero, the dimensions are adjusted to fit the text.
-	   halign - Specifies horizontal alignment and registration point. Defaults to Left.
-	   valign - Specifies vertical alignment and registration point. Defaults to Top. 
-	   			Baseline requires positive baseline.
-	 wordWrap - Specifies whether to wrap long lines to fit into the text box. Requires 
-	 			non-zero width.
-	     text - The text message to show. This message can be changed with setText(). 
-	     		Newline (\n) characters in the text causes a line break.
-	 baseline - Defines the baseline offset. Only used if valign is set to Baseline. 
-				A positive value B sets the vertical registration point to B pixels up 
-				from the bottom of the text box. This is really the "descender height."
-	  leading - Horizontal padding in between lines. Can be zero, positive, or negative.
-	  kerning - Vertical padding in between characters. Can be zero, positive, or negative.
-	  charSet - The list of characters found in the bitmap font image from left to right.
-				You should not include the "space" character.
-	    space -	Defines the space width. Either supply an integer width, or supply a 
-	            character. If a character is supplied, the space width will be one third of 
-	            the width of that character (the em character). Defaults to M which is 
-	            generally the widest character. If M is not in the charSet, you should change 
-	            this.
+	ALSO SEE:
+	 - Solar has also put together a bitmap text class you might like. His is probably
+	   faster for throwing out one line of text and works monospaced. Mine supports word 
+	   wrapping, vertical alignment, variable character widths, and arbitrary character sets.
+
+	 	http://dl.dropboxusercontent.com/u/28629176/gamedev/crappyretrogame/hw_bmptext/BitmapText.hx
+	 	http://forum.haxepunk.com/index.php?topic=334.0
 */
 
 package flaxen.render;
@@ -83,6 +69,34 @@ class BitmapText extends Image
 	private var content:BitmapData; // content fontBitmap
 	private var glyphs:Map<String,Rectangle>;
 
+/**
+	Creates a new BitmapText object.
+	@param image The bitmap font image. This should be a graphic with a one-line string, 
+		containing all the characters of the charSet, with at least one vertical line of 
+		blank space between each character.
+	@param x,y The registration point for the text (i.e., the upper left corner for Left 
+		justification and baseline = 0).
+	@param width,height If nonzero, specifies the maximum dimensions of the text box. 
+		Clips text that exceeds max. If zero, the dimensions are adjusted to fit the text.
+	@param halign  Specifies horizontal alignment and registration point. Defaults to Left.
+	@param valign  Specifies vertical alignment and registration point. Defaults to Top. 
+		Baseline requires positive baseline.
+	@param wordWrap  Specifies whether to wrap long lines to fit into the text box. 
+		Requires non-zero width.
+	@param text  The text message to show. This message can be changed with setText(). 
+		Newline (\n) characters in the text causes a line break.
+	@param baseline  Defines the baseline offset. Only used if valign is set to Baseline. 
+		A positive value B sets the vertical registration point to B pixels up from the 
+		bottom of the text box. This is really the "descender height."
+	@param leading  Horizontal padding in between lines. Can be zero, positive, or negative.
+	@param kerning  Vertical padding in between characters. Can be zero, positive, or negative.
+	@param space 	Defines the space width. Either supply an integer width, or supply a 
+		character. If a character is supplied, the space width will be one third of the 
+		width of that character (the em character). Defaults to M which is generally the 
+		widest character. If M is not in the charSet, you should change this.	
+	@param charSet  The list of characters found in the bitmap font image from left to right. 
+		Omit the "space" character.
+*/
 	public function new(image:Dynamic, x:Int = 0, y:Int = 0, ?text:String, 
 		width:Int = 0, height:Int = 0, wordWrap:Bool = false, 
 		?halign:HorizontalTextAlign, ?valign:VerticalTextAlign, 
@@ -371,17 +385,17 @@ class BitmapText extends Image
     {
     	// Adjust horizontal registration point
     	if(halign == Center)
-    		point.x -= contentWidth / 2;
+    		point.x -= contentWidth * scaleX / 2;
     	else if(halign == Right)
-    		point.x -= contentWidth; 
+    		point.x -= contentWidth * scaleX; 
 
     	// Adjust vertical registration point
     	if(valign == Center)
-    		point.y -= contentHeight / 2;
+    		point.y -= contentHeight * scaleY / 2;
     	else if(valign == Bottom)
-    		point.y -= contentHeight;
+    		point.y -= contentHeight * scaleY;
     	else if(valign == Baseline)
-    		point.y -= (contentHeight - baseline);
+    		point.y -= (contentHeight - baseline) * scaleY;
 
     	// Pthbthth
     	super.render(target, point, camera);

@@ -59,13 +59,20 @@ class TextView extends View
 			var updateDisplay = false;
 			var forceNew = false;
 
-			// Check for style change, provide style default
-			var style = text.style;
-			if(style == null)
-				style = TextStyle.createTextStyle();
-			if(style != curStyle || style.changed)
+			// Check for new/changed style, or provide reasonable default
+			if(hasComponent(TextStyle)) 
 			{
-				curStyle = style;
+				var style = getComponent(TextStyle);
+				if(style != curStyle || style.changed)
+				{
+					curStyle = style;
+					updateDisplay = true;
+				}
+
+			}
+			else if(curStyle == null)
+			{
+				curStyle = TextStyle.forTTF();
 				updateDisplay = true;
 			}
 

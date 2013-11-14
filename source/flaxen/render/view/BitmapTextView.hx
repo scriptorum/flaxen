@@ -52,21 +52,26 @@ class BitmapTextView extends View
 
 	override public function nodeUpdate()
 	{
-		super.nodeUpdate();
-
 		if(hasComponent(Text))
 		{
 			var text:Text = getComponent(Text);
 			var updateDisplay = false;
 			var forceNew = false;
 
-			// Check for style change, provide style default
-			var style = text.style;
-			if(style == null)
-				Log.error("Cannot create BitmapTextView with a null text style");
-			if(style != curStyle || style.changed)
+			// Check for new/changed style, or provide reasonable default
+			if(hasComponent(TextStyle)) 
 			{
-				curStyle = style;
+				var style = getComponent(TextStyle);
+				if(style != curStyle || style.changed)
+				{
+					curStyle = style;
+					updateDisplay = true;
+				}
+
+			}
+			else if(curStyle == null)
+			{
+				curStyle = TextStyle.forBitmap();
 				updateDisplay = true;
 			}
 
@@ -102,6 +107,9 @@ class BitmapTextView extends View
 			display = null;
 			return;
 		}
+
+		super.nodeUpdate();
+
 	}
 
 	// BitmapTextView uses BitmapText which is a subclass of Image. We don't want the 

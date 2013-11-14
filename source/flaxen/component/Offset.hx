@@ -8,8 +8,6 @@ package flaxen.component;
 
 class Offset
 {
-	public static var center:Offset = new Offset(-0.5, -0.5, true);
-
 	public var x:Float;
 	public var y:Float;
 	public var asPercentage:Bool = false;
@@ -19,5 +17,10 @@ class Offset
 		this.x = x;
 		this.y = y;
 		this.asPercentage = asPercentage;
+	}
+
+	inline public static function center(): Offset
+	{
+		return new Offset(-0.5, -0.5, true);
 	}
 }

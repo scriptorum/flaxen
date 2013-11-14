@@ -2,12 +2,31 @@ package flaxen.component;
 
 import flaxen.common.TextAlign;
 
+/**
+	For BitmapText supply an Image component as well; Size component may also be used to 
+	clip text box dimensions and do word wrapping. The presentation of the text can be
+	customized with a TextStyle component.
+*/
+class Text
+{
+	public var message:String;
+
+	public function new(message:String)
+	{
+		this.message = message;
+	}
+}
+
+/**
+	Customizes the appearance of a Text component. For convenience, create a new TextStyle
+	using forTTF() for a regular TTF text (no Image), and forBitmap() for BitmapText (with Image).
+*/
 class TextStyle 
 {
 	// These options work only for TTF Text
-	public var color:Int; 
-	public var size:Int;
 	public var font:String;
+	public var color:Int = 0xFFFFFF; 
+	public var size:Int = 14;
 	public var shadowColor:Int = 0x000000;
 	public var shadowOffset:Int = 2;
 
@@ -29,7 +48,7 @@ class TextStyle
 	}
 
 	// Convenience method for creating a new TextStyle for regular Text
-	public static function createTextStyle(color:Int = 0xFFFFFF, size:Int = 14, ?font:String, 
+	public static function forTTF(color:Int = 0xFFFFFF, size:Int = 14, ?font:String, 
 		?halign:HorizontalTextAlign, wordWrap:Bool = false, leading:Int = 0)
 	{
 		var style = new TextStyle();
@@ -43,7 +62,7 @@ class TextStyle
 	}
 
 	// Convenience method for creating a new TextStyle for BitmapText
-	public static function createBitmapTextStyle(wordWrap:Bool = false, 
+	public static function forBitmap(wordWrap:Bool = false, 
 		?halign:HorizontalTextAlign, ?valign:VerticalTextAlign, 
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0,
 		?space:Dynamic, ?charSet:String)
@@ -58,36 +77,6 @@ class TextStyle
 		style.charSet = charSet;
 		style.space = space;
 		return style;
-	}
-
-}
-
-// For BitmapText supply an Image component as well; Size component may also be used to 
-// fix text box dimensions or do word wrapping
-class Text
-{
-	public var message:String;
-	public var style:TextStyle;
-
-	public function new(message:String, style:TextStyle = null)
-	{
-		this.message = message;
-		this.style = style;
-	}
-
-	public static function createText(message:String, color:Int = 0xFFFFFF, size:Int = 14, 
-		?font:String, ?align:HorizontalTextAlign, wordWrap:Bool = false, leading:Int = 0)
-	{
-		return new Text(message, TextStyle.createTextStyle(color, size, font, align, 
-			wordWrap, leading));
-	}
-
-	public static function createBitmapText(message:String, wordWrap:Bool = false, 
-		?align:HorizontalTextAlign, ?valign:VerticalTextAlign, leading:Int = 0, kerning:Int = 0, 
-		baseline:Int = 0, ?space:Dynamic, ?charSet:String)
-	{
-		return new Text(message, TextStyle.createBitmapTextStyle(wordWrap, align, valign,
-			leading, kerning, baseline, space, charSet));
 	}
 
 }
