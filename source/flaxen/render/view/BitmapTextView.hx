@@ -41,7 +41,8 @@ class BitmapTextView extends View
 
 			graphic = display = new BitmapText(img.path, 0, 0, curMessage, width, height, 
 				curStyle.wordWrap, curStyle.halign, curStyle.valign, curStyle.leading, 
-				curStyle.kerning, curStyle.baseline, curStyle.space, curStyle.charSet);
+				curStyle.kerning, curStyle.baseline, curStyle.space, curStyle.monospace,
+				curStyle.charSet);
 
 			curStyle.changed = false;			
 		}

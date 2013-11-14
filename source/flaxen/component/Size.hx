@@ -19,6 +19,14 @@ class Size
 		return new Size(width, height);
 	}
 
+	// Scales up or down
+	public function scale(by:Float): Size
+	{
+		width *= by;
+		height *= by;
+		return this;
+	}
+
 	public static function screen(): Size
 	{
 		return new Size(HXP.width, HXP.height);

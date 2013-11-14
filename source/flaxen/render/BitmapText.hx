@@ -5,7 +5,6 @@
 	 - Add caching of rects so you don't have to rescan font bitmap every time you add new text
 	   Or separate out BitmapFont class from BitmapText
 	 - Add HorizontalTextAlign.Full support
-	 - Add monospace font support
 
 	HaxePunk Example:
 		var t = "I'm typing a really long line! ";
@@ -59,6 +58,7 @@ class BitmapText extends Image
 	private var maxHeight:Int;
 	private var wordWrap:Bool = false;
 	private var spaceWidth:Int = 10; // If em character not in charSet, this is a crappy default
+	private var monospace:Bool;
 	private var text:String;
 	private var lines:Array<String>;
 	private var lineWidths:Array<Int>;
@@ -78,30 +78,35 @@ class BitmapText extends Image
 		justification and baseline = 0).
 	@param width,height If nonzero, specifies the maximum dimensions of the text box. 
 		Clips text that exceeds max. If zero, the dimensions are adjusted to fit the text.
-	@param halign  Specifies horizontal alignment and registration point. Defaults to Left.
-	@param valign  Specifies vertical alignment and registration point. Defaults to Top. 
+	@param halign Specifies horizontal alignment and registration point. Defaults to Left.
+	@param valign Specifies vertical alignment and registration point. Defaults to Top. 
 		Baseline requires positive baseline.
-	@param wordWrap  Specifies whether to wrap long lines to fit into the text box. 
+	@param wordWrap Specifies whether to wrap long lines to fit into the text box. 
 		Requires non-zero width.
-	@param text  The text message to show. This message can be changed with setText(). 
+	@param text The text message to show. This message can be changed with setText(). 
 		Newline (\n) characters in the text causes a line break.
-	@param baseline  Defines the baseline offset. Only used if valign is set to Baseline. 
+	@param baseline Defines the baseline offset. Only used if valign is set to Baseline. 
 		A positive value B sets the vertical registration point to B pixels up from the 
 		bottom of the text box. This is really the "descender height."
-	@param leading  Horizontal padding in between lines. Can be zero, positive, or negative.
-	@param kerning  Vertical padding in between characters. Can be zero, positive, or negative.
-	@param space 	Defines the space width. Either supply an integer width, or supply a 
-		character. If a character is supplied, the space width will be one third of the 
-		width of that character (the em character). Defaults to M which is generally the 
-		widest character. If M is not in the charSet, you should change this.	
-	@param charSet  The list of characters found in the bitmap font image from left to right. 
+	@param leading Horizontal padding in between lines. Can be zero, positive, or negative.
+	@param kerning Vertical padding in BETWEEN characters. Can be zero, positive, or negative.
+		In a monospaced font, kerning is added to ALL characters.
+	@param space Defines the widest (em) character or space width. Either supply an integer
+		width, or supply a character. If a character is supplied, the space width will be one 
+		third of the width of that character (the em character). Defaults to M which is 
+		generally the widest character. If M is not in the charSet, you should change this.
+		If monospace is true, all characters are forced into this width.
+	@param monospace If true, uses the space width as the same width for all characters.
+		If using horitonzal centering, chars will only line up vertically if the line lengths
+		are all even or all odd.
+	@param charSet The list of characters found in the bitmap font image from left to right. 
 		Omit the "space" character.
 */
 	public function new(image:Dynamic, x:Int = 0, y:Int = 0, ?text:String, 
 		width:Int = 0, height:Int = 0, wordWrap:Bool = false, 
 		?halign:HorizontalTextAlign, ?valign:VerticalTextAlign, 
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0, 
-		space:Dynamic = "M", ?charSet:String)
+		space:Dynamic = "M", monospace:Bool = false, ?charSet:String)
 	{
 		glyphs = new Map<String,Rectangle>();
 		fontBitmap = (Std.is(image, BitmapData) ? image : HXP.getBitmap(image));
@@ -128,6 +133,7 @@ class BitmapText extends Image
 		this.space = space;
 		if(Std.is(space, Int))
 			spaceWidth = cast space;
+		this.monospace = monospace;
 		this.charSet = (charSet == null ? ASCII_CHAR_SET : charSet);
 		this.kerning = kerning;
 		this.leading = leading;
@@ -253,7 +259,7 @@ class BitmapText extends Image
 	// Gets the width of the specific character, does not include kerning
 	public function getCharWidth(ch:String): Int
 	{
-		if(ch == SPACE_CHAR)
+		if(ch == SPACE_CHAR || monospace)
 			return spaceWidth;
 
 		var glyph:Rectangle = getGlyph(ch);
@@ -308,13 +314,24 @@ class BitmapText extends Image
 
 					// Determine space width ... no kerning applied
 					if(Std.is(space, String) && ch == space)
-						spaceWidth = Std.int(Math.max(1, glyphWidth / SPACE_EM_DIVISOR));
+						spaceWidth = (monospace ? glyphWidth : 
+							Std.int(Math.max(1, glyphWidth / SPACE_EM_DIVISOR)));
 
 					break; // Move to next character
 				}
 
 				x++;
 			}
+		}
+
+		if(spaceWidth <= 0)
+			Log.error("Error determining space width");
+
+		// When monospaced, apply kerning to ALL characters
+		if(monospace)
+		{
+			spaceWidth += kerning;
+			kerning = 0;
 		}
 	}	
 
@@ -372,7 +389,7 @@ class BitmapText extends Image
 	    			if(glyph != null)
 	    			{
 	    				content.copyPixels(fontBitmap, glyph, HXP.point, null, null, true);
-    					HXP.point.x += glyph.width;
+    					HXP.point.x += (monospace ? spaceWidth : glyph.width);
     				}
     			}
     		}

@@ -36,6 +36,7 @@ class TextStyle
 	public var kerning:Int;
 	public var charSet:String; 
 	public var space:Dynamic;
+	public var monospace:Bool;
 
 	// These options work for both BitmapText and TTF Text
 	public var halign:HorizontalTextAlign;
@@ -65,7 +66,7 @@ class TextStyle
 	public static function forBitmap(wordWrap:Bool = false, 
 		?halign:HorizontalTextAlign, ?valign:VerticalTextAlign, 
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0,
-		?space:Dynamic, ?charSet:String)
+		?space:Dynamic, monospace:Bool = false, ?charSet:String)
 	{
 		var style = new TextStyle();
 		style.halign = (halign == null ?  HorizontalTextAlign.Left : halign);
@@ -74,8 +75,9 @@ class TextStyle
 		style.leading = leading;
 		style.kerning = kerning;
 		style.baseline = baseline;
-		style.charSet = charSet;
 		style.space = space;
+		style.monospace = monospace;
+		style.charSet = charSet;
 		return style;
 	}
 
