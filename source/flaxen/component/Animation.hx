@@ -1,3 +1,7 @@
+/*
+	TODO
+	  - Consider looping ala Tween, esp for RANDOM
+*/
 package flaxen.component;
 
 import flaxen.util.StringUtil;
@@ -6,36 +10,36 @@ import flaxen.component.Subdivision;
 
 class Animation
 {
-	public var destroyEntity:Bool = false; // on complete/stop, removes whole entity
-	public var destroyComponent:Bool = false; // on complete/stop, removes Animation component from entity
-	public var running:Bool = false; // animation is currently running
-	public var restart:Bool = false; // restart animation from beginning ASAP
-	public var stop:Bool = false; // stop animation ASAP
-	public var complete:Bool = false; // true when sound has completed playing
-	public var random:Bool = false; // true if you want frames selected at random
-
 	public var frames:Array<Int>;
 	public var speed:Float;
 	public var looping:Bool;
 	public var subdivision:Subdivision;
+	public var changed:Bool = true; // Mark as true when changing one of the above values
+
+	public var destroyEntity:Bool = false; // on complete/stop, removes whole entity
+	public var destroyComponent:Bool = false; // on complete/stop, removes Animation component from entity
+	public var complete:Bool = false; // true when animation has completed playing (not if looping)
+	public var stop:Bool = false; // stop animation ASAP (sets complete)
+	public var restart:Bool = false; // restart animation from beginning ASAP
+
+	// This is not currently implemented
+	public var random:Bool = false; // true if you want frames selected at random
 
 	// Frames can be an array of integers, a single integer, or a string
 	// containing comma-separated values: integers and/or hyphenated ranges
 	public function new(subdivision:Subdivision, frames:Dynamic, speed:Float = 30.0, 
-		looping:Bool = true, autoStart:Bool = true)
+		looping:Bool = true)
 	{
 		this.subdivision = subdivision;
 		setFrames(frames);
 		this.speed = speed;
 		this.looping = looping;
-
-		if(autoStart)
-			running = true;
 	}
 
 	public function setFrames(frames:Dynamic): Animation
 	{
 		this.frames = Animation.parseFrames(frames);
+		changed = true;
 		return this;
 	}
 

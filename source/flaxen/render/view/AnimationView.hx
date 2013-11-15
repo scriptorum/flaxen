@@ -1,15 +1,20 @@
+/*
+  TODO
+    - Class only handles one animation at a time
+    - Class recreates Spritemap after every change, this is suboptimal
+*/
 package flaxen.render.view;
 
 import com.haxepunk.HXP;
 import com.haxepunk.graphics.Spritemap;
 
 import flaxen.component.Animation;
+import flaxen.component.Display;
 import flaxen.component.Image;
 
 class AnimationView extends View
 {
 	private var animation:Animation;
-	private var frames:Array<Int>;
 	private var image:Image;
 	private var spritemap:Spritemap;
 
@@ -36,13 +41,15 @@ class AnimationView extends View
 
 	private function animationFinished(): Void
 	{
-		entity.remove(Animation);
+		if(animation.destroyComponent)
+			entity.remove(Animation);
+		else if(animation.destroyEntity && entity.has(Display))
+			entity.get(Display).destroyEntity = true;
+		else animation.complete = true;
 	}
 
 	override public function nodeUpdate()
 	{
-		super.nodeUpdate();
-
 		var updateDisplay = false;
 
 		// Check for new image component
@@ -55,15 +62,28 @@ class AnimationView extends View
 
 		// Check for new animation component
 		var curAnim = getComponent(Animation);
-		if(curAnim != animation || curAnim.frames != frames)
+		if(curAnim != animation || curAnim.changed)
 		{
 			animation = curAnim;
-			frames = animation.frames;
+			animation.changed = false;
 			updateDisplay = true;
 		}
 
+		if (animation.restart)
+			updateDisplay = true;
+
+		if(animation.stop)
+		{
+			if(spritemap == null)
+				animationFinished();
+			else spritemap.complete = true;
+			animation.stop = false;
+		}
+
 		// Change/update animation
-		if(updateDisplay)
+		else if(updateDisplay || animation.restart)
 			setAnim();
+
+		super.nodeUpdate();
 	}
 }
