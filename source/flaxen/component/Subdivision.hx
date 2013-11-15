@@ -1,3 +1,4 @@
+
 package flaxen.component;
 
 import flaxen.component.Size;
@@ -13,5 +14,11 @@ class Subdivision
 		this.width = width;
 		this.height = height;
 		this.plot = plot;
+	}
+
+	public static function create(width:Int, height:Int, 
+		plotWidth:Int, plotHeight:Int): Subdivision
+	{
+		return new Subdivision(width, height, new Size(plotWidth, plotHeight));
 	}
 }

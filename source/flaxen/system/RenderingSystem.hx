@@ -40,10 +40,10 @@ class RenderingSystem extends FlaxenSystem
 		updateViews(BackdropNode, BackdropView);
 		updateViews(GridNode, GridView);
 		updateViews(BitmapTextNode, BitmapTextView); // must update before ImageNode, since it's a superset of that
-		updateViews(ImageNode, ImageView);
 		updateViews(AnimationNode, AnimationView);
 		updateViews(TextNode, TextView);
 		updateViews(EmitterNode, EmitterView);
+		updateViews(ImageNode, ImageView);
 	}
 
 	private function updateViews<TNode:Node<TNode>>(nodeClass:Class<TNode>, viewClass:Class<View>)

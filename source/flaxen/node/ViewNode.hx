@@ -20,6 +20,7 @@ class ImageNode extends Node<ImageNode>
 class AnimationNode extends Node<AnimationNode>
 {
 	public var position:Position;
+	public var image:Image;
 	public var animation:Animation;
 }
 

@@ -1,22 +1,74 @@
 package flaxen.component;
 
-import flaxen.component.Image;
+import flaxen.util.StringUtil;
+import flaxen.core.Log;
 import flaxen.component.Subdivision;
 
 class Animation
 {
+	public var destroyEntity:Bool = false; // on complete/stop, removes whole entity
+	public var destroyComponent:Bool = false; // on complete/stop, removes Animation component from entity
+	public var running:Bool = false; // animation is currently running
+	public var restart:Bool = false; // restart animation from beginning ASAP
+	public var stop:Bool = false; // stop animation ASAP
+	public var complete:Bool = false; // true when sound has completed playing
+	public var random:Bool = false; // true if you want frames selected at random
+
 	public var frames:Array<Int>;
 	public var speed:Float;
 	public var looping:Bool;
-	public var image:Image;
 	public var subdivision:Subdivision;
 
-	public function new(image:Image, subdivision:Subdivision, frames:Array<Int>, speed:Float, looping:Bool)
+	// Frames can be an array of integers, a single integer, or a string
+	// containing comma-separated values: integers and/or hyphenated ranges
+	public function new(subdivision:Subdivision, frames:Dynamic, speed:Float = 30.0, 
+		looping:Bool = true, autoStart:Bool = true)
 	{
-		this.frames = frames;
+		this.subdivision = subdivision;
+		setFrames(frames);
 		this.speed = speed;
 		this.looping = looping;
-		this.image = image;	
-		this.subdivision = subdivision;	
+
+		if(autoStart)
+			running = true;
+	}
+
+	public function setFrames(frames:Dynamic): Animation
+	{
+		this.frames = Animation.parseFrames(frames);
+		return this;
+	}
+
+	public static function parseFrames(frames:Dynamic): Array<Int>
+	{
+		if(Std.is(frames, Array))
+				return cast frames;
+
+		if(Std.is(frames, Int))
+			return [cast(frames, Int)];
+
+		if(!Std.is(frames, String))
+			Log.error("Animation frames must be comma separated integers and hyphenated ranges");
+
+		// Treat as comma-separated string with hyphenated inclusive ranges
+		var result = new Array<Int>();
+		var tokens = StringUtil.split(frames, ",");
+		for(token in tokens)
+		{
+			// Single number
+			if(token.indexOf("-") == -1)
+				result.push(Std.parseInt(token));
+
+			// Range of numbers min-max
+			else
+			{
+				var parts = StringUtil.split(token, "-");
+				var min = Std.parseInt(parts[0]);
+				var max = Std.parseInt(parts[1]);
+				for(i in min...max+1)
+					result.push(i);			
+			}
+		}
+		return result;
 	}
 }

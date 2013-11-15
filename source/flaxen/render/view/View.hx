@@ -63,7 +63,8 @@ class View extends com.haxepunk.Entity
 			return;
 
 		// For certain view subclasses
-		var img:com.haxepunk.graphics.Image = Std.is(graphic, com.haxepunk.graphics.Image) ? cast graphic : null;
+		var img:com.haxepunk.graphics.Image = 
+			Std.is(graphic, com.haxepunk.graphics.Image) ? cast graphic : null;
 
 		// Update layer
 		if(hasComponent(Layer))
