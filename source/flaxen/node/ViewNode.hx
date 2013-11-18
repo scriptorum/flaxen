@@ -22,6 +22,7 @@ class AnimationNode extends Node<AnimationNode>
 	public var position:Position;
 	public var image:Image;
 	public var animation:Animation;
+	public var subdivision:Subdivision;
 }
 
 class BackdropNode extends Node<BackdropNode>

@@ -31,7 +31,7 @@ class BitmapTextDemo extends Flaxen
 			.add(Position.center())
 			.add(new Text("This is bitmap text!\n\n"
 					+ t + t + t + t + t + t + t + t))
-			.add(TextStyle.forBitmap(true, Center, Center, -4, -2));
+			.add(TextStyle.createBitmap(true, Center, Center, -4, -2));
 
 		var e2:Entity = newEntity()
 			.add(new Text("This is regular TTF text."))
@@ -51,7 +51,7 @@ class BitmapTextDemo extends Flaxen
 					.add(new Text("This is a font loaded from the cache"))
 					.add(Position.bottomRight().subtract(10, 10))
 					.add(Scale.half())
-					.add(TextStyle.forBitmap(false, Right, Bottom, 0, 8, 0, 18));
+					.add(TextStyle.createBitmap(false, Right, Bottom, 0, 8, 0, 18));
 			}
 		});
 	}

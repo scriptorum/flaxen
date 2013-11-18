@@ -10,7 +10,7 @@ package flaxen.render.view;
 import flaxen.component.Text;
 import flaxen.component.Alpha;
 import flaxen.component.Size;
-import flaxen.render.FancyText;
+import flaxen.render.ShadowText;
 import flash.text.TextFormatAlign;
 import com.haxepunk.HXP;
 
@@ -23,7 +23,7 @@ class TextView extends View
 	private var curScale:Float = 1.0;
 	private var curMessage:String;
 	private var curStyle:TextStyle;
-	private var display:FancyText;
+	private var display:ShadowText;
 
 	override public function begin()
 	{
@@ -37,10 +37,10 @@ class TextView extends View
 		if(graphic == null || forceNew || curStyle.changed)
 		{
 			// TODO Support ScrollFactor
-			graphic = display = new FancyText(curMessage, 0, 0, Std.int(curStyle.size * curScale), 
+			graphic = display = new ShadowText(curMessage, 0, 0, Std.int(curStyle.size * curScale), 
 				curStyle.color, (curStyle.font == null ? HXP.defaultFont : curStyle.font), 
 				Std.int(curWidth * curScale), Std.int(curHeight * curScale), 
-				Std.string(curStyle.halign), curStyle.wordWrap, 1, curStyle.leading,
+				curStyle.halign, curStyle.wordWrap, 1, curStyle.leading,
 				curStyle.shadowOffset, curStyle.shadowColor);
 			curStyle.changed = false;			
 		}
@@ -72,7 +72,7 @@ class TextView extends View
 			}
 			else if(curStyle == null)
 			{
-				curStyle = TextStyle.forTTF();
+				curStyle = TextStyle.createTTF();
 				updateDisplay = true;
 			}
 

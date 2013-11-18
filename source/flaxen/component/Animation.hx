@@ -6,14 +6,12 @@ package flaxen.component;
 
 import flaxen.util.StringUtil;
 import flaxen.core.Log;
-import flaxen.component.Subdivision;
 
 class Animation
 {
 	public var frames:Array<Int>;
 	public var speed:Float;
 	public var looping:Bool;
-	public var subdivision:Subdivision;
 	public var changed:Bool = true; // Mark as true when changing one of the above values
 
 	public var destroyEntity:Bool = false; // on complete/stop, removes whole entity
@@ -27,10 +25,9 @@ class Animation
 
 	// Frames can be an array of integers, a single integer, or a string
 	// containing comma-separated values: integers and/or hyphenated ranges
-	public function new(subdivision:Subdivision, frames:Dynamic, speed:Float = 30.0, 
+	public function new(frames:Dynamic, speed:Float = 30.0, 
 		looping:Bool = true)
 	{
-		this.subdivision = subdivision;
 		setFrames(frames);
 		this.speed = speed;
 		this.looping = looping;

@@ -19,7 +19,7 @@ class Text
 
 /**
 	Customizes the appearance of a Text component. For convenience, create a new TextStyle
-	using forTTF() for a regular TTF text (no Image), and forBitmap() for BitmapText (with Image).
+	using createTTF() for a regular TTF text (no Image), and createBitmap() for BitmapText (with Image).
 */
 class TextStyle 
 {
@@ -49,7 +49,7 @@ class TextStyle
 	}
 
 	// Convenience method for creating a new TextStyle for regular Text
-	public static function forTTF(color:Int = 0xFFFFFF, size:Int = 14, ?font:String, 
+	public static function createTTF(color:Int = 0xFFFFFF, size:Int = 14, ?font:String, 
 		?halign:HorizontalTextAlign, wordWrap:Bool = false, leading:Int = 0)
 	{
 		var style = new TextStyle();
@@ -63,7 +63,7 @@ class TextStyle
 	}
 
 	// Convenience method for creating a new TextStyle for BitmapText
-	public static function forBitmap(wordWrap:Bool = false, 
+	public static function createBitmap(wordWrap:Bool = false, 
 		?halign:HorizontalTextAlign, ?valign:VerticalTextAlign, 
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0,
 		?space:Dynamic, monospace:Bool = false, ?charSet:String)

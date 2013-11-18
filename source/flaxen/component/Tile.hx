@@ -6,30 +6,29 @@ import flaxen.component.Subdivision;
 
 class Tile
 {
-	public var subdivision:Subdivision;
-	public var tile:Int;
+	public var value:Int;
 
-	public function new(subdivision:Subdivision, tile:Int)
+	public function new(value:Int)
 	{
-		this.subdivision = subdivision;
-		this.tile = tile;
+		this.value = value;
 	}
 
 	// Plot X
-	public function x(): Int
+	public function x(subdivision:Subdivision): Int
 	{
-		return tile % subdivision.width;
+		return value % subdivision.width;
 	}
 
 	// Plot Y
-	public function y(): Int
+	public function y(subdivision:Subdivision): Int
 	{
-		return Math.floor(tile / subdivision.width);
+		return Math.floor(value / subdivision.width);
 	}
 
-	public function rect(): Rectangle
+	public function rect(subdivision:Subdivision): Rectangle
 	{
-		return new Rectangle(x() * subdivision.plot.width, y() * subdivision.plot.height, 
+		return new Rectangle(x(subdivision) * subdivision.plot.width, 
+			y(subdivision) * subdivision.plot.height, 
 			subdivision.plot.width, subdivision.plot.height);
 	}
 }

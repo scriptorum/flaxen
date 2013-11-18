@@ -3,12 +3,14 @@ package flaxen.render.view;
 import flash.geom.Rectangle;
 
 import flaxen.component.Tile;
+import flaxen.component.Subdivision;
 import flaxen.component.Image;
 
 class ImageView extends View
 {
 	private var tile:Tile;
-	private var tileNum:Int;
+	private var tileValue:Int;
+	private var subdivision:Subdivision;
 	private var image:Image;
 	private var display:com.haxepunk.graphics.Image.Image;
 	private var clip:Rectangle;
@@ -20,10 +22,7 @@ class ImageView extends View
 
 	private function setTile()
 	{
-		tile = getComponent(Tile);
-		tileNum = tile.tile;
-		image = getComponent(Image);
-		var rect = tile.rect();
+		var rect = tile.rect(subdivision);
 		graphic = display = new com.haxepunk.graphics.Image(image.path, rect);
 		image.width = rect.width;
 		image.height = rect.height;
@@ -31,36 +30,49 @@ class ImageView extends View
 
 	private function setImage()
 	{
-		image = getComponent(Image);
 		graphic = display = new com.haxepunk.graphics.Image(image.path, image.clip);
-		clip = image.clip;
-		if(clip == null)
-		{
-			image.width = display.width;
-			image.height = display.height;
-		}
-		else
-		{
-			image.width = clip.width;
-			image.height = clip.height;
-		}
+		image.width = (clip == null ? display.width : clip.width);
+		image.height = (clip == null ? display.height : clip.height);
 	}
 
 	override public function nodeUpdate()
 	{
+		var updateDisplay = false;
+
+		var curImage = getComponent(Image);
+		if(curImage != image || curImage.clip != clip)
+		{
+			image = curImage;
+			clip = curImage.clip;
+			updateDisplay = true;
+		}
+
 		// Image with Tile
 		if(hasComponent(Tile))
-		{
+		{			
 			var curTile = getComponent(Tile);
-			if(this.tile != curTile || this.image != getComponent(Image) ||  this.tileNum != curTile.tile)
+			if(curTile != tile || curTile.value != tileValue)
+			{
+				tile = curTile;
+				tileValue = curTile.value;
+				updateDisplay = true;
+			}
+
+			var curSubdivision = getComponent(Subdivision); // required component if Tile exists
+			if(curSubdivision != subdivision)
+			{
+				subdivision = curSubdivision;
+				updateDisplay = true;
+			}
+
+			if(updateDisplay)
 				setTile();
 		}
 
 		// Image only
 		else
 		{
-			var nextImage = getComponent(Image);
-			if(this.image != nextImage || nextImage.clip != this.clip)
+			if(updateDisplay)
 				setImage();
 		}
 

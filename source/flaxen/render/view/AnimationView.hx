@@ -11,11 +11,13 @@ import com.haxepunk.graphics.Spritemap;
 import flaxen.component.Animation;
 import flaxen.component.Display;
 import flaxen.component.Image;
+import flaxen.component.Subdivision;
 
 class AnimationView extends View
 {
 	private var animation:Animation;
 	private var image:Image;
+	private var subdivision:Subdivision;
 	private var spritemap:Spritemap;
 
 	override public function begin()
@@ -27,16 +29,17 @@ class AnimationView extends View
 	{
 		var cbFunc:CallbackFunction = (animation.looping ? null : animationFinished);
 		spritemap = new Spritemap(image.path,
-			Std.int(animation.subdivision.plot.width), 
-			Std.int(animation.subdivision.plot.height), 
+			Std.int(subdivision.plot.width), 
+			Std.int(subdivision.plot.height), 
 			cbFunc);
 		spritemap.add("default", animation.frames, animation.speed, animation.looping);
 		spritemap.play("default");
 		graphic = spritemap;
 
 		// Update image dimensions
-		image.width = animation.subdivision.plot.width;
-		image.height = animation.subdivision.plot.height;
+		// TODO - would this make more sense to set the full image dimensions, rather than the plot?
+		image.width = subdivision.plot.width;
+		image.height = subdivision.plot.height;
 	}
 
 	private function animationFinished(): Void
@@ -57,6 +60,13 @@ class AnimationView extends View
 		if(image != curImage)
 		{
 			image = curImage;
+			updateDisplay = true;
+		}
+
+		var curSubdivision = getComponent(Subdivision);
+		if(curSubdivision != subdivision)
+		{
+			subdivision = curSubdivision;
 			updateDisplay = true;
 		}
 

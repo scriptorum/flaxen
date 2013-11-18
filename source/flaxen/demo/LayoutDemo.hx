@@ -26,7 +26,8 @@ import flaxen.component.Size;
 import flaxen.component.Repeating;
 import flaxen.component.Application;
 import flaxen.service.InputService;
-import flaxen.util.Easing;
+import flaxen.common.Easing;
+import flaxen.common.TextAlign;
 
 class LayoutDemo extends Flaxen
 {
@@ -49,7 +50,7 @@ class LayoutDemo extends Flaxen
 		newEntity()
 			.add(new Image("art/metalpanels.png"))
 			.add(Repeating.instance)
-			.add(new Position(0,0))
+			.add(Position.zero())
 			.add(new Layer(20));
 
 		// Central content
@@ -57,7 +58,7 @@ class LayoutDemo extends Flaxen
 			.add(new Image("art/flaxen.png"))
 			.add(new Position(240, 240)) // center of central layout
 			.add(central)
-			.add(Offset.center); // center image
+			.add(Offset.center()); // center image
 		wobble(e, { x:0.8, y:1.2 });
 
 		var travertine = new Image("art/travertine.png");
@@ -67,11 +68,11 @@ class LayoutDemo extends Flaxen
 			newEntity().add(travertine).add(central).add(travLayer).add(new Position(x, y));
 
 		// Panel content
-		var style = new TextStyle(0xFFFF88, 40, null, center, true);
+		var style = TextStyle.createTTF(0xFFFF88, 40, null, Center);
 		for(panel in [{ layout:panelA, label:"A" }, { layout:panelB, label:"B" }, { layout:panelC, label:"C"}])
 		{
 			newEntity().add(travertine).add(panel.layout).add(travLayer).add(new Position(0, 0));
-			newEntity().add(new Text(panel.label, style)).add(panel.layout)
+			newEntity().add(new Text(panel.label)).add(style).add(panel.layout)
 				.add(new Position(0,60)).add(new Size(160, 160));
 		}
 

@@ -1,7 +1,5 @@
 /**
 	TODO
-	  - Maybe Subdivision should be added as a component, and then Animation and
-	    tile can read it from the entity.
 	  - Subdivision shouldn't require tiles across/down data, this should be inferred
 	    from the Image
 	  - Subdivision, isn't it really just a Division?
@@ -30,13 +28,13 @@ class AnimationDemo extends Flaxen
 
 	override public function ready()
 	{	
-		var subd = Subdivision.create(5, 5, 60, 60);
 		resolveEntity("ball")
 			.add(new Image("art/ball.png"))
 			.add(Position.center())
 			.add(Offset.center())
 			.add(new Data(false))
-			.add(new Animation(subd, eastRoll, 30));
+			.add(Subdivision.create(5, 5, 60, 60))
+			.add(new Animation(eastRoll, 30));
 
 		setInputHandler(function(f)
 		{

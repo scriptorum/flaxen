@@ -72,7 +72,7 @@ class BitmapTextView extends View
 			}
 			else if(curStyle == null)
 			{
-				curStyle = TextStyle.forBitmap();
+				curStyle = TextStyle.createBitmap();
 				updateDisplay = true;
 			}
 
