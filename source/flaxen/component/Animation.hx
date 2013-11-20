@@ -1,6 +1,7 @@
 /*
 	TODO
 	  - Consider looping ala Tween, esp for RANDOM
+	  - Support multiple animation sequences in a single Spritemap
 */
 package flaxen.component;
 

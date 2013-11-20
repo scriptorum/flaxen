@@ -14,6 +14,7 @@ import flaxen.component.Position;
 import flaxen.component.Data;
 import flaxen.component.Animation;
 import flaxen.component.Subdivision;
+import flaxen.component.Alpha;
 import flaxen.service.InputService;
 
 class AnimationDemo extends Flaxen
@@ -28,13 +29,16 @@ class AnimationDemo extends Flaxen
 
 	override public function ready()
 	{	
-		resolveEntity("ball")
-			.add(new Image("art/ball.png"))
-			.add(Position.center())
-			.add(Offset.center())
+		newComponentSet("ball")
+			.add(new Image("art/ball.png")) // Share image between all balls
+			.add(Offset.center) // create new Offset for each ball, no parameters
+			.add(function() { return Position.center(); }) // create new Position, via function
+			.add(Subdivision.create(5, 5, 60, 60));
+
+		var ball = newSingleton("ball")
 			.add(new Data(false))
-			.add(Subdivision.create(5, 5, 60, 60))
 			.add(new Animation(eastRoll, 30));
+		installComponents(ball, "ball");
 
 		setInputHandler(function(f)
 		{
