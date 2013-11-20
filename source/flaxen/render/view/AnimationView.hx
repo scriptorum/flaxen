@@ -12,6 +12,7 @@ import flaxen.component.Animation;
 import flaxen.component.Display;
 import flaxen.component.Image;
 import flaxen.component.Subdivision;
+import flaxen.common.LoopType;
 
 class AnimationView extends View
 {
@@ -27,12 +28,13 @@ class AnimationView extends View
 
 	private function setAnim()
 	{
-		var cbFunc:CallbackFunction = (animation.looping ? null : animationFinished);
+		var cbFunc:CallbackFunction = (animation.loop == None ? null : animationFinished);
 		spritemap = new Spritemap(image.path,
 			Std.int(subdivision.plot.width), 
 			Std.int(subdivision.plot.height), 
 			cbFunc);
-		spritemap.add("default", animation.frames, animation.speed, animation.looping);
+
+		spritemap.add("default", animation.frames, animation.speed, animation.loop != LoopType.None);
 		spritemap.play("default");
 		graphic = spritemap;
 

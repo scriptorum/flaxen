@@ -1,3 +1,8 @@
+/**
+    TODO
+        - Add rev (reverse in place) and getRev (return reversed output)
+        - Add merge (concat in place) and getMerge (return concatenated output)
+*/
 package flaxen.util;
 
 class ArrayUtil

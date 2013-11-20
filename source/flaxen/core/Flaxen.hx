@@ -6,6 +6,7 @@
 	- When Image.width/height is set should be set to actual width height and not based on 
 	  context. This is especially true if multiple entities share the same Image.
 	- Put notes in each Component as to the consequence of multiple entities sharing it.
+	- Add newEntityFromSet and newSingletonFromSet
 */
 
 package flaxen.core;

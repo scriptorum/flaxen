@@ -2,8 +2,7 @@ package flaxen.component;
 
 import ash.core.Engine;
 import flaxen.common.Easing;
-
-enum TweenLoop { None; Forward; Backward; Both; BothBackward; }
+import flaxen.common.LoopType;
 
 class Tween
 {
@@ -18,7 +17,7 @@ class Tween
 	public var props:Array<String>;
 	public var easing:EasingFunction;
 	public var elapsed:Float = 0;
-	public var loop:TweenLoop; // Can set after creating tween
+	public var loop:LoopType; // Can set after creating tween
 	public var optional:Float = 1.70158;
 	public var duration:Float;
 	public var destroyEntity:Bool = false;
@@ -33,7 +32,7 @@ class Tween
 		this.target = target;
 		this.duration = duration;
 		this.easing = (easing == null ? Easing.linearTween : easing);
-		this.loop = TweenLoop.None;
+		this.loop = LoopType.None;
 		this.name = "tween"  + Std.string(++created);
 		
 		if(autoStart)
@@ -84,7 +83,7 @@ class Tween
  		
 		for(i in 0...props.length)
 		{
-			var pos = (loop == TweenLoop.BothBackward || loop == TweenLoop.Backward ? 
+			var pos = (loop == LoopType.BothBackward || loop == LoopType.Backward ? 
 				duration - elapsed : elapsed);
 			var value = easing(pos, starts[i], ranges[i], duration, optional);
 			Reflect.setProperty(source, props[i], value);
@@ -92,16 +91,16 @@ class Tween
 
  		if(elapsed >= duration)
  		{
-			if(loop == TweenLoop.None)
+			if(loop == LoopType.None)
 			{				
  				complete = true;
  				return;
 			}
 
-			if(loop == TweenLoop.Both)
-				loop = TweenLoop.BothBackward;
-			else if(loop == TweenLoop.BothBackward)
-				loop = TweenLoop.Both;
+			if(loop == LoopType.Both)
+				loop = LoopType.BothBackward;
+			else if(loop == LoopType.BothBackward)
+				loop = LoopType.Both;
 
 			restart();
  		}

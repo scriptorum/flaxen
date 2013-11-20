@@ -16,10 +16,12 @@ import flaxen.component.Animation;
 import flaxen.component.Subdivision;
 import flaxen.component.Alpha;
 import flaxen.service.InputService;
+import flaxen.common.LoopType;
+import com.haxepunk.HXP;
 
 class AnimationDemo extends Flaxen
 {
-	private static inline var eastRoll:String = "5-9,0-4";
+	private static inline var northRoll:String = "5-9,0-4";
 	private static inline var westRoll:String = "15-19,10-14";
 
 	public static function main()
@@ -37,17 +39,29 @@ class AnimationDemo extends Flaxen
 
 		var ball = newSingleton("ball")
 			.add(new Data(false))
-			.add(new Animation(eastRoll, 30));
+			.add(new Animation(northRoll, 30));
 		installComponents(ball, "ball");
+
+		var e = newEntity().add(new Animation(westRoll, 30, LoopType.Both));
+		installComponents(e, "ball").get(Position).y = HXP.height / 3;
+
+		e = newEntity().add(new Animation(westRoll, 30, LoopType.BothBackward));
+		installComponents(e, "ball").get(Position).y = HXP.height / 3 * 2;
+
+		e = newEntity().add(new Animation(northRoll, 30, LoopType.Backward));
+		installComponents(e, "ball").get(Position).x = HXP.width / 3;
+
+		e = newEntity().add(new Animation(westRoll, 30, LoopType.Backward));
+		installComponents(e, "ball").get(Position).x = HXP.width / 3 * 2;
 
 		setInputHandler(function(f)
 		{
 			if(InputService.clicked)
 			{
-				var ball = resolveEntity("ball");
+				var ball = demandEntity("ball");
 				var data = ball.get(Data);
 				data.value = !data.value;
-				ball.get(Animation).setFrames(data.value ? westRoll : eastRoll);
+				ball.get(Animation).setFrames(data.value ? westRoll : northRoll);
 			}
 		});
 	}
