@@ -405,6 +405,22 @@ class Flaxen extends com.haxepunk.Engine
 		return entity;
 	}
 
+	// Convenience method, creating new entity and installing component set in one
+	public function newEntityWithSet(setName:String, 
+		?prefix:String, addToAsh:Bool = true): Entity 
+	{
+		var e = newEntity(prefix, addToAsh);
+		return installComponents(e, setName);
+	}
+
+	// Convenience method, creating new singleton entity and installing component set in one
+	public function newSingletonWithSet(setName:String, 
+		entityName:String, addToAsh:Bool = true): Entity 
+	{
+		var e = newSingleton(entityName, addToAsh);
+		return installComponents(e, setName);
+	}
+	
 	/*
 	 * ENTITY STATS
 	 */ 

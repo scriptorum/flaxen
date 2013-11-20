@@ -16,7 +16,7 @@ class Animation
 	public var speed:Float;
 	public var changed:Bool = true; // Mark as true when changing one of the above values
 	
-	public var loop(default,null):LoopType; // Don't change this when set
+	public var loop(default,null):LoopType; // Don't change this directly, but through setFrames
 
 	public var destroyEntity:Bool = false; // on complete/stop, removes whole entity
 	public var destroyComponent:Bool = false; // on complete/stop, removes Animation component from entity
@@ -32,14 +32,14 @@ class Animation
 	public function new(frames:Dynamic, speed:Float = 30.0, ?loop:LoopType)
 	{
 		this.speed = speed;
-		this.loop = (loop == null ? LoopType.Forward : loop);
-		setFrames(frames);
+		setFrames(frames, loop);
 	}
 
-	public function setFrames(frames:Dynamic): Animation
+	public function setFrames(frames:Dynamic, ?loop:LoopType): Animation
 	{
+		this.loop = (loop == null ? LoopType.Forward : loop);
 		this.frames = Animation.parseFrames(frames);
-		switch(loop)
+		switch(this.loop)
 		{
 			case Backward:
 			this.frames.reverse();

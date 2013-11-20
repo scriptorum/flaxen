@@ -37,22 +37,27 @@ class AnimationDemo extends Flaxen
 			.add(function() { return Position.center(); }) // create new Position, via function
 			.add(Subdivision.create(5, 5, 60, 60));
 
+		// could also have done newSingletonWithSet("ball", "ball"), instead of installComponents
 		var ball = newSingleton("ball")
 			.add(new Data(false))
 			.add(new Animation(northRoll, 30));
-		installComponents(ball, "ball");
+		installComponents(ball, "ball"); // add components to set
 
-		var e = newEntity().add(new Animation(westRoll, 30, LoopType.Both));
-		installComponents(e, "ball").get(Position).y = HXP.height / 3;
+		newEntityWithSet("ball")
+			.add(new Animation(westRoll, 30, LoopType.Both))
+			.get(Position).y = HXP.height / 3;
 
-		e = newEntity().add(new Animation(westRoll, 30, LoopType.BothBackward));
-		installComponents(e, "ball").get(Position).y = HXP.height / 3 * 2;
+		newEntityWithSet("ball")
+			.add(new Animation(westRoll, 30, LoopType.BothBackward))
+			.get(Position).y = HXP.height / 3 * 2;
 
-		e = newEntity().add(new Animation(northRoll, 30, LoopType.Backward));
-		installComponents(e, "ball").get(Position).x = HXP.width / 3;
+		newEntityWithSet("ball")
+			.add(new Animation(northRoll, 30, LoopType.Backward))
+			.get(Position).x = HXP.width / 3;
 
-		e = newEntity().add(new Animation(westRoll, 30, LoopType.Backward));
-		installComponents(e, "ball").get(Position).x = HXP.width / 3 * 2;
+		newEntityWithSet("ball")
+			.add(new Animation(westRoll, 30, LoopType.Backward))
+			.get(Position).x = HXP.width / 3 * 2;
 
 		setInputHandler(function(f)
 		{
