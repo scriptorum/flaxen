@@ -14,6 +14,8 @@ import flaxen.component.Position;
 import flaxen.component.Alpha;
 import flaxen.component.Invisible;
 import flaxen.component.Layout;
+import flaxen.component.Image;
+import com.haxepunk.HXP;
 
 import ash.core.Entity;
 
@@ -206,4 +208,12 @@ class View extends com.haxepunk.Entity
 	{ 
 		return true; 
 	} 
+
+	// Updates the dimensions stored in the Image component
+	public function setImageDimensions(image:Image)
+	{
+		var bitmap = HXP.getBitmap(image.path);
+		image.width = bitmap.width;
+		image.height = bitmap.height;
+	}
 }

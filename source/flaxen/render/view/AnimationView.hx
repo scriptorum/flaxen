@@ -29,19 +29,16 @@ class AnimationView extends View
 	private function setAnim()
 	{
 		var cbFunc:CallbackFunction = (animation.loop == None ? null : animationFinished);
-		spritemap = new Spritemap(image.path,
+		graphic = spritemap = new Spritemap(image.path,
 			Std.int(subdivision.plot.width), 
 			Std.int(subdivision.plot.height), 
 			cbFunc);
+		spritemap.flipped = image.flipped;
 
 		spritemap.add("default", animation.frames, animation.speed, animation.loop != LoopType.None);
 		spritemap.play("default");
-		graphic = spritemap;
 
-		// Update image dimensions
-		// TODO - would this make more sense to set the full image dimensions, rather than the plot?
-		image.width = subdivision.plot.width;
-		image.height = subdivision.plot.height;
+		setImageDimensions(image);
 	}
 
 	private function animationFinished(): Void

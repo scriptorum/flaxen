@@ -24,15 +24,15 @@ class ImageView extends View
 	{
 		var rect = tile.rect(subdivision);
 		graphic = display = new com.haxepunk.graphics.Image(image.path, rect);
-		image.width = rect.width;
-		image.height = rect.height;
+		setImageDimensions(image);
+		display.flipped = image.flipped;
 	}
 
 	private function setImage()
 	{
 		graphic = display = new com.haxepunk.graphics.Image(image.path, image.clip);
-		image.width = (clip == null ? display.width : clip.width);
-		image.height = (clip == null ? display.height : clip.height);
+		display.flipped = image.flipped;
+		setImageDimensions(image);
 	}
 
 	override public function nodeUpdate()

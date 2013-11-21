@@ -35,7 +35,8 @@ class BackdropView extends View
 	{
 		curWidth = HXP.screen.width; // HAXEPUNK FIX
 		curHeight = HXP.screen.height; // HAXEPUNK FIX
-		curImage = image;
 		graphic = new Backdrop(image.path);
+		setImageDimensions(image);
+		curImage = image;
 	}
 }

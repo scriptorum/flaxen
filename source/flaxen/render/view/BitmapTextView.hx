@@ -43,8 +43,10 @@ class BitmapTextView extends View
 				curStyle.wordWrap, curStyle.halign, curStyle.valign, curStyle.leading, 
 				curStyle.kerning, curStyle.baseline, curStyle.space, curStyle.monospace,
 				curStyle.charSet);
+			display.flipped = img.flipped;
 
-			curStyle.changed = false;			
+			curStyle.changed = false;
+			setImageDimensions(img);
 		}
 
 		// Update/set text message
