@@ -1,3 +1,5 @@
+
+
 /*
  * In charge of maintenance of transitions between game modes. 
  *
@@ -32,13 +34,14 @@ package flaxen.system;
 
 import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
+import flaxen.core.FlaxenHandler;
 import flaxen.component.Application;
 import flaxen.component.Transitional;
 
 class ModeSystem extends FlaxenSystem
 {
-	private var startHandlers:Map<ApplicationMode, FlaxenHandler>;
-	private var stopHandlers:Map<ApplicationMode, FlaxenHandler>;
+	private var startHandlers:Map<ApplicationMode, FlaxenCallback>;
+	private var stopHandlers:Map<ApplicationMode, FlaxenCallback>;
 
 	public function new(f:Flaxen)
 	{ 
@@ -47,8 +50,8 @@ class ModeSystem extends FlaxenSystem
 
 	override public function init()
 	{
-		startHandlers = new Map<ApplicationMode, FlaxenHandler>();
-		stopHandlers = new Map<ApplicationMode, FlaxenHandler>();
+		startHandlers = new Map<ApplicationMode, FlaxenCallback>();
+		stopHandlers = new Map<ApplicationMode, FlaxenCallback>();
 	}
 
 	override public function update(time:Float)
@@ -86,24 +89,30 @@ class ModeSystem extends FlaxenSystem
 
 	private function runStopHandler(mode:ApplicationMode): Void
 	{
-		var handler:FlaxenHandler = stopHandlers.get(mode);
+		if(mode == null)
+			return;
+
+		var handler:FlaxenCallback = stopHandlers.get(mode);
 		if(handler != null)
 			handler(flaxen);		
 	}
 
 	private function runStartHandler(mode:ApplicationMode): Void
 	{
-		var handler:FlaxenHandler = startHandlers.get(mode);
+		if(mode == null)
+			return;
+
+		var handler:FlaxenCallback = startHandlers.get(mode);
 		if(handler != null)
 			handler(flaxen);
 	}
 
-	public function registerStartHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
+	public function registerStartHandler(mode:ApplicationMode, handler:FlaxenCallback): Void
 	{
 		startHandlers.set(mode, handler);
 	}
 
-	public function registerStopHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
+	public function registerStopHandler(mode:ApplicationMode, handler:FlaxenCallback): Void
 	{
 		stopHandlers.set(mode, handler);
 	}

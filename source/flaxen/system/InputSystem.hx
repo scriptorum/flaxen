@@ -1,7 +1,9 @@
+
 package flaxen.system;
 
 import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
+import flaxen.core.FlaxenHandler;
 import flaxen.component.Application;
 
 //
@@ -15,7 +17,7 @@ import flaxen.component.Application;
 //
 class InputSystem extends FlaxenSystem
 {
-	private var handlers:Map<ApplicationMode, FlaxenHandler>;
+	private var handlers:Map<ApplicationMode, FlaxenCallback>;
 
 	public function new(f:Flaxen)
 	{ 
@@ -24,7 +26,7 @@ class InputSystem extends FlaxenSystem
 
 	override public function init()
 	{
-		handlers = new Map<ApplicationMode, FlaxenHandler>();
+		handlers = new Map<ApplicationMode, FlaxenCallback>();
 	}
 
 	override public function update(_)
@@ -39,12 +41,12 @@ class InputSystem extends FlaxenSystem
 		if(mode == null)
 			return;
 
-		var handler:FlaxenHandler = handlers.get(mode);
+		var handler:FlaxenCallback = handlers.get(mode);
 		if(handler != null)
 			handler(flaxen);
 	}
 
-	public function registerHandler(mode:ApplicationMode, handler:FlaxenHandler): Void
+	public function registerHandler(mode:ApplicationMode, handler:FlaxenCallback): Void
 	{
 		if(mode == null)
 			return;

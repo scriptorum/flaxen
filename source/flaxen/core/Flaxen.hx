@@ -28,6 +28,7 @@ import flaxen.component.Timestamp;
 import flaxen.component.Transitional;
 import flaxen.component.Tween;
 import flaxen.core.FlaxenScene;
+import flaxen.core.FlaxenHandler;
 import flaxen.core.ComponentSet;
 import flaxen.node.CameraFocusNode;
 import flaxen.node.LayoutNode;
@@ -51,8 +52,7 @@ import com.haxepunk.HXP;
 	import flaxen.service.ProfileService;
 #end
 
-enum FlaxenSystemGroup { Core; User; Standard; }
-typedef FlaxenHandler = Flaxen -> Void;
+enum FlaxenSystemGroup { Early; Standard; Late; }
 
 class Flaxen extends com.haxepunk.Engine
 {
@@ -107,26 +107,26 @@ class Flaxen extends com.haxepunk.Engine
 
 	private function addBuiltInSystems()
 	{
-		// Core Systems
-		addSystem(modeSystem = new ModeSystem(this), Core);
-		addSystem(inputSystem = new InputSystem(this), Core);
+		// Early Systems
+		addSystem(modeSystem = new ModeSystem(this), Early);
+		addSystem(inputSystem = new InputSystem(this), Early);
 
-		// Standard Systems
-		addSystem(new CameraSystem(this), Standard); // TODO Maybe this shouldn't be standard
-		addSystem(new ActionSystem(this), Standard);
-		addSystem(new TweeningSystem(this), Standard);
-		addSystem(new RenderingSystem(this), Standard);
-		addSystem(new AudioSystem(this), Standard);
+		// Late Systems
+		addSystem(new CameraSystem(this), Late); // TODO Maybe this shouldn't be standard
+		addSystem(new ActionSystem(this), Late);
+		addSystem(new TweeningSystem(this), Late);
+		addSystem(new RenderingSystem(this), Late);
+		addSystem(new AudioSystem(this), Late);
 	}
 
 	// Systems operate in the order that they are added.
-	// Core systems process first, then user systems, then standard systems.
+	// Early systems process first, then user systems, then standard systems.
 	// Unless you have a good reason, you probably want to leave it in the user group.
     public function addSystem(system:FlaxenSystem, ?group:FlaxenSystemGroup):Void
     {
     	// Default group
     	if(group == null)
-    		group = User;
+    		group = Standard;
 
     	// Profiler start log
     	#if PROFILER
@@ -147,9 +147,9 @@ class Flaxen extends com.haxepunk.Engine
     {
 		return switch(group)
 		{
-			case Core: coreSystemId++; 
-			case User: userSystemId++;
-			case Standard: standardSystemId++; 
+			case Early: coreSystemId++; 
+			case Standard: userSystemId++;
+			case Late: standardSystemId++; 
 		}
     }
 
@@ -230,6 +230,7 @@ class Flaxen extends com.haxepunk.Engine
      * will be interpreted as relative to the Layout.
      */
 
+	// Creates or replaces a new layout, indexed by name
 	public function newLayout(name:String, portaitX:Float, portraitY:Float, 
 		landscapeX:Float, landscapeY:Float): Layout
 	{
@@ -238,11 +239,10 @@ class Flaxen extends com.haxepunk.Engine
 		return addLayout(l);
 	}
 
-	// Registers a new layout. Make sure you set Layout.current to portrait or landscape to start.
+	// Registers a layout. Make sure you set Layout.current to portrait or landscape 
+	// to start.
     public function addLayout(layout:Layout): Layout
     {
-    	if(layouts.get(layout.name) != null)
-    		throw "Layout " + layout.name + " already exists";
 	 	layouts.set (layout.name, layout);
     	return layout;
     }
@@ -385,7 +385,7 @@ class Flaxen extends com.haxepunk.Engine
 	 * COMPONENT SETS COVENIENCE METHODS
 	 */
 
-	// Creates a new ComponentSet object and stores it by name.
+	// Creates or replaces a new ComponentSet object, indexed by name
 	// A ComponentSet provides a way to simply add a set of components
 	// to entities. See ComponentSet for details.
 	public function newComponentSet(name:String): ComponentSet
@@ -625,40 +625,42 @@ class Flaxen extends com.haxepunk.Engine
 	}	
 
 	// Adds a function that is called when an application mode is started
-	// For example, this will log some text to console at game start:
-	// 		setStartHandler(function(f:Flaxen) { f.newEntity().add(Image("art/img.png")); });
-	public function setStartHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Void
+	public function setStartHandler(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
-		modeSystem.registerStartHandler(mode == null ? Always : mode, handler);
+		modeSystem.registerStartHandler(mode == null ? Always : mode, callback);
+		return this;
 	}
 
 	// Adds a function that is called when an application mode is stopped
-	// This happens before the unprotected entities are removed.
-	// 		setStopHandler(function(_) { trace("Removed"); }, Play);
-	public function setStopHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Void
+	public function setStopHandler(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
-		modeSystem.registerStopHandler(mode == null ? Always : mode, handler);
+		modeSystem.registerStopHandler(mode == null ? Always : mode, callback);
+		return this;
 	}
 
 	// Adds a function that is called regularly only during a specific application mode.
-	// This function should check user inputs and respond appropriately.
-	// 		setInputHandler(function(_) { if(InputSerice.clicked) /* respond */; }, User("MyMode"));
-	public function setInputHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Void
+	// Generally this is intended for input handler, but you could also use it just as
+	// an update function. Updating should properly be done by adding your own custom
+	// systems.
+	public function setInputHandler(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
-		inputSystem.registerHandler(mode == null ? Always : mode, handler);
+		inputSystem.registerHandler(mode == null ? Always : mode, callback);
+		return this;
 	}
 
-	// TODO Rename FlaxenHandler to FlaxenFunc or SimpleFunc
 	// Sets up all mode handlers in one shot.
 	// Create a subclass of FlaxenHandler and override the functions you want.
-	// public function setHandler(handlerObj:FlaxenHandler, ?mode:ApplicationMode): Void
-	// {
-	// 	if(mode == null)
-	// 		mode = Always;
-	// 	setStartHandler(handlerObj.start, mode);
-	// 	setStopHandler(handlerObj.start, mode);
-	// 	setInputHandler(handlerObj.start, mode);
-	// }
+	public function setHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Flaxen
+	{
+		if(mode == null)
+			mode = Always;
+
+		setStartHandler(handler.start, mode);
+		setStopHandler(handler.stop, mode);
+		setInputHandler(handler.input, mode);
+
+		return this;
+	}
 
 	/*
 	 * AUDIO FUNCTIONS
