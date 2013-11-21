@@ -37,4 +37,4 @@ class Intent
 // 	}
 // }
 
-// flaxen.addIntent(new FireIntent(random(360)));
+// flaxen.newEntity().add(new FireIntent(random(360)));

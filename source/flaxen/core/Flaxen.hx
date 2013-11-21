@@ -398,9 +398,7 @@ class Flaxen extends com.haxepunk.Engine
 	// and must have been previously defined by newComponentSet().
 	public function installComponents(entity:Entity, name:String): Entity
 	{
-		var set = sets.get(name);
-		if(set == null)
-			throw "ComponentSet " + name + " not found";
+		var set = getComponentSet(name);
 		set.addToEntity(entity);
 		return entity;
 	}
@@ -419,6 +417,14 @@ class Flaxen extends com.haxepunk.Engine
 	{
 		var e = newSingleton(entityName, addToAsh);
 		return installComponents(e, setName);
+	}
+
+	public function getComponentSet(name:String): ComponentSet
+	{
+		var set = sets.get(name);
+		if(set == null)
+			throw "ComponentSet " + name + " not found";
+		return set;
 	}
 	
 	/*
