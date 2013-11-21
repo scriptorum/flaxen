@@ -100,6 +100,7 @@ class Flaxen extends com.haxepunk.Engine
 		#end
 
 		HXP.scene = new FlaxenScene(this); // hook Ash into HaxePunk
+		InputService.init();
 	}	
 
 	public function ready() { } // Override
