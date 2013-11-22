@@ -213,6 +213,11 @@ class View extends com.haxepunk.Entity
 	public function setImageDimensions(image:Image)
 	{
 		var bitmap = HXP.getBitmap(image.path);
+		#if debug
+			if(bitmap == null)
+				throw "Bitmap not found (" + image.path + ")";
+		#end
+
 		image.width = bitmap.width;
 		image.height = bitmap.height;
 	}

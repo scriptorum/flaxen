@@ -1,4 +1,3 @@
-
 package flaxen.component;
 
 import flaxen.common.Array2D;
@@ -14,7 +13,7 @@ class Grid extends Array2D<Int>
 		super(width, height, initValue);
 	}
 
-	public function load(str:String, delimiter:String = ",", eol = ";", x:Int = 0, y:Int = 0): Void
+	public function load(str:String, delimiter:String = ",", eol = ";", x:Int = 0, y:Int = 0): Grid
 	{
 		var _x = x;
 		var _y = y;
@@ -28,5 +27,6 @@ class Grid extends Array2D<Int>
 			_y++;
 			_x = x;
 		}
+		return this;
 	}
 }
