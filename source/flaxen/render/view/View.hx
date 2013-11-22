@@ -71,7 +71,7 @@ class View extends com.haxepunk.Entity
 		// Update layer
 		if(hasComponent(Layer))
 		{
-			var newLayer = getComponent(Layer).layer;
+			var newLayer = getComponent(Layer).value;
 			if(newLayer != this.layer)
 				this.layer = newLayer;
 		}

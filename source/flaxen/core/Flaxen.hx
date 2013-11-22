@@ -54,7 +54,7 @@ import com.haxepunk.HXP;
 
 enum FlaxenSystemGroup { Early; Standard; Late; }
 
-class Flaxen extends com.haxepunk.Engine
+class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 {
 	public static inline var DEFAULT_ENTITY_NAME:String = "fEntity"; // entity default name or prefix
 	public static inline var CONTROL:String = "fControl"; // control entity name prefix
@@ -78,9 +78,13 @@ class Flaxen extends com.haxepunk.Engine
 
 	public function new(width:Int = 0, height:Int = 0) // leave 0 to match window dimensions
 	{
-		this.layouts = new Map<String,Layout>();
-		this.sets = new Map<String,ComponentSet>();
-		this.ash = new ash.core.Engine(); // ecs
+		layouts = new Map<String,Layout>();
+		sets = new Map<String,ComponentSet>();
+		ash = new ash.core.Engine(); // Ash entity component system
+
+		// Add support for dependent node removal
+		ash.getNodeList(DependentsNode).nodeRemoved.add(dependentsNodeRemoved);
+
 		getApp(); // Create entity with Application component
 		addBuiltInSystems(); // initialize entity component systems
 
@@ -187,11 +191,8 @@ class Flaxen extends com.haxepunk.Engine
 	  	HXP.windowWidth = HXP.stage.stageWidth;
         HXP.windowHeight = HXP.stage.stageHeight;
 
-        // trace("Stage:" + HXP.stage.stageWidth + "x" + HXP.stage.stageHeight);
-
         // Determine tall or wide layout
 	    layoutOrientation = (HXP.stage.stageWidth < HXP.stage.stageHeight ? Portrait : Landscape); 
-        // trace("Orientation:" + layoutOrientation);
 	    checkScreenOrientation();
 
 	    // Determine best-fit scaling 
@@ -199,14 +200,12 @@ class Flaxen extends com.haxepunk.Engine
 	    var hScale = HXP.stage.stageHeight / baseHeight;
 	    var scale = Math.min(wScale, hScale);
         HXP.screen.scaleX = HXP.screen.scaleY = scale;
-        // trace("Scale:" + scale);
 
         // Center all layouts on screen
 	    layoutOffset = new Position(0,0);
 	    if(scale == hScale)
 	    	layoutOffset.x = (HXP.stage.stageWidth / HXP.screen.scaleY - baseWidth) / 2;
 	    else layoutOffset.y = (HXP.stage.stageHeight / HXP.screen.scaleX - baseHeight) / 2;
-        // trace("Offset:" + layoutOffset.x + "," + layoutOffset.y);
 
         updateLayouts(); // Update orientation and offset for all layouts
     }
@@ -221,7 +220,6 @@ class Flaxen extends com.haxepunk.Engine
 	    	baseHeight = tmp;
     	}
     	HXP.resize(baseWidth, baseHeight);
-    	// trace("Base:" + baseWidth + "x" + baseHeight);
     }
 
     /*
@@ -301,6 +299,13 @@ class Flaxen extends com.haxepunk.Engine
 		return e;
 	}
 
+	// Ensures the named singleton exists and is empty of components
+	public function resetSingleton(name:String): Entity
+	{
+		removeEntity(name);
+		return newSingleton(name);
+	}
+
 	// Returns a unique entity name, with an optionally specified prefix
 	public function getEntityName(prefix:String = DEFAULT_ENTITY_NAME,
 		unique:Bool = true): String
@@ -374,11 +379,21 @@ class Flaxen extends com.haxepunk.Engine
 
 	// Removes an entity, looked up by name
 	// Returns quietly if entity is not found
-	public function removeEntity(name:String): Void
+	public function removeEntity(name:String): Bool
 	{
 		var e:Entity = getEntity(name);
 		if(e != null)
+		{
 			ash.removeEntity(e);
+			return true;			
+		}
+		return false;
+	}
+
+	public function demandRemoveEntity(name:String): Void
+	{
+		if(removeEntity(name) == false)
+			throw "Cannot remove missing entity " + name;
 	}
 
 	/*
@@ -556,7 +571,9 @@ class Flaxen extends com.haxepunk.Engine
 		{
 			var e:Entity = ash.getEntityByName(name);
 			if(e != null)
+			{
 				ash.removeEntity(e);
+			}
 		}
 
 		dependents.clear();

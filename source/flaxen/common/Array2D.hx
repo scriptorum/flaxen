@@ -28,23 +28,23 @@ class Array2D<T>
 		setRect(0, 0, width, height, fill);
 	}
 
-	private function indexWithinDomain(index:Int): Bool
+	inline public function indexWithinDomain(index:Int): Bool
 	{
 		return (index >= 0 && index < size);
 	}
 
-	private function verifyIndex(index:Int): Void
+	inline public function verifyIndex(index:Int): Void
 	{
 		if (!indexWithinDomain(index))
 			throw("Array2D index " + index + " is out of bounds");
 	}
 
-	private function withinDomain(x:Int, y:Int): Bool
+	public function withinDomain(x:Int, y:Int): Bool
 	{
 		return (x >= 0 && x < width && y >= 0 && y < height);
 	}
 
-	private function verify(x:Int, y:Int): Void
+	public function verify(x:Int, y:Int): Void
 	{
 		if (!withinDomain(x, y))
 			throw("Array2D position " + x + "," + y +" is out of bounds");
