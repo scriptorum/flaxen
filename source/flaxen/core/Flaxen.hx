@@ -7,6 +7,7 @@
 	  context. This is especially true if multiple entities share the same Image.
 	- Put notes in each Component as to the consequence of multiple entities sharing it.
 	- Add newEntityFromSet and newSingletonFromSet
+ 	- Add FlaxenOptions for initializing 
 */
 
 package flaxen.core;
@@ -76,7 +77,8 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	public var layoutOrientation:Orientation;
 	public var layoutOffset:Position;
 
-	public function new(width:Int = 0, height:Int = 0) // leave 0 to match window dimensions
+	// width/height -> leave 0 to match window dimensions
+	public function new(width:Int = 0, height:Int = 0, fps:Int = 60) 
 	{
 		layouts = new Map<String,Layout>();
 		sets = new Map<String,ComponentSet>();
@@ -91,15 +93,15 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		baseWidth = width;
 		baseHeight = height;
 
-		super(width, height, 60, false,
-			#if FORCE_BUFFER com.haxepunk.RenderMode.BUFFER #else null #end);
+		super(width, height, fps, false,
+			#if HaxePunkForceBuffer com.haxepunk.RenderMode.BUFFER #else null #end);
 
 		// HXP.screen.smoothing = true;		
 	}
 
 	override public function init()
 	{
-		#if HXP_CONSOLE
+		#if HaxePunkConsole
 			HXP.console.enable();
 		#end
 

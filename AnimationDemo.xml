@@ -12,8 +12,8 @@
     <assets path="assets/data" rename="data" type="text" include="*.xml|*.txt" exclude="*.bak"/>
     <icon path="assets/art/icon.svg"/>  
 
-    <section if="debug">
-        <assets path="assets/art" rename="gfx" include="*.png" />
+    <section if="HaxePunkConsole">
+        <assets path="assets/art/HaxePunk" rename="gfx" include="*.png" />
     </section>
 
     <source path="source" />
