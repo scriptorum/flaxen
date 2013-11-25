@@ -221,17 +221,21 @@ class View extends com.haxepunk.Entity
 				throw "Bitmap not found (" + image.path + ")";
 		#end
 
+		image.width = bitmap.width;
+		image.height = bitmap.height;
+
 		if(imageGrid == null)
 		{
-			image.width = (image.clip != null ? image.clip.width : bitmap.width);
-			image.height = (image.clip != null ? image.clip.height : bitmap.height);
+			image.clipWidth = (image.clip != null ? image.clip.width : bitmap.width);
+			image.clipHeight = (image.clip != null ? image.clip.height : bitmap.height);
 		}
 		else
 		{
 			imageGrid.tilesAcross = Std.int(bitmap.width / imageGrid.tileWidth);
 			imageGrid.tilesDown = Std.int(bitmap.height / imageGrid.tileHeight);
-			image.width = imageGrid.tileWidth;
-			image.height = imageGrid.tileHeight;
+			image.clipWidth = imageGrid.tileWidth;
+			image.clipHeight = imageGrid.tileHeight;
+
 			#if debug
 				// Right now there's no support for clipping and gridding.
 				if(image.clip != null)
