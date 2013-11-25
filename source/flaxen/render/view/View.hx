@@ -1,3 +1,4 @@
+
 //
 // I'm still not happy with the way transformation points/position points work here.
 //
@@ -15,6 +16,7 @@ import flaxen.component.Alpha;
 import flaxen.component.Invisible;
 import flaxen.component.Layout;
 import flaxen.component.Image;
+import flaxen.component.ImageGrid;
 import com.haxepunk.HXP;
 
 import ash.core.Entity;
@@ -210,7 +212,8 @@ class View extends com.haxepunk.Entity
 	} 
 
 	// Updates the dimensions stored in the Image component
-	public function setImageDimensions(image:Image)
+	// Optionally calculates and updates the tilesAcross/Down in an ImageGrid component
+	public function setImageDimensions(image:Image, ?imageGrid:ImageGrid)
 	{
 		var bitmap = HXP.getBitmap(image.path);
 		#if debug
@@ -218,7 +221,22 @@ class View extends com.haxepunk.Entity
 				throw "Bitmap not found (" + image.path + ")";
 		#end
 
-		image.width = bitmap.width;
-		image.height = bitmap.height;
+		if(imageGrid == null)
+		{
+			image.width = (image.clip != null ? image.clip.width : bitmap.width);
+			image.height = (image.clip != null ? image.clip.height : bitmap.height);
+		}
+		else
+		{
+			imageGrid.tilesAcross = Std.int(bitmap.width / imageGrid.tileWidth);
+			imageGrid.tilesDown = Std.int(bitmap.height / imageGrid.tileHeight);
+			image.width = imageGrid.tileWidth;
+			image.height = imageGrid.tileHeight;
+			#if debug
+				// Right now there's no support for clipping and gridding.
+				if(image.clip != null)
+					throw "An image with a clip cannot have an ImageGrid";
+			#end
+		}
 	}
 }

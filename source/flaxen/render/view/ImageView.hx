@@ -3,14 +3,14 @@ package flaxen.render.view;
 import flash.geom.Rectangle;
 
 import flaxen.component.Tile;
-import flaxen.component.Subdivision;
+import flaxen.component.ImageGrid;
 import flaxen.component.Image;
 
 class ImageView extends View
 {
 	private var tile:Tile;
 	private var tileValue:Int;
-	private var subdivision:Subdivision;
+	private var imageGrid:ImageGrid;
 	private var image:Image;
 	private var display:com.haxepunk.graphics.Image.Image;
 	private var clip:Rectangle;
@@ -22,9 +22,9 @@ class ImageView extends View
 
 	private function setTile()
 	{
-		var rect = tile.rect(subdivision);
+		setImageDimensions(image, imageGrid);
+		var rect = tile.rect(imageGrid);
 		graphic = display = new com.haxepunk.graphics.Image(image.path, rect);
-		setImageDimensions(image);
 		display.flipped = image.flipped;
 	}
 
@@ -58,10 +58,10 @@ class ImageView extends View
 				updateDisplay = true;
 			}
 
-			var curSubdivision = getComponent(Subdivision); // required component if Tile exists
-			if(curSubdivision != subdivision)
+			var curImageGrid = getComponent(ImageGrid); // required component if Tile exists
+			if(curImageGrid != imageGrid)
 			{
-				subdivision = curSubdivision;
+				imageGrid = curImageGrid;
 				updateDisplay = true;
 			}
 

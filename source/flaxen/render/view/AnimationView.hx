@@ -11,14 +11,14 @@ import com.haxepunk.graphics.Spritemap;
 import flaxen.component.Animation;
 import flaxen.component.Display;
 import flaxen.component.Image;
-import flaxen.component.Subdivision;
+import flaxen.component.ImageGrid;
 import flaxen.common.LoopType;
 
 class AnimationView extends View
 {
 	private var animation:Animation;
 	private var image:Image;
-	private var subdivision:Subdivision;
+	private var imageGrid:ImageGrid;
 	private var spritemap:Spritemap;
 
 	override public function begin()
@@ -30,15 +30,15 @@ class AnimationView extends View
 	{
 		var cbFunc:CallbackFunction = (animation.loop == None ? null : animationFinished);
 		graphic = spritemap = new Spritemap(image.path,
-			Std.int(subdivision.plot.width), 
-			Std.int(subdivision.plot.height), 
+			Std.int(imageGrid.tileWidth), 
+			Std.int(imageGrid.tileHeight), 
 			cbFunc);
 		spritemap.flipped = image.flipped;
 
 		spritemap.add("default", animation.frames, animation.speed, animation.loop != LoopType.None);
 		spritemap.play("default");
 
-		setImageDimensions(image);
+		setImageDimensions(image, imageGrid);
 	}
 
 	private function animationFinished(): Void
@@ -62,10 +62,10 @@ class AnimationView extends View
 			updateDisplay = true;
 		}
 
-		var curSubdivision = getComponent(Subdivision);
-		if(curSubdivision != subdivision)
+		var curImageGrid = getComponent(ImageGrid);
+		if(curImageGrid != imageGrid)
 		{
-			subdivision = curSubdivision;
+			imageGrid = curImageGrid;
 			updateDisplay = true;
 		}
 

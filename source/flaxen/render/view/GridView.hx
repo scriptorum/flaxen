@@ -1,6 +1,6 @@
  package flaxen.render.view;
 
-import flaxen.component.Subdivision;
+import flaxen.component.ImageGrid;
 import flaxen.component.Image;
 import flaxen.component.Grid;
 
@@ -15,13 +15,13 @@ class GridView extends View
 
 	override public function begin()	
 	{
-		var subdivision = getComponent(Subdivision);
+		var imageGrid = getComponent(ImageGrid);
 		var grid = getComponent(Grid);
 		var image = getComponent(Image);
-		setImageDimensions(image);
+		setImageDimensions(image, imageGrid);
 
-		tileWidth = cast subdivision.plot.width;
-		tileHeight = cast subdivision.plot.height;
+		tileWidth = cast imageGrid.tileWidth;
+		tileHeight = cast imageGrid.tileHeight;
 
 		tileMap = new Tilemap(image.path, Std.int(image.width), Std.int(image.height), tileWidth, tileHeight);
 		graphic = tileMap;

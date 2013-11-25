@@ -8,7 +8,7 @@ import flaxen.component.Position;
 import flaxen.component.Grid;
 import flaxen.component.Text;
 import flaxen.component.Tile;
-import flaxen.component.Subdivision;
+import flaxen.component.ImageGrid;
 import flaxen.component.Emitter;
 
 class ImageNode extends Node<ImageNode>
@@ -22,7 +22,7 @@ class AnimationNode extends Node<AnimationNode>
 	public var position:Position;
 	public var image:Image;
 	public var animation:Animation;
-	public var subdivision:Subdivision;
+	public var subdivision:ImageGrid;
 }
 
 class BackdropNode extends Node<BackdropNode>
@@ -36,7 +36,7 @@ class GridNode extends Node<GridNode>
 	public var position:Position;
 	public var grid:Grid;
 	public var image:Image;
-	public var subdivision:Subdivision;
+	public var subdivision:ImageGrid;
 }
 
 class TextNode extends Node<TextNode>

@@ -2,7 +2,7 @@ package flaxen.component;
 
 import flash.geom.Rectangle;
 import flaxen.component.Tile;
-import flaxen.component.Subdivision;
+import flaxen.component.ImageGrid;
 
 class Tile
 {
@@ -14,21 +14,25 @@ class Tile
 	}
 
 	// Plot X
-	public function x(subdivision:Subdivision): Int
+	public function x(subdivision:ImageGrid): Int
 	{
-		return value % subdivision.width;
+		return value % subdivision.tilesAcross;
 	}
 
 	// Plot Y
-	public function y(subdivision:Subdivision): Int
+	public function y(subdivision:ImageGrid): Int
 	{
-		return Math.floor(value / subdivision.width);
+		#if debug
+		if(subdivision.tilesAcross <= 0)
+			throw "ImageGrid.tilesAcross not initialized";
+		#end
+
+		return Math.floor(value / subdivision.tilesAcross);
 	}
 
-	public function rect(subdivision:Subdivision): Rectangle
+	public function rect(subdivision:ImageGrid): Rectangle
 	{
-		return new Rectangle(x(subdivision) * subdivision.plot.width, 
-			y(subdivision) * subdivision.plot.height, 
-			subdivision.plot.width, subdivision.plot.height);
+		return new Rectangle(x(subdivision) * subdivision.tileWidth, 
+			y(subdivision) * subdivision.tileHeight, subdivision.tileWidth, subdivision.tileHeight);
 	}
 }

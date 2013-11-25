@@ -1,9 +1,3 @@
-/**
-	TODO
-	  - Subdivision shouldn't require tiles across/down data, this should be inferred
-	    from the Image
-	  - Subdivision, isn't it really just a Division?
-*/
 package flaxen.demo; 
 
 import ash.core.Entity;
@@ -13,7 +7,7 @@ import flaxen.component.Offset;
 import flaxen.component.Position;
 import flaxen.component.Data;
 import flaxen.component.Animation;
-import flaxen.component.Subdivision;
+import flaxen.component.ImageGrid;
 import flaxen.component.Alpha;
 import flaxen.service.InputService;
 import flaxen.common.LoopType;
@@ -35,7 +29,7 @@ class AnimationDemo extends Flaxen
 			.add(new Image("art/ball.png")) // Share image between all balls
 			.add(Offset.center) // create new Offset for each ball, no parameters
 			.add(function() { return Position.center(); }) // create new Position, via function
-			.add(Subdivision.create(5, 5, 60, 60));
+			.add(ImageGrid.create(60, 60));
 
 		// could also have done newSingletonWithSet("ball", "ball"), instead of installComponents
 		var ball = newSingleton("ball")

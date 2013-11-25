@@ -25,7 +25,7 @@ import flaxen.component.Scale;
 import flaxen.component.Tween;
 import flaxen.component.Application;
 import flaxen.service.InputService;
-import flaxen.util.Easing;
+import flaxen.common.Easing;
 
 class WobbleDemo extends Flaxen
 {
@@ -43,7 +43,7 @@ class WobbleDemo extends Flaxen
 		var e:Entity = resolveEntity(logo) // get or create entity
 			.add(new Image("art/flaxen.png"))
 			.add(new Position(HXP.halfWidth, HXP.halfHeight))
-			.add(Offset.center);
+			.add(Offset.center());
 
 		wobble(e, { x:0.8, y:1.2 });
 	}
