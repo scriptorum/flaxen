@@ -54,7 +54,7 @@ class MathUtil
         return (a > b ? a - b : b - a);
     }
 
-    // Returns true if both numbers match withing tolerance decimal placentityService.
+    // Returns true if both numbers match within tolerance decimal places.
     public static function matches(a:Float, b:Float, tolerance:Int = 0): Bool
     {
         return (roundTo(a, tolerance) == roundTo(b, tolerance));

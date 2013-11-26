@@ -1,3 +1,7 @@
+/*
+	TODO
+	Implement focusGained/lost
+*/
 package flaxen.core;
 
 import flaxen.core.Flaxen;

@@ -1,5 +1,7 @@
 package flaxen.common;
 
+import flaxen.core.Log;
+
 // 2D integer point
 class Point
 {
@@ -34,7 +36,7 @@ class Point
 			var v1 = array.shift();
 			var v2 = array.shift();
 			if(v2 == null)
-				throw "Unbalanced set of x/y pairs passed to makeArray";
+				Log.error("Unbalanced set of x/y pairs passed to makeArray");
 			result.push(new Point(v1, v2));
 		}
 

@@ -3,6 +3,7 @@ package flaxen.common;
 import flaxen.common.Point;
 import flaxen.util.MathUtil;
 import flaxen.util.ArrayUtil;
+import flaxen.core.Log;
 
 class Array2D<T>
 {
@@ -36,7 +37,7 @@ class Array2D<T>
 	inline public function verifyIndex(index:Int): Void
 	{
 		if (!indexWithinDomain(index))
-			throw("Array2D index " + index + " is out of bounds");
+			Log.error("Array2D index " + index + " is out of bounds");
 	}
 
 	public function withinDomain(x:Int, y:Int): Bool
@@ -47,7 +48,7 @@ class Array2D<T>
 	public function verify(x:Int, y:Int): Void
 	{
 		if (!withinDomain(x, y))
-			throw("Array2D position " + x + "," + y +" is out of bounds");
+			Log.error("Array2D position " + x + "," + y +" is out of bounds");
 	}
 
 	public function getIndex(index:Int): T

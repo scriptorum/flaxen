@@ -13,6 +13,7 @@ import flaxen.component.Display;
 import flaxen.component.Image;
 import flaxen.component.ImageGrid;
 import flaxen.common.LoopType;
+import flaxen.core.Log;
 
 class AnimationView extends View
 {
@@ -34,6 +35,10 @@ class AnimationView extends View
 			Std.int(imageGrid.tileHeight), 
 			cbFunc);
 		spritemap.flipped = image.flipped;
+
+		Log.assert(animation.speed != Math.POSITIVE_INFINITY, "Inifinite speed for spritemap " + image.path);
+		Log.assert(animation.speed != Math.NEGATIVE_INFINITY, "Negative infinite speed for spritemap " + image.path);
+		Log.assert(animation.speed != Math.NaN, "NaN speed for spritemap " + image.path);
 
 		spritemap.add("default", animation.frames, animation.speed, animation.loop != LoopType.None);
 		spritemap.play("default");

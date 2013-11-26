@@ -6,8 +6,7 @@
 */
 package flaxen.component;
 
-import flaxen.util.StringUtil;
-import flaxen.core.Log;
+import flaxen.util.DynamicUtil;
 import flaxen.common.LoopType;
 
 class Animation
@@ -38,7 +37,7 @@ class Animation
 	public function setFrames(frames:Dynamic, ?loop:LoopType): Animation
 	{
 		this.loop = (loop == null ? LoopType.Forward : loop);
-		this.frames = StringUtil.parseRange(frames);
+		this.frames = DynamicUtil.parseRange(frames);
 		switch(this.loop)
 		{
 			case Backward:

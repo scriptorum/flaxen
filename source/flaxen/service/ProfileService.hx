@@ -51,7 +51,7 @@ class ProfileService
 		stats.set(name, profile);
 
 		if(stats.get(name) == null)
-			throw("Creation didn't stick!");
+			Log.error("Creation didn't stick!");
 
 		return profile;
 	}

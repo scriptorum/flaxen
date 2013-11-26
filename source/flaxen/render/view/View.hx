@@ -17,6 +17,7 @@ import flaxen.component.Invisible;
 import flaxen.component.Layout;
 import flaxen.component.Image;
 import flaxen.component.ImageGrid;
+import flaxen.core.Log;
 import com.haxepunk.HXP;
 
 import ash.core.Entity;
@@ -47,7 +48,7 @@ class View extends com.haxepunk.Entity
 	{
 		var instance:T = entity.get(component);
 		if(instance == null)
-			throw("Cannot get component " + Type.getClassName(component) + " for entity " + entity.name);
+			Log.error("Cannot get component " + Type.getClassName(component) + " for entity " + entity.name);
 		return instance;
 	}
 
@@ -218,7 +219,7 @@ class View extends com.haxepunk.Entity
 		var bitmap = HXP.getBitmap(image.path);
 		#if debug
 			if(bitmap == null)
-				throw "Bitmap not found (" + image.path + ")";
+				Log.error("Bitmap not found (" + image.path + ")");
 		#end
 
 		image.width = bitmap.width;
@@ -239,7 +240,7 @@ class View extends com.haxepunk.Entity
 			#if debug
 				// Right now there's no support for clipping and gridding.
 				if(image.clip != null)
-					throw "An image with a clip cannot have an ImageGrid";
+					Log.error("An image with a clip cannot have an ImageGrid");
 			#end
 		}
 	}

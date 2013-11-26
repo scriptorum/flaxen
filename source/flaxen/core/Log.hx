@@ -1,21 +1,54 @@
+/*
+	TODO
+		- Move to common?
+		- Rename to Sys/System?
+*/
 package flaxen.core;
 
 class Log
 {
-	public static inline function log(msg:String)
+	inline public static function log(msg:String)
 	{
 		trace(msg);
 	}
 
-	public static inline function warn(msg:String)
+	inline public static function warn(msg:String)
 	{
 		#if debug
 			trace(msg);
 		#end
 	}
 
-	public static inline function error(msg:String)
+	inline public static function die(msg:String) // alias for error
 	{
-		throw msg;
+		return error(msg);
+	}
+
+	inline public static function error(msg:String)
+	{
+		// TEMP HACK because THROW isn't working properly
+		warn("ERROR: " + msg);
+		quit();
+
+		//throw msg;
+	}
+
+	inline public static function assert(condition:Bool, ?msg:String = "Assert failed")
+	{
+		if(condition != true)
+			error(msg);
+	}
+
+	// Debug assert - asserts only checked in debug mode
+	inline public static function debugAssert(condition:Bool, ?msg:String)
+	{		
+		#if debug
+			assert(condition, msg);
+		#end
+	}
+
+	public static function quit()
+	{
+		flash.Lib.exit();
 	}
 }

@@ -1,6 +1,7 @@
 package flaxen.component;
 
 import flaxen.component.Application;
+import flaxen.core.Log;
 
 // When transitioning from one application mode to another, all entities are destroyed, unless they are 
 // protected: Transitional entities are protected if their transitional mode is Always, Next, or 
@@ -34,7 +35,7 @@ class Transitional
 	public function new(mode:ApplicationMode, destroyComponent:Bool = false)
 	{	
 		if(mode == null)
-			throw "ApplicationMode cannot be null";
+			Log.error("ApplicationMode cannot be null");
 
 		this.mode = mode;
 		this.destroyComponent = destroyComponent;

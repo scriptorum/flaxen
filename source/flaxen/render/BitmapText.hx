@@ -108,7 +108,7 @@ class BitmapText extends Image
 	{
 		fontBitmap = (Std.is(image, BitmapData) ? image : HXP.getBitmap(image));
 		if(fontBitmap == null)
-			throw "Cannot parse null fontBitmap";
+			Log.error("Cannot parse null fontBitmap");
 
 		this.text = (text == null ? "" : text);
 

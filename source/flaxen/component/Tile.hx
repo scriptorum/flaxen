@@ -3,6 +3,7 @@ package flaxen.component;
 import flash.geom.Rectangle;
 import flaxen.component.Tile;
 import flaxen.component.ImageGrid;
+import flaxen.core.Log;
 
 class Tile
 {
@@ -24,7 +25,7 @@ class Tile
 	{
 		#if debug
 		if(subdivision.tilesAcross <= 0)
-			throw "ImageGrid.tilesAcross not initialized";
+			Log.error("ImageGrid.tilesAcross not initialized");
 		#end
 
 		return Math.floor(value / subdivision.tilesAcross);

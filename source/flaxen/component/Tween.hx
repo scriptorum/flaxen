@@ -3,6 +3,7 @@ package flaxen.component;
 import ash.core.Engine;
 import flaxen.common.Easing;
 import flaxen.common.LoopType;
+import flaxen.core.Log;
 
 class Tween
 {
@@ -47,9 +48,9 @@ class Tween
 
 		if(Reflect.isObject(target))
 			fields = Reflect.fields(target);
-		else throw("Unsupported properties object");
+		else Log.error("Unsupported properties object");
 		if(fields.length == 0)
-			throw("No fields found for tween target; ensure it is an anonymous object.");
+			Log.error("No fields found for tween target; ensure it is an anonymous object.");
 
 		ranges = new Array<Float>();
 		starts = new Array<Float>();
@@ -59,9 +60,9 @@ class Tween
 			var sVal:Float = Reflect.getProperty(source, field);
 			var tVal:Float = Reflect.getProperty(target, field);
 			if(Math.isNaN(tVal))
-				throw("Property " + field + " is not a number");
+				Log.error("Property " + field + " is not a number");
 			if(Math.isNaN(sVal))
-				throw("Start object lacks numeric field " + field);
+				Log.error("Start object lacks numeric field " + field);
 			props.push(field);
 			starts.push(sVal);
 			ranges.push(tVal - sVal);
