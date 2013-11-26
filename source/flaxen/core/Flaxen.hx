@@ -3,10 +3,7 @@
    	- Maybe change input system to UpdateSystem, and let people choose if they want to use it
      	for input, update, or provide their own systems
 	- Change order of alignments to valign,halign? (Top,Left looks more natural than the reverse)
-	- When Image.width/height is set should be set to actual width height and not based on 
-	  context. This is especially true if multiple entities share the same Image.
 	- Put notes in each Component as to the consequence of multiple entities sharing it.
-	- Add newEntityFromSet and newSingletonFromSet
  	- Add FlaxenOptions for initializing 
 */
 
