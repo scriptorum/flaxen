@@ -1,4 +1,4 @@
- package flaxen.render.view;
+package flaxen.render.view;
 
 import flaxen.component.ImageGrid;
 import flaxen.component.Image;
