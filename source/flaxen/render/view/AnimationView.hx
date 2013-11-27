@@ -2,6 +2,7 @@
   TODO
     - Class only handles one animation at a time
     - Class recreates Spritemap after every change, this is suboptimal
+    - Maybe add sequences for each loop type, so you can switch loop type and get the new animation?
 */
 package flaxen.render.view;
 

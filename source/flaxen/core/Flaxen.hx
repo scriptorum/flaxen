@@ -411,9 +411,11 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
 	// Adds a set of components to the entity. The ComponentSet is specified by name
 	// and must have been previously defined by newComponentSet().
-	public function installComponents(entity:Entity, name:String): Entity
+	public function installComponents(entity:Entity, setName:String): Entity
 	{
-		var set = getComponentSet(name);
+		var set = getComponentSet(setName);
+		if(set == null)
+			Log.error("Component set not found:" + setName);
 		set.addToEntity(entity);
 		return entity;
 	}
