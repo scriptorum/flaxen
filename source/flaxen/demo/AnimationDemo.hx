@@ -12,6 +12,7 @@ import flaxen.component.Alpha;
 import flaxen.service.InputService;
 import flaxen.common.LoopType;
 import com.haxepunk.HXP;
+import com.haxepunk.utils.Key;
 
 class AnimationDemo extends Flaxen
 {
@@ -55,12 +56,19 @@ class AnimationDemo extends Flaxen
 
 		setInputHandler(function(f)
 		{
-			if(InputService.clicked)
+			if(InputService.pressed(Key.S))
 			{
 				var ball = demandEntity("ball");
 				var data = ball.get(Data);
 				data.value = !data.value;
 				ball.get(Animation).setFrames(data.value ? westRoll : northRoll);
+			}
+
+			if(InputService.pressed(Key.P))
+			{
+				var ball = demandEntity("ball");
+				var anim = ball.get(Animation);
+				anim.paused = !anim.paused;
 			}
 		});
 	}

@@ -20,6 +20,7 @@ class Animation
 	// These can be set at any time
 	public var stop:Bool = false; // stop animation ASAP (sets complete)
 	public var restart:Bool = false; // restart animation from beginning ASAP
+	public var paused:Bool = false; // pause or resume animation
 
 	// Set once at initialization only
 	public var destroyEntity:Bool = false; // on complete/stop, removes whole entity

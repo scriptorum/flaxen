@@ -99,6 +99,10 @@ class AnimationView extends View
 		else if(updateDisplay || animation.restart)
 			setAnim();
 
+		// Pause/resume animation
+		if(curAnim.paused == spritemap.active)
+			spritemap.active = !curAnim.paused;
+
 		super.nodeUpdate();
 	}
 }
