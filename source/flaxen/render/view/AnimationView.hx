@@ -41,7 +41,7 @@ class AnimationView extends View
 		Log.assert(animation.speed != Math.NEGATIVE_INFINITY, "Negative infinite speed for spritemap " + image.path);
 		Log.assert(animation.speed != Math.NaN, "NaN speed for spritemap " + image.path);
 
-		spritemap.add("default", animation.frames, animation.speed, animation.loop != LoopType.None);
+		spritemap.add("default", animation.frameArr, animation.speed, animation.loop != LoopType.None);
 		spritemap.play("default");
 
 		setImageDimensions(image, imageGrid);

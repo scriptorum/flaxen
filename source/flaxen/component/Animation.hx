@@ -8,50 +8,59 @@ package flaxen.component;
 
 import flaxen.util.DynamicUtil;
 import flaxen.common.LoopType;
+import com.haxepunk.HXP;
 
 class Animation
 {
-	public var frames:Array<Int>;
+	// Call update() after changing these values
+	public var frames:Dynamic;
 	public var speed:Float;
-	public var changed:Bool = true; // Mark as true when changing one of the above values
-	
 	public var loop(default,null):LoopType; // Don't change this directly, but through setFrames
 
-	public var destroyEntity:Bool = false; // on complete/stop, removes whole entity
-	public var destroyComponent:Bool = false; // on complete/stop, removes Animation component from entity
-	public var complete:Bool = false; // true when animation has completed playing (not if looping)
+	// These can be set at any time
 	public var stop:Bool = false; // stop animation ASAP (sets complete)
 	public var restart:Bool = false; // restart animation from beginning ASAP
 
+	// Set once at initialization only
+	public var destroyEntity:Bool = false; // on complete/stop, removes whole entity
+	public var destroyComponent:Bool = false; // on complete/stop, removes Animation component from entity
+
+	// Do not change these directly
+	public var frameArr:Array<Int>; // List of frame integers with loop reverse/both baked in; set by update()
+	public var changed:Bool = true; // Set by update()
+	public var complete:Bool = false; // true when animation has completed playing (not if looping)
+
 	// This is not currently implemented
-	public var random:Bool = false; // true if you want frames selected at random
+	public var random:Bool = false; // true if you want the frames always selected at random
 
 	// Frames can be an array of integers, a single integer, or a string
 	// containing comma-separated values: integers and/or hyphenated ranges
-	public function new(frames:Dynamic, speed:Float = 30.0, ?loop:LoopType)
+	public function new(frames:Dynamic, ?speed:Float, ?loop:LoopType)
 	{
-		this.speed = speed;
-		setFrames(frames, loop);
+		this.frames = frames;
+		this.speed = (speed == null ? HXP.assignedFrameRate : speed);
+		this.loop = (loop == null ? LoopType.Forward : loop);
+		update();
 	}
 
-	public function setFrames(frames:Dynamic, ?loop:LoopType): Animation
+	// Must be called after changing loop or frames.
+	public function update(): Animation
 	{
-		this.loop = (loop == null ? LoopType.Forward : loop);
-		this.frames = DynamicUtil.parseRange(frames);
-		switch(this.loop)
+		frameArr = DynamicUtil.parseRange(frames);
+		switch(loop)
 		{
 			case Backward:
-			this.frames.reverse();
+			frameArr.reverse();
 
 			case Both:
-			var f = this.frames.copy();
+			var f = frameArr.copy();
 			f.reverse();
-			this.frames = this.frames.concat(f);
+			frameArr = frameArr.concat(f);
 
 			case BothBackward:
-			var f = this.frames.copy();
-			this.frames.reverse();
-			this.frames = this.frames.concat(f);
+			var f = frameArr.copy();
+			frameArr.reverse();
+			frameArr = frameArr.concat(f);
 
 			case None:
 			case Forward:
@@ -60,5 +69,14 @@ class Animation
 
 		changed = true;
 		return this;
+	}
+
+	// Convenience method for changing frames or looping
+	public function setFrames(frames:Dynamic, ?loop:LoopType)
+	{
+		this.frames = frames;
+		if(loop != null)
+			this.loop = loop;
+		update();
 	}
 }
