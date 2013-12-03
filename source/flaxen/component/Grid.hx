@@ -32,14 +32,3 @@ class Grid extends Array2D<Int>
 		return this;
 	}
 }
-
-// String version of the integer-based Grid component
-class StringGrid extends Array2D<String>
-{
-	public var changed:Bool = true;
-
-	override public function new(width:Int, height:Int, initValue:Dynamic = null)
-	{
-		super(width, height, initValue);
-	}
-}
