@@ -1,9 +1,14 @@
+/*
+    This and Log should really be merged, and some things from Log should move to SystemUtil or something.
+*/
 package flaxen.util;
 
 #if !flash
 import sys.io.File;
 import sys.io.FileOutput;
 #end
+
+import flaxen.util.ArrayUtil;
 
 class LogUtil
 {
@@ -74,7 +79,7 @@ class LogUtil
 		if(Std.is(o, Int) || Std.is(o, Float) || Std.is(o, Bool) || Std.is(o, String))
 			return Std.string(o);
 
-		if(recursed != null && Util.find(recursed, o) != -1)
+		if(recursed != null && ArrayUtil.find(recursed, o) != -1)
 		 	return "<RECURSION>";
 
 		var clazz = Type.getClass(o);
