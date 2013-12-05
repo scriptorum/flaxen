@@ -376,6 +376,15 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return e.get(component);
 	}
 
+	// Same as getComponent but throws exceptions if entity or component are not found.
+	public function demandComponent<T>(name:String, component:Class<T>): T
+	{
+		var e:Entity = demandEntity(name);
+		if(!e.has(component))
+			Log.error("Demanded component not found:" + component + " in entity " + name);
+		return e.get(component);
+	}
+
 	// Removes an entity, looked up by name
 	// Returns quietly if entity is not found
 	public function removeEntity(name:String): Bool
