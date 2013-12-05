@@ -5,6 +5,8 @@
 */
 package flaxen.core;
 
+import haxe.CallStack;
+
 class Log
 {
 	inline public static function log(msg:String)
@@ -19,18 +21,20 @@ class Log
 		#end
 	}
 
-	inline public static function die(msg:String) // alias for error
+	inline public static function die(?msg:String) // alias for error
 	{
 		return error(msg);
 	}
 
-	inline public static function error(msg:String)
+	inline public static function error(msg:String = "Unspecified error")
 	{
-		// TEMP HACK because THROW isn't working properly
-		warn("ERROR: " + msg);
-		quit();
-
-		//throw msg;
+		#if flash
+			throw msg;
+		#else
+			// THROW isn't working properly since OpenFL 1.1.1
+			log("ERROR: " + msg + CallStack.toString(CallStack.callStack()));
+			quit();
+		#end
 	}
 
 	inline public static function assert(condition:Bool, ?msg:String = "Assert failed")
@@ -49,6 +53,8 @@ class Log
 
 	public static function quit()
 	{
-		flash.Lib.exit();
+		#if !flash
+			flash.Lib.exit();
+		#end
 	}
 }
