@@ -58,29 +58,55 @@ class ComponentSet
 		return this;
 	} 
 
+	// Removes a component from an entity, if it has one
+	public function remove(clazz:Class<Dynamic>): ComponentSet
+	{
+		return add(new RemoveComponentWrapper(clazz));
+	}
+
 	// Installs the components into the entity
 	public function addToEntity(entity:Entity)
 	{
 		for(component in components)
 		{
-			var instance:Dynamic = component;
-
-			if(Std.is(component, Array))
+			if(Std.is(component, RemoveComponentWrapper))
 			{
-				var a:Array<Dynamic> = cast component;
-				instance = Type.createInstance(a[0], a.slice(1));
+				var wrapper:RemoveComponentWrapper = cast component;
+				entity.remove(wrapper.clazz);
 			}
 
-			else if(Std.is(component, Class))
-				instance = Type.createEmptyInstance(component);
-
-			else if (Reflect.isFunction(component))
+			else
 			{
-				var f:Void->Dynamic = cast component;
-				instance = f();
-			}
+				var instance:Dynamic = component;
 
-			entity.add(instance);
+				if(Std.is(component, Array))
+				{
+					var a:Array<Dynamic> = cast component;
+					instance = Type.createInstance(a[0], a.slice(1));
+				}
+
+				else if(Std.is(component, Class))
+					instance = Type.createEmptyInstance(component);
+
+				else if (Reflect.isFunction(component))
+				{
+					var f:Void->Dynamic = cast component;
+					instance = f();
+				}
+
+				entity.add(instance);
+			}
+				
 		}
+	}
+}
+
+private class RemoveComponentWrapper
+{
+	public var clazz:Class<Dynamic>;
+
+	public function new(clazz:Class<Dynamic>)
+	{
+		this.clazz = clazz;
 	}
 }
