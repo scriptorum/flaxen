@@ -22,6 +22,7 @@ class LogUtil
                 var str:String = dumpEntity(entity, depth, preventRecursion);
                 fo.writeString(str + "\n");
             }
+            fo.close();
         }
     #end
 
