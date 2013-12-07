@@ -1,0 +1,10 @@
+#Flaxen
+Flaxen is a Haxe-based solution that combines a game engine ([HaxePunk](https://github.com/HaxePunk/HaxePunk)) with an entity component system ([Ash-Haxe](https://github.com/nadako/Ash-HaXe)).
+
+## OVERVIEW
+I'm putting up this library partially because other people might be interested in it, but mostly because it's the base code I've been using for game jams. It's pretty much just for me. That being said, you can use this code if you like, but it's entirely at your own risk. It evolves on a whim, and I break it a lot, so there you go.
+
+## HOW TO USE IT
+I've got a few demos in there to show off some of the features. Essentially you create a Flaxen object, register any of your systems, and start adding entities with newSingleton or newEntity. The systems process entities that meet certain characteristics (see nodes in Ash). To add an image to the screen you'll need to create an entity with an Image component and also a Position component. You can then add Scale, Rotation, Offset, and Origin components. An Image can also be combined with an ImageGrid (specifes how a packed image is gridded) and either a Tile (to pick one image from the pack) or a Grid (to show multiple images in a tiled map). You can move entities with Velocity and the MovementSystem or adding a Tween. Sequential steps can be managed by creating an ActionQueue. There's also a fledgling layout manager in there for handling portrait/landscape layout differences and scaling appropriately.
+
+At some point I may provide proper documentation, but for now check out [HaxePunk](https://github.com/HaxePunk/HaxePunk) and [Ash-Haxe](https://github.com/nadako/Ash-HaXe), then look at the few demos provided and dig into the built-in systems, components, and view subclasses. If I successfully complete Ludum Dare 28, I'll put here a link to that code, so you can see a fuller example of the library in use.
