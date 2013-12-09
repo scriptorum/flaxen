@@ -9,6 +9,9 @@
 
 package flaxen.core;
 
+import ash.core.Entity;
+import ash.core.Node;
+import com.haxepunk.HXP;
 import flaxen.common.Easing;
 import flaxen.component.ActionQueue;
 import flaxen.component.Alpha;
@@ -25,27 +28,20 @@ import flaxen.component.Position;
 import flaxen.component.Timestamp;
 import flaxen.component.Transitional;
 import flaxen.component.Tween;
-import flaxen.core.FlaxenScene;
-import flaxen.core.FlaxenHandler;
 import flaxen.core.ComponentSet;
+import flaxen.core.FlaxenHandler;
+import flaxen.core.FlaxenOptions;
+import flaxen.core.FlaxenScene;
+import flaxen.core.FlaxenSystem;
 import flaxen.node.CameraFocusNode;
 import flaxen.node.LayoutNode;
 import flaxen.node.SoundNode;
 import flaxen.node.TransitionalNode;
 import flaxen.service.CameraService;
 import flaxen.service.InputService;
-import flaxen.system.ActionSystem;
-import flaxen.system.AudioSystem;
-import flaxen.system.CameraSystem;
-import flaxen.system.InputSystem;
-import flaxen.system.ModeSystem;
-import flaxen.system.RenderingSystem;
-import flaxen.system.TweeningSystem;
-import ash.core.Entity;
-import ash.core.Node;
-import com.haxepunk.HXP;
+import flaxen.system.*;
 
-#if PROFILER
+#if PROFILER // TODO not tested
 	import flaxen.system.ProfileSystem;
 	import flaxen.service.ProfileService;
 #end
@@ -73,27 +69,40 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	public var baseHeight:Int;
 	public var layoutOrientation:Orientation;
 	public var layoutOffset:Position;
+	public var options:FlaxenOptions;
 
 	// width/height -> leave 0 to match window dimensions
-	public function new(width:Int = 0, height:Int = 0, fps:Int = 60) 
+	// can pass a FlaxenOptions object instead for the first parameter
+	public function new(?optionsOrWidth:Dynamic, ?height:Int, ?fps:Int, ?fixed:Bool, ?smoothing:Bool,
+		?earlySystems:Array<Class<FlaxenSystem>>, ?lateSystems:Array<Class<FlaxenSystem>>)
 	{
+		if(Std.is(optionsOrWidth, FlaxenOptions))
+			this.options = optionsOrWidth;
+		else this.options = new FlaxenOptions(optionsOrWidth, height, fps, fixed, 
+			smoothing, earlySystems, lateSystems);
+
 		layouts = new Map<String,Layout>();
 		sets = new Map<String,ComponentSet>();
 		ash = new ash.core.Engine(); // Ash entity component system
+		baseWidth = options.width;
+		baseHeight = options.height;
 
 		// Add support for dependent node removal
 		ash.getNodeList(DependentsNode).nodeRemoved.add(dependentsNodeRemoved);
 
 		getApp(); // Create entity with Application component
-		addBuiltInSystems(); // initialize entity component systems
 
-		baseWidth = width;
-		baseHeight = height;
+		trace("Options:" + options.width + "x" + options.height + " " + options.fps + "FPS" 
+			+ (options.fixed ? " FIXED" : " VARIABLE") + (options.smoothing ? "SMOOTH" : ""));
 
-		super(width, height, fps, false,
+		// Add built-in entity component systems
+		addSystems(options.earlySystems, Early); 
+		addSystems(options.lateSystems, Late); 
+
+		super(options.width, options.height, options.fps, options.fixed,
 			#if HaxePunkForceBuffer com.haxepunk.RenderMode.BUFFER #else null #end);
 
-		// HXP.screen.smoothing = true;		
+		HXP.screen.smoothing = options.smoothing;
 	}
 
 	override public function init()
@@ -106,20 +115,16 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		InputService.init();
 	}	
 
-	public function ready() { } // Override
+	public function ready() { } // Override this to start your game
 
-	private function addBuiltInSystems()
+	// Adds a bunch of FlaxenSystems at once to the system group specified
+	public function addSystems(systems:Array<Class<FlaxenSystem>>, ?group:FlaxenSystemGroup)
 	{
-		// Early Systems
-		addSystem(modeSystem = new ModeSystem(this), Early);
-		addSystem(inputSystem = new InputSystem(this), Early);
+		if(systems == null)
+			return;
 
-		// Late Systems
-		addSystem(new CameraSystem(this), Late); // TODO Maybe this shouldn't be standard
-		addSystem(new ActionSystem(this), Late);
-		addSystem(new TweeningSystem(this), Late);
-		addSystem(new RenderingSystem(this), Late);
-		addSystem(new AudioSystem(this), Late);
+		for(sys in systems)
+			addSystem(Type.createInstance(sys, [this]), group);
 	}
 
 	// Systems operate in the order that they are added.
@@ -144,6 +149,12 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
     	#if PROFILER
     		ash.addSystem(new ProfileSystem(name, false), nextPriority(group));
     	#end
+
+		// These systems need to be remembered for further configuration
+    	if(Std.is(system, ModeSystem))
+    		modeSystem = cast system;
+    	else if(Std.is(system, InputSystem))
+    		inputSystem = cast system;
     }
 
     private function nextPriority(?group:FlaxenSystemGroup): Int
@@ -654,6 +665,8 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	// Adds a function that is called when an application mode is started
 	public function setStartHandler(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
+		if(modeSystem == null)
+			Log.error("ModeSystem is not available");
 		modeSystem.registerStartHandler(mode == null ? Always : mode, callback);
 		return this;
 	}
@@ -661,6 +674,8 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	// Adds a function that is called when an application mode is stopped
 	public function setStopHandler(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
+		if(modeSystem == null)
+			Log.error("ModeSystem is not available");
 		modeSystem.registerStopHandler(mode == null ? Always : mode, callback);
 		return this;
 	}
@@ -671,6 +686,8 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	// systems.
 	public function setInputHandler(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
+		if(inputSystem == null)
+			Log.error("InputSystem is not available");
 		inputSystem.registerHandler(mode == null ? Always : mode, callback);
 		return this;
 	}
