@@ -26,15 +26,9 @@ class Log
 		return error(msg);
 	}
 
-	inline public static function error(msg:String = "Unspecified error")
+	public static function error(msg:String = "Unspecified error")
 	{
-		#if flash
-			throw msg;
-		#else
-			// THROW isn't working properly since OpenFL 1.1.1
-			log("ERROR: " + msg + CallStack.toString(CallStack.callStack()));
-			quit();
-		#end
+		throw(msg);
 	}
 
 	inline public static function assert(condition:Bool, ?msg:String = "Assert failed")

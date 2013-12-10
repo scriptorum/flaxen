@@ -77,8 +77,8 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		?earlySystems:Array<Class<FlaxenSystem>>, ?lateSystems:Array<Class<FlaxenSystem>>)
 	{
 		if(Std.is(optionsOrWidth, FlaxenOptions))
-			this.options = optionsOrWidth;
-		else this.options = new FlaxenOptions(optionsOrWidth, height, fps, fixed, 
+			options = optionsOrWidth;
+		else options = new FlaxenOptions(optionsOrWidth, height, fps, fixed, 
 			smoothing, earlySystems, lateSystems);
 
 		layouts = new Map<String,Layout>();
@@ -92,13 +92,11 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
 		getApp(); // Create entity with Application component
 
-		trace("Options:" + options.width + "x" + options.height + " " + options.fps + "FPS" 
-			+ (options.fixed ? " FIXED" : " VARIABLE") + (options.smoothing ? "SMOOTH" : ""));
-
 		// Add built-in entity component systems
 		addSystems(options.earlySystems, Early); 
 		addSystems(options.lateSystems, Late); 
 
+		Log.assert(options.fps > 0, "FPS must be positive");
 		super(options.width, options.height, options.fps, options.fixed,
 			#if HaxePunkForceBuffer com.haxepunk.RenderMode.BUFFER #else null #end);
 

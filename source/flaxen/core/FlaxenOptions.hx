@@ -1,6 +1,7 @@
 package flaxen.core;
 
 import flaxen.core.FlaxenSystem;
+import flaxen.core.Log;
 import flaxen.system.*;
 
 class FlaxenOptions

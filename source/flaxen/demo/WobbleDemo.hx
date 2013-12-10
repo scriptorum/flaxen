@@ -53,7 +53,7 @@ class WobbleDemo extends Flaxen
 		if(InputService.clicked)
 		{
 			var e = demandEntity(logo); // get entity or Log.error( error 
-			var tween = e.get(Tween));
+			var tween = e.get(Tween);
 			var target = { x:tween.target.y, y:tween.target.x }; // swap targets
 			wobble(e, target);
 		}
