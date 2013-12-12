@@ -84,9 +84,17 @@ class Array2D<T>
 
 	public inline function fromIndex(index:Int): Point
 	{
-		var x = index % width;
-		var y = Math.floor(index / width);
-		return new Point(x, y);
+		return new Point(getX(index), getY(index));
+	}
+
+	public inline function getX(index:Int): Int
+	{
+		return index % width;
+	}
+
+	public inline function getY(index:Int): Int
+	{
+		return Math.floor(index / width);
 	}
 
 	public function setRect(xOff:Int, yOff:Int, width:Int, height:Int, value:Dynamic): Array2D<T>
