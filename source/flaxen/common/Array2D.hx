@@ -10,10 +10,10 @@ class Array2D<T>
 	private static var ORTHONGONAL_NEIGHBORS = Point.makeArray([-1,0,    0,-1,  1,0,   0,1]);
 	private static var DIAGONAL_NEIGHBORS =    Point.makeArray([-1,-1,  1,-1,  -1,1,  1,1]);
 
-	public var array:Array<T>;
-	public var width:Int;
-	public var height:Int;
-	public var size:Int;
+	public var array(default,null):Array<T>;
+	public var width(default,null):Int;
+	public var height(default,null):Int;
+	public var size(default,null):Int;
 
 	public function new(width:Int, height:Int, fill:Dynamic)
 	{
