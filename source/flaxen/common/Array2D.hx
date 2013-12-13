@@ -60,7 +60,7 @@ class Array2D<T>
 	public function get(x:Int, y:Int): T
 	{
 		verify(x, y);
-		return array[indexOf(x,y)];
+		return array[toIndex(x,y)];
 	}
 
 	public function setIndex(index:Int, value:T): Array2D<T>
@@ -73,11 +73,11 @@ class Array2D<T>
 	public function set(x:Int, y:Int, value:T): Array2D<T>
 	{
 		verify(x, y);
-		array[indexOf(x,y)] = value;
+		array[toIndex(x,y)] = value;
 		return this;
 	}
 
-	public inline function indexOf(x:Int, y:Int): Int
+	public inline function toIndex(x:Int, y:Int): Int
 	{
 		return x + y * width;
 	}
@@ -145,7 +145,7 @@ class Array2D<T>
 				var y = offset.y + pt.y;
 				if(withinDomain(x,y))
 				{
-					var idx = indexOf(x, y);
+					var idx = toIndex(x, y);
 					neighbors.push(idx);
 				}
 			}
