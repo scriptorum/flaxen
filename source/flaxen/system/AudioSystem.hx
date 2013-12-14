@@ -66,7 +66,7 @@ class AudioSystem extends FlaxenSystem
 		if(globalAudio.muted)
 			return;
 
-		var nmeSound = Assets.getSound((sound.isMusic ? "music/" : "sound/") + sound.file);
+		var nmeSound = Assets.getSound(sound.file);
 		if(nmeSound == null)
 		{
 			handleFailure(entity, sound, "Cannot load sound");

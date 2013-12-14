@@ -28,6 +28,7 @@ import flaxen.component.Position;
 import flaxen.component.Timestamp;
 import flaxen.component.Transitional;
 import flaxen.component.Tween;
+import flaxen.component.Sound;
 import flaxen.core.ComponentSet;
 import flaxen.core.FlaxenHandler;
 import flaxen.core.FlaxenOptions;
@@ -727,7 +728,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	}
 
 	/*
-	 * AUDIO FUNCTIONS
+	 * GLOBAL AUDIO FUNCTIONS
 	 */
 
 	// Stops all currently playing sounds
@@ -835,7 +836,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
 	// Creates a new ActionQueue and a new Entity to hold it
 	// This Entity will be destroyed when the queue completes
-	public function addActionQueue(name:String = null): ActionQueue
+	public function newActionQueue(name:String = null): ActionQueue
 	{
 		var e = (name == null ? newEntity("aq") : newSingleton(name));
 		var aq = new ActionQueue();
@@ -848,7 +849,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
 	// Creates a new Tween and adds a new Entity to hold it
 	// This Entity will be destroyed when the tween completes
-	public function addTween(source:Dynamic, target:Dynamic, duration:Float, 
+	public function newTween(source:Dynamic, target:Dynamic, duration:Float, 
 		easing:EasingFunction = null, autoStart:Bool = true, name:String = null, 
 		parent:String = null): Tween
 	{
@@ -863,6 +864,16 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
 		return tween;
 	}
+
+	// Convenience method for plays a new sound
+	public function newSound(path:String, loop:Bool = false, offset:Float = 0): Entity
+	{
+		var e = newEntity("sound");
+		var sound = new Sound(path, loop, offset);
+		sound.destroyEntity = true;
+		e.add(sound);
+		return e;
+	}	
 }
 
 class DependentsNode extends Node<DependentsNode>
