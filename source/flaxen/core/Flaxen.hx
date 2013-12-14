@@ -314,6 +314,28 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return newSingleton(name);
 	}
 
+	// Creates and adds the second entity, making it dependent of the first entity
+	// The parent may be specified by name or by passing the Entity itself
+	// Returns the child entity
+	public function newChildEntity(parent:Dynamic, child:String): Entity
+	{
+		var childEnt = newEntity(child);
+		var parentEnt:Entity = (Std.is(parent, Entity) ? cast parent : demandEntity(cast parent));
+		addDependent(parentEnt, childEnt);
+		return childEnt;
+	}
+
+	// Creates and adds the second entity as a singleton, making it dependent of the first entity
+	// The parent may be specified by name or by passing the Entity itself
+	// Returns the child entity
+	public function newChildSingleton(parent:Dynamic, child:String): Entity
+	{
+		var childEnt = newSingleton(child);
+		var parentEnt:Entity = (Std.is(parent, Entity) ? cast parent : demandEntity(cast parent));
+		addDependent(parentEnt, childEnt);
+		return childEnt;
+	}
+
 	// Returns a unique entity name, with an optionally specified prefix
 	public function getEntityName(prefix:String = DEFAULT_ENTITY_NAME,
 		unique:Bool = true): String

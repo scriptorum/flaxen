@@ -18,11 +18,6 @@ class EmitterView extends View
 	private var change:Emitter; // Tests for changes
 	private var display:com.haxepunk.graphics.Emitter;
 
-	#if flash // Flash bug hack https://github.com/HaxePunk/HaxePunk/issues/153
-		private var pxOff:Float;
-		private var pyOff:Float;
-	#end
-
 	override public function begin()
 	{
 		type = "emitter";
@@ -48,10 +43,6 @@ class EmitterView extends View
 			var pWidth:Int = emitter.scale == null ? bm.width : cast (bm.width * emitter.scale.x);
 			var pHeight:Int = emitter.scale == null ? bm.height : cast (bm.height * emitter.scale.y);
 			graphic = display = new com.haxepunk.graphics.Emitter(emitter.particle, pWidth, pHeight);
-			#if flash // Flash bug hack https://github.com/HaxePunk/HaxePunk/issues/153
-				pxOff = -pWidth / 2;
-				pyOff = -pHeight / 2;
-			#end
 	        display.newType(FX, [0]);
 	        displayChanged = true;
 		}
@@ -114,7 +105,10 @@ class EmitterView extends View
 
 		if(displayChanged || emitter.maxParticles != change.maxParticles || lifespanChanged)
 		{
-			emitter.particlesPerSec = 1 / (emitter.maxParticles / (emitter.lifespan + emitter.lifespanRand / 2));
+			emitter.particlesPerSec = emitter.maxParticles / (emitter.lifespan + emitter.lifespanRand / 2);
+			var secondsPerParticle = 1/ emitter.particlesPerSec;
+			if(emitter.accum < secondsPerParticle)
+				emitter.accum = secondsPerParticle;
 			change.maxParticles = emitter.maxParticles;
 		}
 	}
@@ -131,17 +125,21 @@ class EmitterView extends View
 				// Possibly fire more particles out
 				if(display.particleCount < emitter.maxParticles)
 				{
-		        	emitter.elapsed += HXP.elapsed;  
-		        	var needed:Int = Math.floor(emitter.elapsed / emitter.particlesPerSec);
-		        	emitter.elapsed -= needed * emitter.particlesPerSec;
+		        	emitter.elapsed += HXP.elapsed;
+		        	emitter.accum += HXP.elapsed;
+		        	var needed:Int = Math.floor(emitter.accum * emitter.particlesPerSec);
+		        	emitter.accum -= needed / emitter.particlesPerSec;
 
 		        	for(i in 0...needed)
 		        		fire();
 				}
 
 		    	// Stop emitter if we've created enough
-		    	if(emitter.maxEmissions > 0 && emitter.totalEmissions >= emitter.maxEmissions)
+		    	if((emitter.stopAfterEmissions > 0 && emitter.totalEmissions >= emitter.stopAfterEmissions)
+		    			|| (emitter.stopAfterSeconds > 0 && emitter.elapsed >= emitter.stopAfterSeconds))
+		    	{
     				emitter.active = false;
+		    	}
 			}
 
 			// Check if emitter should be marked as complete
@@ -178,12 +176,6 @@ class EmitterView extends View
 		// Emit particle within a rectangle
     	var px = emitter.position == null ? 0 : emitter.position.x;
     	var py = emitter.position == null ? 0 : emitter.position.y;
-
-    	// Flash bug hack https://github.com/HaxePunk/HaxePunk/issues/153
-    	#if flash
-    		px += pxOff;
-    		py += pyOff;
-    	#end
 
 		if(emitter.emitRectRand != null)
 		{
