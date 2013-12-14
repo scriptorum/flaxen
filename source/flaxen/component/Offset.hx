@@ -1,7 +1,7 @@
 package flaxen.component;
 
 /*
- * This changes the center point of the image. It does not change the transformation point! 
+ * This changes the center point of the image. It does not change the rotation point! 
  * To do that, use Origin. Supply true for asPercentage to interpret x/y as percentages of
  * width/height. For example new Offset(-0.5, -0.5, true) centers any image.
  */

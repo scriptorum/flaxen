@@ -143,12 +143,14 @@ class View extends com.haxepunk.Entity
 			if(hasComponent(Origin))
 			{
 				var o = getComponent(Origin);
-				if(o.x != img.originX || o.y != img.originY || scaleChanged)
+				var ox = (o.asPercentage ? o.x * img.width : o.x);
+				var oy = (o.asPercentage ? o.y * img.height : o.y);
+				if(ox != img.originX || oy != img.originY || scaleChanged)
 				{
-					img.originX = cast o.x; // HaxePunk scales origin for us
-					img.originY = cast o.y; // But then they shift the position too! 
-					img.x = cast(img.scaleX == 1 ? o.x : o.x * img.scaleX); // So calculate the scaled origin
-					img.y = cast(img.scaleY == 1 ? o.y : o.y * img.scaleY); // And move the position back
+					img.originX = cast ox; // HaxePunk scales origin for us
+					img.originY = cast oy; // But then they shift the position too! 
+					img.x = cast(img.scaleX == 1 ? ox : ox * img.scaleX); // So calculate the scaled origin
+					img.y = cast(img.scaleY == 1 ? oy : oy * img.scaleY); // And move the position back
 				}
 			}
 			else if(img.originX != 0 || img.originY != 0)
