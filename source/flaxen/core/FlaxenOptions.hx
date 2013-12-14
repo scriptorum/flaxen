@@ -17,13 +17,13 @@ class FlaxenOptions
 	public var lateSystems:Array<Class<FlaxenSystem>>;
 
 	// Creates a basic FlaxenOptions object
-	public function new(width:Int = 0, height:Int = 0, fps:Int = 60, fixed:Bool = false, 
+	public function new(width:Int = 0, height:Int = 0, ?fps:Int, fixed:Bool = false, 
 		smoothing:Bool = false, ?earlySystems:Array<Class<FlaxenSystem>>, 
 		?lateSystems:Array<Class<FlaxenSystem>>)
 	{
 		this.width = width;
 		this.height = height;
-		this.fps = fps;
+		this.fps = (fps == null || fps == 0 ? 60 : fps);
 		this.fixed = fixed;
 		this.smoothing = smoothing;
 

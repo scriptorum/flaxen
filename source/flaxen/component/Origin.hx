@@ -5,6 +5,8 @@ package flaxen.component;
  * To do that, use Offset. (Center point? Maybe you mean 'position' point?)
  * 
  * Note that HaxePunk's notion of origin really means "transformation and center point." I dunlike.
+ *
+ * TODO - Support percentage based origins like in Offset, and add center() static function
  */
 class Origin
 {
