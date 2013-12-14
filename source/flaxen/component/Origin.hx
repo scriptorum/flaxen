@@ -21,6 +21,6 @@ class Origin
 
 	inline public static function center(): Origin
 	{
-		return new Origin(-0.5, -0.5, true);
+		return new Origin(0.5, 0.5, true);
 	}
 }
