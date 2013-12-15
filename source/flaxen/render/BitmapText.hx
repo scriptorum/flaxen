@@ -295,6 +295,7 @@ class BitmapText extends Image
 			var seekingCharStart:Bool = true;
 			var startX:Int = 0; // start of letter
 			var x:Int = 0;
+			var glyphsExpected:Int = charSet.length;
 			for(ch in charSet.split(""))
 			{	
 				while(x < fontBitmap.width)
@@ -323,12 +324,17 @@ class BitmapText extends Image
 						seekingCharStart = true;
 						var glyphWidth = x - startX; // Glyph width without kerning
 						glyphs.set(ch, new Rectangle(startX, 0, glyphWidth, fontBitmap.height));
+						glyphsExpected--;
 						break; // Move to next character
 					}
 
 					x++;
 				}
 			}
+
+			// Throw warnings for wrong number of glyphs
+			if(glyphsExpected != 0)
+				Log.warn("Gylphs are missing; expected " + glyphsExpected + " more glyphs in the bitmap.");
 
 			// Store glyphs in font cache
 			fontCache.set(fontBitmap, glyphs);

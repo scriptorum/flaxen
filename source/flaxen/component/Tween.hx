@@ -25,6 +25,8 @@ class Tween
 	public var destroyComponent:Bool = false;
 	public var fields:Array<String>;
 	public var name:String; // optional object name for logging
+	public var stopAfterLoops:Int = 0; // Only if loop is not None; if 0 assumed infinite
+	public var loopCount(default, null):Int = 0;
 
 	public function new(source:Dynamic, target:Dynamic, duration:Float, 
 		easing:EasingFunction = null, autoStart:Bool = true)
@@ -95,7 +97,7 @@ class Tween
 
  		if(elapsed >= duration)
  		{
-			if(loop == LoopType.None)
+			if(loop == LoopType.None || ++loopCount >= stopAfterLoops)
 			{				
  				complete = true;
  				return;

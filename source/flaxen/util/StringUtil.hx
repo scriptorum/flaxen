@@ -32,4 +32,23 @@ class StringUtil
     		return arr;
     	return str.split(delim);
     }
+
+    public static function formatCommas(num:Int): String
+    {
+        if(num < 1000)
+            return Std.string(num);
+
+        var tail = Std.string(num % 1000);
+        if(tail.length < 3)
+            tail = repeat("0", 3 - tail.length) + tail;
+        return formatCommas(Std.int(num / 1000)) + "," + tail;
+    }
+
+    public static function repeat(toRepeat:String, count:Int): String
+    {
+        var str:String = "";
+        for(i in 0...count)
+            str += toRepeat;
+        return str;
+    }
 }
