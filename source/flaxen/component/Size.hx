@@ -1,4 +1,6 @@
-
+/**
+	An alternative to the Scale component. Scales the image to the fixed dimensions specified.
+*/
 package flaxen.component;
 
 import com.haxepunk.HXP;

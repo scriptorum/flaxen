@@ -34,4 +34,14 @@ class Rotation
 			return false;
 		return (o1.matches(o2));
 	}
+
+	public static function random(): Rotation
+	{
+		return new Rotation(Math.random() * 360);
+	}
+
+	public static function zero(): Rotation
+	{
+		return new Rotation(0);
+	}
 }
