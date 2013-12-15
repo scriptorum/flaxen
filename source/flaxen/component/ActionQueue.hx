@@ -27,7 +27,7 @@ class ActionQueue
 		this.name = "queue"  + Std.string(++created);
 	}
 
-	public function add(action:Action): Action
+	public function add(action:Action): ActionQueue
 	{
 		if(first == null)
 			first = last = action;
@@ -37,47 +37,47 @@ class ActionQueue
 			last = action;
 		}
 
-		return action;
+		return this;
 	}
 
 	// Convenience adders
-	public function delay(duration:Float): Action
+	public function delay(duration:Float): ActionQueue
 	{
 		return(add(new ActionDelay(duration)));
 	}
-	public function log(message:String): Action
+	public function log(message:String): ActionQueue
 	{
 		return(add(new ActionLog(message)));
 	}
-	public function addComponent(entity:Entity, component:Dynamic): Action
+	public function addComponent(entity:Entity, component:Dynamic): ActionQueue
 	{
 		return(add(new ActionAddComponent(entity, component)));
 	}
-	public function removeComponent(entity:Entity, component:Class<Dynamic>): Action
+	public function removeComponent(entity:Entity, component:Class<Dynamic>): ActionQueue
 	{
 		return(add(new ActionRemoveComponent(entity, component)));
 	}
-	public function addEntity(engine:Engine, entity:Entity): Action
+	public function addEntity(engine:Engine, entity:Entity): ActionQueue
 	{
 		return(add(new ActionAddEntity(engine, entity)));
 	}
-	public function removeEntityByName(engine:Engine, entityName:String): Action
+	public function removeEntityByName(engine:Engine, entityName:String): ActionQueue
 	{
 		return(add(new ActionRemoveEntityByName(engine, entityName)));
 	}
-	public function removeEntity(engine:Engine, entity:Entity): Action
+	public function removeEntity(engine:Engine, entity:Entity): ActionQueue
 	{
 		return(add(new ActionRemoveEntity(engine, entity)));
 	}
-	public function waitForProperty(object:Dynamic, property:String, value:Dynamic): Action
+	public function waitForProperty(object:Dynamic, property:String, value:Dynamic): ActionQueue
 	{
 		return(add(new ActionWaitForProperty(object, property, value)));
 	}
-	public function addCallback(func:Void->Void): Action
+	public function addCallback(func:Void->Void): ActionQueue
 	{
 		return(add(new ActionCallback(func)));
 	}
-	public function addThread(func:Void->Bool): Action // AKA waitForTrue(func)
+	public function addThread(func:Void->Bool): ActionQueue // AKA waitForTrue(func)
 	{
 		return(add(new ActionThread(func)));
 	}
