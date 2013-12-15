@@ -118,8 +118,8 @@ class Array2D<T>
 	// If orthogonalOnly is passed, diagonal points are not considered adjacent
 	public function pointsAreAdjacent(x1:Int, y1:Int, x2:Int, y2:Int, orthogonalOnly:Bool = false): Bool
 	{
-		var dx = MathUtil.idiff(x1, x2);
-		var dy = MathUtil.idiff(y1, y2);
+		var dx = MathUtil.diff(x1, x2);
+		var dy = MathUtil.diff(y1, y2);
 
 		if(orthogonalOnly)
 			return ((dx == 1 && dy == 0) || (dx == 0 && dy == 1));

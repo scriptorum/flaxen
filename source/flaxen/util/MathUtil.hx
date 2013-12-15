@@ -2,7 +2,7 @@ package flaxen.util;
 
 class MathUtil
 {
-	public static function rnd(min:Int, max:Int): Int
+	public static function rnd<T:Float,Int>(min:T, max:T): T
 	{
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	}	
@@ -22,39 +22,27 @@ class MathUtil
 		return 0;
 	}
 
-	public static function isign(i:Int): Int
-	{		
-		if(i == 0)
-			return 0;
-		return i < 0 ? -1 : 1;
-	}
-
-	public static function imin(a:Int, b:Int): Int
+	public static function min<T:Float,Int>(a:T, b:T): T
 	{
 		return (a < b ? a : b);
 	}
 
-	public static function imax(a:Int, b:Int): Int
+	public static function max<T:Float,Int>(a:T, b:T): T
 	{
 		return (a > b ? a : b);
 	}
 
-	public static function iabs(num:Int): Int
+	public static function abs<T:Float,Int>(num:T): T
 	{
 		return (num < 0 ? -num : num);
 	}
 
-    public static function idiff(a:Int, b:Int): Int
+    public static function diff<T:Float,Int>(a:T, b:T): T
     {
         return (a > b ? a - b : b - a);
     }
 
-    public static function diff(a:Float, b:Float): Float
-    {
-        return (a > b ? a - b : b - a);
-    }
-
-    // Returns true if both numbers match within tolerance decimal places.
+    // Returns true if both floats match within tolerance decimal places.
     public static function matches(a:Float, b:Float, tolerance:Int = 0): Bool
     {
         return (roundTo(a, tolerance) == roundTo(b, tolerance));
