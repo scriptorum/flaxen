@@ -1,3 +1,4 @@
+
 package flaxen.component;
 
 import flaxen.render.view.View;
@@ -6,6 +7,7 @@ import flaxen.render.view.View;
 
 class Display
 {
+	public var updateId:Int = -1;
 	public var view:View;
 	public var destroyEntity:Bool = false;
 

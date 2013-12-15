@@ -1,4 +1,3 @@
-
 //
 // I'm still not happy with the way transformation points/position points work here.
 //
@@ -19,6 +18,7 @@ import flaxen.component.Image;
 import flaxen.component.ImageGrid;
 import flaxen.core.Log;
 import com.haxepunk.HXP;
+import com.haxepunk.Graphic;
 
 import ash.core.Entity;
 
@@ -27,6 +27,7 @@ class View extends com.haxepunk.Entity
 	public var entity:Entity;
 	public var currentSize:Size = null;
 	public var currentScale:Scale = null;
+	public var currentGraphic:Graphic = null;
 
 	public function new(entity:Entity)
 	{
@@ -35,8 +36,6 @@ class View extends com.haxepunk.Entity
 		this.entity = entity;
 		begin();
 		nodeUpdate();
-
-		// trace("Created view from " + entity.name + " with position " + x + "," + y);
 	}
 
 	public function hasComponent<T>(component:Class<T>): Bool
@@ -61,11 +60,18 @@ class View extends com.haxepunk.Entity
 	public function nodeUpdate(): Void
 	{
 		if(graphic == null)
-			return;
-
+			return;	
+			
 		visible = !hasComponent(Invisible);
 		if(!visible)
 			return;
+
+		var graphicChanged = false;
+		if(currentGraphic != graphic)
+		{
+			currentGraphic = graphic;
+			graphicChanged = true;			
+		}
 
 		// For certain view subclasses
 		var img:com.haxepunk.graphics.Image = 
@@ -92,8 +98,8 @@ class View extends com.haxepunk.Entity
 		}
 
 		// Handle image specific updates
-		var scaleChanged = false;
-		var sizeChanged = false;
+		var scaleChanged = graphicChanged;
+		var sizeChanged = graphicChanged;
 		if(img != null)
 		{
 			// Update specified size
