@@ -81,10 +81,10 @@ class AudioSystem extends FlaxenSystem
 		}
 
 		if(sound.destroyEntity || sound.destroyComponent)
-		if(channel == null) Log.warn("WTF!");
-			channel.addEventListener (Event.SOUND_COMPLETE, function(_) {
-				sound.complete = true;
-			});			
+		channel.addEventListener (Event.SOUND_COMPLETE, function(_) 
+		{
+			sound.complete = true;
+		});			
 
 		var audio = new Audio(channel);
 		entity.add(audio);

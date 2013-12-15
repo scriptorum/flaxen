@@ -866,10 +866,11 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	}
 
 	// Convenience method for plays a new sound
-	public function newSound(path:String, loop:Bool = false, offset:Float = 0): Entity
+	public function newSound(file:String, loop:Bool = false, volume:Float = 1, pan:Float = 0, 
+		offset:Float = 0): Entity
 	{
 		var e = newEntity("sound");
-		var sound = new Sound(path, loop, offset);
+		var sound = new Sound(file, loop, volume, pan, offset);
 		sound.destroyEntity = true;
 		e.add(sound);
 		return e;

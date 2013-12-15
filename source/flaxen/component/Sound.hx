@@ -17,14 +17,16 @@ class Sound
 	public var failsAllowed:Int = 0; // if cannot play sound, tries again N times if this is positive
 
 	// May be modified real-time, will be picked up by AudioSystem
-	public var volume:Float = 1; // 0-1
-	public var pan:Float = 0; // -1 full left, +1 full right
+	public var volume:Float; // 0-1
+	public var pan:Float; // -1 full left, +1 full right
 
-	public function new(file:String, loop:Bool = false, offset:Float = 0)
+	public function new(file:String, loop:Bool = false, volume:Float = 1, pan:Float = 0, offset:Float = 0)
 	{
 		this.isMusic = file.endsWith("mp3");
 		this.file = file;
 		this.loop = loop;
+		this.volume = volume;
+		this.pan = pan;
 		this.offset = offset;
 	}
 }
