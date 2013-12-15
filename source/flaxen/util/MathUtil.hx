@@ -4,7 +4,9 @@ class MathUtil
 {
 	public static function rnd<T:Float,Int>(min:T, max:T): T
 	{
-		return Math.floor(Math.random() * (max - min + 1)) + min;
+		return cast(Std.is(min,Int) ? 
+			(Math.floor(Math.random() * (max - min + 1) + min)) :
+			(Math.random() * (max - min) + min));
 	}	
 
     public static function roundTo(value:Float, precision:Int): Float
