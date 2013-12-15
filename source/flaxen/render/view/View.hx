@@ -91,6 +91,7 @@ class View extends com.haxepunk.Entity
 			}
 		}
 
+		// Handle image specific updates
 		var scaleChanged = false;
 		var sizeChanged = false;
 		if(img != null)

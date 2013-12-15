@@ -121,4 +121,21 @@ class Position
 	{
 		return new Position(HXP.width, HXP.height);
 	}
+
+	// #if checkNaN
+	// 	private var _y:Float;
+	// 	public var y(get,set):Float;
+	// 	public function set_y(y:Float): Float { 
+	// 		if(Math.isNaN(y)) throw "Position.y is not a number"; return _y = y; }
+	// 	public function get_y(): Float { return _y; }
+
+	// 	private var _x:Float;
+	// 	public var x(get,set):Float;
+	// 	public function set_x(x:Float): Float { 
+	// 		if(Math.isNaN(x)) throw "Position.x is not a number"; return _x = x; }
+	// 	public function get_x(): Float { return _x; }
+	// #else
+	// 	public var x:Float;
+	// 	public var y:Float;
+	// #end
 }

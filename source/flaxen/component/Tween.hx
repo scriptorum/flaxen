@@ -32,6 +32,7 @@ class Tween
 		this.source = source;
 		this.target = target;
 		this.duration = duration;
+		Log.assert(duration > 0);
 		this.easing = (easing == null ? Easing.linearTween : easing);
 		this.loop = LoopType.None;
 		this.name = "tween"  + Std.string(++created);
@@ -60,9 +61,9 @@ class Tween
 			var sVal:Float = Reflect.getProperty(source, field);
 			var tVal:Float = Reflect.getProperty(target, field);
 			if(Math.isNaN(tVal))
-				Log.error("Property " + field + " is not a number");
+				Log.error("Property " + field + " is not a number (" + tVal + ")");
 			if(Math.isNaN(sVal))
-				Log.error("Start object lacks numeric field " + field);
+				Log.error("Start object lacks numeric field " + field + " (" + sVal + ")");
 			props.push(field);
 			starts.push(sVal);
 			ranges.push(tVal - sVal);
@@ -87,6 +88,8 @@ class Tween
 			var pos = (loop == LoopType.BothBackward || loop == LoopType.Backward ? 
 				duration - elapsed : elapsed);
 			var value = easing(pos, starts[i], ranges[i], duration, optional);
+			// trace("Easing pos:" + pos + " i:" + i + " start:" + starts[i] + " range:" 
+			// 		+ ranges[i] + " duration:" + duration + " optional:" + optional +" VALUE:" + value);
 			Reflect.setProperty(source, props[i], value);
 		}
 
