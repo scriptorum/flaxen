@@ -518,7 +518,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return (getEntity(name) != null);
 	}
 
-	public function addMarker(markerName:String): Void
+	public function newMarker(markerName:String): Void
 	{
 		var name = expandMarkerName(markerName);
 		if(!hasMarker(name))
@@ -543,7 +543,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	 * or having them just be markers with a special suffix.
 	 */
 
-	public function addControl(control:Control): Entity
+	public function newControl(control:Control): Entity
 	{
 		var e = resolveEntity(CONTROL);
 		e.add(control);
