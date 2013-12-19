@@ -104,7 +104,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
 	override public function init()
 	{
-		#if HaxePunkConsole
+		#if console
 			HXP.console.enable();
 		#end
 
