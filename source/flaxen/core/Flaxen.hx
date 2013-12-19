@@ -1,8 +1,13 @@
-/*
+/**
   TODO
 	- Change order of alignments to valign,halign? (Top,Left looks more natural than the reverse)
 	- Put notes in each Component as to the consequence of multiple entities sharing it.
  	- Add FlaxenOptions for initializing 
+
+	FLAGS (openfl platform -DflagName):
+		    console - Brings up the HaxePunk console, be sure to include console folder under assets
+		forceBuffer - Forces software buffering when using CPP targets
+		   profiler - Includes the ProfileSystem - TODO Test/Implement
 */
 
 package flaxen.core;
@@ -40,9 +45,8 @@ import flaxen.service.CameraService;
 import flaxen.service.InputService;
 import flaxen.system.*;
 
-#if PROFILER // TODO not tested
+#if profiler
 	import flaxen.system.ProfileSystem;
-	import flaxen.service.ProfileService;
 #end
 
 enum FlaxenSystemGroup { Early; Standard; Late; }
@@ -97,7 +101,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
 		Log.assert(options.fps > 0, "FPS must be positive");
 		super(options.width, options.height, options.fps, options.fixed,
-			#if HaxePunkForceBuffer com.haxepunk.RenderMode.BUFFER #else null #end);
+			#if forceBuffer com.haxepunk.RenderMode.BUFFER #else null #end);
 
 		HXP.screen.smoothing = options.smoothing;
 	}
@@ -134,17 +138,17 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
     		group = Standard;
 
     	// Profiler start log
-    	#if PROFILER
+    	#if profiler
     		var name = Type.getClassName(Type.getClass(system));
-    		ash.addSystem(new ProfileSystem(name, true), nextPriority(group));
+    		ash.addSystem(new ProfileSystem(this, name, true), nextPriority(group));
     	#end
 
     	// Add system to ash
         ash.addSystem(system, nextPriority(group));
 
         // Profiler end log
-    	#if PROFILER
-    		ash.addSystem(new ProfileSystem(name, false), nextPriority(group));
+    	#if profiler
+    		ash.addSystem(new ProfileSystem(this, name, false), nextPriority(group));
     	#end
 
 		// These systems need to be remembered for further configuration

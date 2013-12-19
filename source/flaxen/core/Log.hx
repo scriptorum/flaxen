@@ -9,6 +9,12 @@ import haxe.CallStack;
 
 class Log
 {
+	inline public static function write(msg:String)
+	{
+		log(msg);
+	}
+
+	// TODO support configuration of log file to write to instead of/in addition to console
 	inline public static function log(msg:String)
 	{
 		trace(msg);
