@@ -2,12 +2,11 @@
   TODO
 	- Change order of alignments to valign,halign? (Top,Left looks more natural than the reverse)
 	- Put notes in each Component as to the consequence of multiple entities sharing it.
- 	- Add FlaxenOptions for initializing 
 
 	FLAGS (openfl platform -DflagName):
 		    console - Brings up the HaxePunk console, be sure to include console folder under assets
 		forceBuffer - Forces software buffering when using CPP targets
-		   profiler - Includes the ProfileSystem - TODO Test/Implement
+		   profiler - Includes the ProfileSystem - press P to dump profile stats
 */
 
 package flaxen.core;
