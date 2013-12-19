@@ -37,6 +37,11 @@ class Log
 			error(msg);
 	}
 
+	inline public static function assertNonNull(object:Dynamic, ?msg:String = "Null assertion failed")
+	{
+		assert(object != null, msg);
+	}
+
 	// Debug assert - asserts only checked in debug mode
 	inline public static function debugAssert(condition:Bool, ?msg:String)
 	{		

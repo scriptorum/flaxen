@@ -1,7 +1,5 @@
 /*
   TODO
-   	- Maybe change input system to UpdateSystem, and let people choose if they want to use it
-     	for input, update, or provide their own systems
 	- Change order of alignments to valign,halign? (Top,Left looks more natural than the reverse)
 	- Put notes in each Component as to the consequence of multiple entities sharing it.
  	- Add FlaxenOptions for initializing 
@@ -61,7 +59,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	private var standardSystemId:Int = 20000;
 	private var nextEntityId:Int = 0;
 	private var modeSystem:ModeSystem;
-	private var inputSystem:InputSystem;
+	private var updateSystem:UpdateSystem;
 	private var layouts:Map<String, Layout>;
 	private var sets:Map<String, ComponentSet>;
 
@@ -152,8 +150,8 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		// These systems need to be remembered for further configuration
     	if(Std.is(system, ModeSystem))
     		modeSystem = cast system;
-    	else if(Std.is(system, InputSystem))
-    		inputSystem = cast system;
+    	else if(Std.is(system, UpdateSystem))
+    		updateSystem = cast system;
     }
 
     private function nextPriority(?group:FlaxenSystemGroup): Int
@@ -683,47 +681,43 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		setMode(app.curMode);
 	}	
 
-	// Adds a function that is called when an application mode is started
-	public function setStartHandler(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
+	// Adds a function that is called when an application mode is started See setHandler.
+	public function setStartCallback(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
-		if(modeSystem == null)
-			Log.error("ModeSystem is not available");
-		modeSystem.registerStartHandler(mode == null ? Always : mode, callback);
+		Log.assertNonNull(modeSystem, "ModeSystem is not available");
+		modeSystem.registerStartHandler(callback, mode == null ? Default : mode);
 		return this;
 	}
 
-	// Adds a function that is called when an application mode is stopped
-	public function setStopHandler(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
+	// Adds a function that is called when an application mode is stopped. See setHandler
+	public function setStopCallback(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
-		if(modeSystem == null)
-			Log.error("ModeSystem is not available");
-		modeSystem.registerStopHandler(mode == null ? Always : mode, callback);
+		Log.assertNonNull(modeSystem, "ModeSystem is not available");
+		modeSystem.registerStopHandler(callback, mode == null ? Default : mode);
 		return this;
 	}
 
 	// Adds a function that is called regularly only during a specific application mode.
-	// Generally this is intended for input handler, but you could also use it just as
-	// an update function. Updating should properly be done by adding your own custom
-	// systems.
-	public function setInputHandler(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
+	// Generally this is intended for handling input, but you could also use it just as
+	// an update function. See UpdateSystem for more information. Also see setHandler.
+	public function setUpdateCallback(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
-		if(inputSystem == null)
-			Log.error("InputSystem is not available");
-		inputSystem.registerHandler(mode == null ? Always : mode, callback);
+		Log.assertNonNull(updateSystem, "UpdateSystem is not available");
+		updateSystem.registerHandler(callback, mode == null ? Default : mode);
 		return this;
 	}
 
-	// Sets up all mode handlers in one shot.
-	// Create a subclass of FlaxenHandler and override the functions you want.
+	// Sets up all mode callbacks in one shot. Create a subclass of FlaxenHandler and
+	// override the functions you want. You cannot "unset" a handler once set.
+	// If a mode is not supplied, registers it as Default, which is the bootstrap mode.
+	// If Always is supplied, the handlers are run in ALL MODES, after the primary handlers
+	// run. For example: setHandler(handler1, Play); setHandler(handler2, Always); 
+	// If you setMode(Play), handler1.start will be called, followed by handler2.start.
 	public function setHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Flaxen
 	{
-		if(mode == null)
-			mode = Always;
-
-		setStartHandler(handler.start, mode);
-		setStopHandler(handler.stop, mode);
-		setInputHandler(handler.input, mode);
-
+		setStartCallback(handler.start, mode);
+		setStopCallback(handler.stop, mode);
+		setUpdateCallback(handler.update, mode);
 		return this;
 	}
 

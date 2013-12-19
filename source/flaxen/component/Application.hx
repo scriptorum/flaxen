@@ -6,9 +6,10 @@ enum ApplicationModeType<T>
 	// app in ModeSystem and then transition to Play, Menu or whatever mode you want.
 	Default;
 
-	// This is not an application mode and should not be transitioned to.
-	// When supplied to a Transitional object, it indicates an entity is 
-	// protected and will always survive transitions
+	// This is not an application mode and should not be transitioned to. When supplied to a 
+	// Transitional object, it indicates an entity is protected and will always survive 
+	// transitions. When supplied with a start/stop/update handler, indicates the handler
+	// will always be called, regardless of mode. See Flaxen.setHandler.
 	Always;
 
 	// These are built-in modes, use them if you like or define your own with custom

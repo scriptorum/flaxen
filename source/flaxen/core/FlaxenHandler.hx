@@ -16,7 +16,7 @@ class FlaxenHandler
 	{
 	}
 	
-	public function input(flaxen:Flaxen)
+	public function update(flaxen:Flaxen)
 	{
 	}
 }
