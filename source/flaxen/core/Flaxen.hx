@@ -4,9 +4,9 @@
 	- Put notes in each Component as to the consequence of multiple entities sharing it.
 
 	FLAGS (openfl platform -DflagName):
-		    console - Brings up the HaxePunk console, be sure to include console folder under assets
+		    console - Includes the HaxePunk console; press ` to open; be sure to include assets/console
+		   profiler - Includes the ProfileSystem; press P to log profile stats
 		forceBuffer - Forces software buffering when using CPP targets
-		   profiler - Includes the ProfileSystem - press P to dump profile stats
 */
 
 package flaxen.core;
@@ -453,7 +453,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
 	// Adds a set of components to the entity. The ComponentSet is specified by name
 	// and must have been previously defined by newComponentSet().
-	public function installComponents(entity:Entity, setName:String): Entity
+	public function addComponents(entity:Entity, setName:String): Entity
 	{
 		var set = getComponentSet(setName);
 		if(set == null)
@@ -467,7 +467,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		?prefix:String, addToAsh:Bool = true): Entity 
 	{
 		var e = newEntity(prefix, addToAsh);
-		return installComponents(e, setName);
+		return addComponents(e, setName);
 	}
 
 	// Convenience method, creating new singleton entity and installing component set in one
@@ -475,7 +475,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		entityName:String, addToAsh:Bool = true): Entity 
 	{
 		var e = newSingleton(entityName, addToAsh);
-		return installComponents(e, setName);
+		return addComponents(e, setName);
 	}
 
 	public function getComponentSet(name:String): ComponentSet
@@ -871,7 +871,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		sound.destroyEntity = true;
 		e.add(sound);
 		return e;
-	}	
+	}
 }
 
 class DependentsNode extends Node<DependentsNode>

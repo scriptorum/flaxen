@@ -6,7 +6,7 @@
 */
 package flaxen.component;
 
-import flaxen.util.DynamicUtil;
+import flaxen.util.DynUtil;
 import flaxen.common.LoopType;
 import com.haxepunk.HXP;
 
@@ -47,7 +47,7 @@ class Animation
 	// Must be called after changing loop or frames.
 	public function update(): Animation
 	{
-		frameArr = DynamicUtil.parseRange(frames);
+		frameArr = DynUtil.parseRange(frames);
 		switch(loop)
 		{
 			case Backward:

@@ -2,7 +2,7 @@ package flaxen.util;
 
 import flaxen.core.Log;
 
-class DynamicUtil
+class DynUtil
 {
     // Primary, this method parses a range string into an array of integers. 
     // For example: 2,4-7,9 returns [2,4,5,6,7,9].

@@ -14,7 +14,9 @@ class Log
 		log(msg);
 	}
 
-	// TODO support configuration of log file to write to instead of/in addition to console
+	// TODO Support configuration of log file to write to instead of/in addition to console.
+	// TODO Report actual position of INLINE log, instead of position of this function. :( 
+	//	    Possible? Look into Context and macros.
 	inline public static function log(msg:String)
 	{
 		trace(msg);
