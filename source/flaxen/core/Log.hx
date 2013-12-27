@@ -60,7 +60,7 @@ class Log
 
 	public static function quit()
 	{
-		#if !flash
+		#if (cpp || neko)
 			flash.Lib.exit();
 		#end
 	}

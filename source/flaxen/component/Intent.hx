@@ -1,17 +1,23 @@
-/*
- * Intents are a way to decouple input from reaction to that input. When the appropriate
- * input is detected, instead of taking that action, create an Intent. Then in a
- * subsequent system process that Intent. This has two effects. First, it simplifies
- * the InputSystem so it no longer needs to know about operational details of the
- * reaction. Second, it allows a third-party system to introduce its own intents
- * and drive reactions without player inputs.
- *
- * Example: When FireControl is enabled a player hits spacebar. The InputSystem adds
- * a FireIntent, storing the player's angle. The FireSystem detects this intent
- * and causes the player avatar to fire in the angle specified. In another case,
- * the player is possessed. The PossessedSystem detects this state and at random
- * intervals injects a fireIntent with a random angle. As a result the player 
- * randomly starts randomly firing.
+/**
+	Intents are a way to decouple input from reaction to that input. When the appropriate
+	input is detected, instead of taking that action, create an Intent. Then in a
+	subsequent system process that Intent. This has two effects. First, it simplifies
+	the InputSystem so it no longer needs to know about operational details of the
+	reaction. Second, it allows a third-party system to introduce its own intents
+	and drive reactions without player inputs.
+
+	Example: When FireControl is enabled, a player hits spacebar. The InputSystem adds
+	a FireIntent, storing the player's angle. The FireSystem detects this intent
+	and causes the player avatar to fire in the angle specified. In another case,
+	the player is possessed. The PossessedSystem detects this state and at random
+	intervals injects a fireIntent with a random angle. As a result the player 
+	randomly starts randomly firing.
+
+	TODO:
+	  - Work on some practical implementations of this. Is the name variable even '
+	   	helpful? Maybe this should just be a plain interface? Or create a "buildValueClass()"
+	   	macro...
+
  */
 
 package flaxen.component;

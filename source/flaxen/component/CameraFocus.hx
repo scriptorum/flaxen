@@ -1,21 +1,14 @@
 package flaxen.component;
 
-class CameraFocus
+import flaxen.component.StaticComponent;
+
+// To focus on an entity, that entity must contain a Position component
+class CameraFocus extends StaticComponent
 {
 	public static var MANUAL_FOCUS_ENTITY:String = "manualCameraFocus";
-	public static var instance:CameraFocus = new CameraFocus();
-	
-	public function new()
-	{
-	}
 }
 
 // To prevent manual focusing
-class CameraLock
+class CameraLock extends StaticComponent
 {
-	public static var instance:CameraLock = new CameraLock();
-	
-	public function new()
-	{
-	}
 }

@@ -1,8 +1,7 @@
 package flaxen.component;
 
-class Invisible
+import flaxen.component.StaticComponent;
+
+class Invisible extends StaticComponent
 {
-	public function new()
-	{
-	}
 }

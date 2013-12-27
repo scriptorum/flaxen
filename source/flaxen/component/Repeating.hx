@@ -1,10 +1,7 @@
 package flaxen.component;
 
-class Repeating
-{
-	public static var instance:Repeating = new Repeating();
+import flaxen.component.StaticComponent;
 
-	public function new()
-	{
-	}
+class Repeating extends StaticComponent
+{
 }
