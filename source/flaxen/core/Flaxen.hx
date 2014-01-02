@@ -2,6 +2,8 @@
   TODO
 	- Change order of alignments to valign,halign? (Top,Left looks more natural than the reverse)
 	- Put notes in each Component as to the consequence of multiple entities sharing it.
+	- Add caching semi-static component; for example, Image.cache("art/mybutt.png") or Layer.cache(30).
+	- Look into supporting two frame rates, fixed for physics updates, and variable for all else.
 
 	FLAGS (openfl platform -DflagName):
 		    console - Includes the HaxePunk console; press ` to open; be sure to include assets/console

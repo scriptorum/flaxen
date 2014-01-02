@@ -1,4 +1,3 @@
-
 package flaxen.component;
 
 class Layer

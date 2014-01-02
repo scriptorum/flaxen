@@ -1,3 +1,11 @@
+/**
+	TODO
+	 - Add description and give usage examples
+	 - change add to addAction
+	 - change addCallback to call
+	 - change addThread to thread
+	 - do not require engine as parameter to add/removeEntity, instead supply that to constructor
+*/
 package flaxen.component;
 
 import ash.core.Entity;
@@ -24,7 +32,7 @@ class ActionQueue
 				add(action);
 		}
 
-		this.name = "queue"  + Std.string(++created);
+		this.name = "fActionQueue"  + Std.string(++created);
 	}
 
 	public function add(action:Action): ActionQueue
