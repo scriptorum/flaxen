@@ -32,10 +32,14 @@ class DynUtil
             else
             {
                 var parts = StringUtil.split(token, "-");
-                var min = Std.parseInt(parts[0]);
-                var max = Std.parseInt(parts[1]);
-                for(i in min...max+1)
-                    result.push(i);         
+                var i = Std.parseInt(parts[0]);
+                var end = Std.parseInt(parts[1]);
+                result.push(i); 
+                while(i != end)
+                { 
+                    i += (end < i ? -1 : 1);
+                    result.push(i); 
+                }
             }
         }
         return result;
