@@ -33,6 +33,11 @@ class StringUtil
     	return str.split(delim);
     }
 
+    public static function toInitCase(str:String): String
+    {
+        return str.substr(0, 1).toUpperCase() + str.substr(1);
+    }
+
     public static function formatCommas(num:Int): String
     {
         if(num < 1000)
