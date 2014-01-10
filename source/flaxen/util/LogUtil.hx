@@ -35,11 +35,11 @@ class LogUtil
     public static function dumpEntity(entity:ash.core.Entity, depth:Int = 1, preventRecursion = true): String
     {
     	var result = entity.name + ":{\n";
-    	var sep = "";
+    	var sep = "  ";
     	for(c in entity.getAll())
     	{
-    		result += sep + dump(c, depth, preventRecursion);
-    		sep = ",\n";
+    		result += sep + dump(c, depth, preventRecursion, "    ");
+    		sep = ",\n  ";
     	}
     	return result + "}";
     }
@@ -66,13 +66,13 @@ class LogUtil
     	return ret;
     }
 
-	public static function dump(o:Dynamic, depth:Int = 1, preventRecursion = true): String
+	public static function dump(o:Dynamic, depth:Int = 1, preventRecursion = true, indent:String = ""): String
 	{
 		var recursed = (preventRecursion == false ? null : new Array<Dynamic>());
-		return internalDump(o, recursed, depth);
+		return internalDump(o, recursed, depth, indent);
 	}
 
-	private static function internalDump(o:Dynamic, recursed:Array<Dynamic>, depth:Int): String
+	private static function internalDump(o:Dynamic, recursed:Array<Dynamic>, depth:Int, indent:String = ""): String
 	{
 		if (o == null)
 			return "<NULL>";
@@ -94,12 +94,12 @@ class LogUtil
 			return "<MAXDEPTH>";
 
 		var result = Type.getClassName(clazz) + ":{";
-		var sep = "";
+		var sep = "\n" + indent;
 
 		for(f in Reflect.fields(o))
 		{
-			result += sep + f + ":" + internalDump(Reflect.field(o, f), recursed, depth - 1);
-			sep = ", ";
+			result += sep + f + ":" + internalDump(Reflect.field(o, f), recursed, depth - 1, indent + "  ");
+			sep = ",\n" + indent;
 		}
 		return result + "}";
 	}
