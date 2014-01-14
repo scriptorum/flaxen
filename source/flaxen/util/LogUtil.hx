@@ -77,7 +77,8 @@ class LogUtil
 		if (o == null)
 			return "<NULL>";
 
-		if(Std.is(o, Int) || Std.is(o, Float) || Std.is(o, Bool) || Std.is(o, String))
+		if(Std.is(o, Int) || Std.is(o, Float) || Std.is(o, Bool) || Std.is(o, String) 
+                || Reflect.isEnumValue(o))
 			return Std.string(o);
 
 		if(recursed != null && ArrayUtil.find(recursed, o) != -1)
