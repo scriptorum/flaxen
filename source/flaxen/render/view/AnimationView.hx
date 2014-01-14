@@ -3,6 +3,7 @@
     - Class only handles one animation at a time
     - Class recreates Spritemap after every change, this is suboptimal
     - Maybe add sequences for each loop type, so you can switch loop type and get the new animation?
+    - Add support for "freeze at end" loop type.
 */
 package flaxen.render.view;
 
@@ -30,11 +31,10 @@ class AnimationView extends View
 
 	private function setAnim()
 	{
-		var cbFunc:CallbackFunction = (animation.loop == None ? null : animationFinished);
 		graphic = spritemap = new Spritemap(image.path,
 			Std.int(imageGrid.tileWidth), 
 			Std.int(imageGrid.tileHeight), 
-			cbFunc);
+			animationFinished);
 		spritemap.flipped = image.flipped;
 
 		Log.assert(animation.speed != Math.POSITIVE_INFINITY, "Inifinite speed for spritemap " + image.path);
@@ -49,6 +49,9 @@ class AnimationView extends View
 
 	private function animationFinished(): Void
 	{
+		if(animation.loop != None || animation.stop == false)
+			return;
+
 		if(animation.destroyComponent)
 			entity.remove(Animation);
 		else if(animation.destroyEntity && entity.has(Display))
@@ -79,6 +82,7 @@ class AnimationView extends View
 		var curAnim = getComponent(Animation);
 		if(curAnim != animation || curAnim.changed)
 		{
+			trace("Animation changed for " + entity.name);
 			animation = curAnim;
 			animation.changed = false;
 			updateDisplay = true;
