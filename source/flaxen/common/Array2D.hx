@@ -152,4 +152,19 @@ class Array2D<T>
 
 		return neighbors;
 	}
+
+	public function toString(colSep:String = "\t", rowSep:String = "\n", stringFunc:T->String = null): String
+	{
+		var buf = new StringBuf();
+		for(y in 0...width)
+		{
+			for(x in 0...height)
+			{
+				buf.add(stringFunc == null ? get(x,y) : stringFunc(get(x,y)));
+				buf.add(colSep);
+			}
+			buf.add(rowSep);
+		}
+		return buf.toString();
+	}
 }

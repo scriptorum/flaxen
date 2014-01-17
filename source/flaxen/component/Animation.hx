@@ -3,6 +3,7 @@
 	  - Consider looping ala Tween, esp for RANDOM
 	  - Support multiple animation sequences in a single Spritemap
 	  - Maybe the Loop adjustments in setFrames should be moved to AnimationView?
+	  - Add support for stopAfterLoops
 */
 package flaxen.component;
 
@@ -10,21 +11,34 @@ import flaxen.util.DynUtil;
 import flaxen.common.LoopType;
 import com.haxepunk.HXP;
 
+// When an animation stops, defines final frame behavior. When loop is LoopType.None, the animation 
+// stops after one sequence. Otherwise you have set stop manually. Pausing the animation will not 
+// cause this behavior to activate. Sets complete flag.
+enum AnimationStopType
+{ 
+	Clear;	// The animation disappears (default)
+	Last;	// The animation freezes on the last frame
+	First;	// The animation freezes on the first frame
+}
+
 class Animation
 {
 	// Call update() after changing these values
 	public var frames:Dynamic;
 	public var speed:Float;
 	public var loop(default,null):LoopType; // Don't change this directly, but through setFrames
+	// public var stopAfterLoops:Int = 0; // Only if loop is not None; if 0 assumed infinite
+	// public var loopCount(default, null):Int = 0;
 
 	// These can be set at any time
 	public var stop:Bool = false; // stop animation ASAP (sets complete)
-	public var restart:Bool = false; // restart animation from beginning ASAP
+	public var restart:Bool = false; // restart animation from beginning ASAP, unsets complete flag
 	public var paused:Bool = false; // pause or resume animation
 
 	// Set once at initialization only
-	public var destroyEntity:Bool = false; // on complete/stop, removes whole entity
-	public var destroyComponent:Bool = false; // on complete/stop, removes Animation component from entity
+	public var destroyEntity:Bool = false; // on complete, removes whole entity
+	public var destroyComponent:Bool = false; // on complete, removes Animation component from entity
+	public var stopType:AnimationStopType; // when stopped, shows this frame; value may be changed before restart
 
 	// Do not change these directly
 	public var frameArr:Array<Int>; // List of frame integers with loop reverse/both baked in; set by update()
@@ -36,11 +50,12 @@ class Animation
 
 	// Frames can be an array of integers, a single integer, or a string
 	// containing comma-separated values: integers and/or hyphenated ranges
-	public function new(frames:Dynamic, ?speed:Float, ?loop:LoopType)
+	public function new(frames:Dynamic, ?speed:Float, ?loop:LoopType, ?stopType:AnimationStopType)
 	{
 		this.frames = frames;
 		this.speed = (speed == null ? HXP.assignedFrameRate : speed);
 		this.loop = (loop == null ? LoopType.Forward : loop);
+		this.stopType = (stopType == null ? Clear : stopType);
 		update();
 	}
 
@@ -78,6 +93,13 @@ class Animation
 		this.frames = frames;
 		if(loop != null)
 			this.loop = loop;
+		update();
+	}
+
+	public function setLoopType(loop:LoopType, ?stopType:AnimationStopType)
+	{
+		this.loop = loop;
+		this.stopType = (stopType == null ? Clear : stopType);
 		update();
 	}
 }

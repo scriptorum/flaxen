@@ -234,4 +234,11 @@ class Easing
 		if (t < d / 2) return easeInBounce (t * 2, 0, c, d) * .5 + b;
 		return easeOutBounce(t * 2 - d, 0, c, d) * .5 + c * .5 + b;
 	}
+
+	// Random stuttering along path
+	// The effect may look different depending on the frame rate
+	public static function easeRandom(t:Float, b:Float, c:Float, d:Float, ?o:Float): Float
+	{
+		return c * Math.random() + b;
+	}
 }

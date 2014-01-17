@@ -41,22 +41,40 @@ class AnimationView extends View
 		Log.assert(animation.speed != Math.NEGATIVE_INFINITY, "Negative infinite speed for spritemap " + image.path);
 		Log.assert(animation.speed != Math.NaN, "NaN speed for spritemap " + image.path);
 
-		spritemap.add("default", animation.frameArr, animation.speed, animation.loop != LoopType.None);
-		spritemap.play("default");
+		spritemap.add("play", animation.frameArr, animation.speed, animation.loop != LoopType.None);
+		spritemap.play("play");
 
 		setImageDimensions(image, imageGrid);
+		animation.restart = animation.complete = false;
 	}
 
 	private function animationFinished(): Void
 	{
-		if(animation.loop != None || animation.stop == false)
+		if(animation.loop != None && animation.stop == false)
 			return;
 
 		if(animation.destroyComponent)
 			entity.remove(Animation);
 		else if(animation.destroyEntity && entity.has(Display))
 			entity.get(Display).destroyEntity = true;
-		else animation.complete = true;
+		else stop();
+	}
+
+	private function stop()
+	{
+		switch(animation.stopType)
+		{
+			case Clear:
+			graphic = null;
+
+			case First:
+			spritemap.setAnimFrame("play", 0);
+
+			case Last:
+			spritemap.setAnimFrame("play", animation.frameArr.length - 1);
+		}	
+		animation.stop = false;
+		animation.complete = true;
 	}
 
 	override public function nodeUpdate()
@@ -82,7 +100,6 @@ class AnimationView extends View
 		var curAnim = getComponent(Animation);
 		if(curAnim != animation || curAnim.changed)
 		{
-			trace("Animation changed for " + entity.name);
 			animation = curAnim;
 			animation.changed = false;
 			updateDisplay = true;
