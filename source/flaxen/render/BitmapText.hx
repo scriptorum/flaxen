@@ -183,7 +183,7 @@ class BitmapText extends Image
 		// If post-constructor, force parent Image to update as well
 		if(updateSuper)
 		{
-			if (_blit)
+			if (blit)
 	    	{
 	    		createBuffer();
 	    		setBitmapSource(content);

@@ -44,6 +44,7 @@ class Animation
 	public var frameArr:Array<Int>; // List of frame integers with loop reverse/both baked in; set by update()
 	public var changed:Bool = true; // Set by update()
 	public var complete:Bool = false; // true when animation has completed playing (not if looping)
+	public var frame:Int = 0; // the current frame of the animation
 
 	// This is not currently implemented
 	public var random:Bool = false; // true if you want the frames always selected at random

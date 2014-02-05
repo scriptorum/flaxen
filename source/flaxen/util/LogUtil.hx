@@ -72,6 +72,8 @@ class LogUtil
 		return internalDump(o, recursed, depth, indent);
 	}
 
+    // The <RECURSION> check isn't quite that - it will say RECURSION if it's not recursed,
+    // but there are multiple copies within the same object. TODO: Change to <DUPE>?
 	private static function internalDump(o:Dynamic, recursed:Array<Dynamic>, depth:Int, indent:String = ""): String
 	{
 		if (o == null)

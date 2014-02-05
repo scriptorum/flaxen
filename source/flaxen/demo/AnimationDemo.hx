@@ -11,8 +11,11 @@ import flaxen.component.Image;
 import flaxen.component.ImageGrid;
 import flaxen.component.Offset;
 import flaxen.component.Position;
+import flaxen.component.Layer;
+import flaxen.component.Repeating;
 import flaxen.core.Flaxen;
 import flaxen.core.Log;
+import flaxen.util.LogUtil;
 import flaxen.service.InputService;
 
 class AnimationDemo extends Flaxen
@@ -27,6 +30,11 @@ class AnimationDemo extends Flaxen
 
 	override public function ready()
 	{	
+		newEntity()
+			.add(new Image("art/metalpanels.png"))
+			.add(new Layer(100))
+			.add(Repeating.instance);
+
 		newComponentSet("ball")
 			.add(new Image("art/ball.png")) // Share image between all balls
 			.add(Offset.center) // create new Offset for each ball, no parameters
@@ -65,6 +73,7 @@ class AnimationDemo extends Flaxen
 				var anim = ball.get(Animation);
 				anim.setFrames(data.value ? eastRoll : northRoll);
 				Log.write("Change animation frames to " + anim.frames);
+				Log.write(LogUtil.dumpEntity(ball));
 			}
 
 			if(InputService.pressed(Key.DIGIT_2))
@@ -73,6 +82,7 @@ class AnimationDemo extends Flaxen
 				var anim = ball.get(Animation);
 				anim.paused = !anim.paused;
 				Log.write((anim.paused ? "Pausing" : "Unpausing") + " animation");
+				Log.write(LogUtil.dumpEntity(ball));
 			}
 
 			if(InputService.pressed(Key.DIGIT_3))
@@ -81,6 +91,7 @@ class AnimationDemo extends Flaxen
 				var anim = ball.get(Animation);
 				anim.setLoopType(anim.loop == None ? Forward : None, Last);
 				Log.write("Changing animation loop type to " + anim.loop);
+				Log.write(LogUtil.dumpEntity(ball));
 			}
 
 			if(InputService.pressed(Key.DIGIT_4))
@@ -89,6 +100,7 @@ class AnimationDemo extends Flaxen
 				var anim = ball.get(Animation);
 				anim.restart = true;
 				Log.write("Restarting animation");
+				Log.write(LogUtil.dumpEntity(ball));
 			}
 
 			if(InputService.pressed(Key.DIGIT_5))
@@ -104,6 +116,7 @@ class AnimationDemo extends Flaxen
 				anim.loop = None;
 				anim.restart = true;
 				Log.write("Changed animation stop behavior to " + anim.stopType);
+				Log.write(LogUtil.dumpEntity(ball));
 			}
 		});
 	}

@@ -73,17 +73,10 @@ class View extends com.haxepunk.Entity
 			graphicChanged = true;			
 		}
 
-		// For certain view subclasses
-		var img:com.haxepunk.graphics.Image = 
-			Std.is(graphic, com.haxepunk.graphics.Image) ? cast graphic : null;
-
 		// Update layer
-		if(hasComponent(Layer))
-		{
-			var newLayer = getComponent(Layer).value;
-			if(newLayer != this.layer)
-				this.layer = newLayer;
-		}
+		var newLayer = hasComponent(Layer) ? getComponent(Layer).value : 0;	
+		if(newLayer != this.layer)
+			this.layer = newLayer;
 
 		// Update scroll factor
 		if(hasComponent(ScrollFactor))
@@ -95,7 +88,11 @@ class View extends com.haxepunk.Entity
 				if(amount != graphic.scrollX || amount != graphic.scrollY)
 					graphic.scrollX = graphic.scrollY = amount;
 			}
-		}
+		} // TODO What if ScrollFactor is removed
+
+		// For certain view subclasses
+		var img:com.haxepunk.graphics.Image = 
+			Std.is(graphic, com.haxepunk.graphics.Image) ? cast graphic : null;
 
 		// Handle image specific updates
 		var scaleChanged = graphicChanged;

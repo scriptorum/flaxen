@@ -30,7 +30,7 @@ class AnimationView extends View
 	}
 
 	private function setAnim()
-	{
+	{		
 		graphic = spritemap = new Spritemap(image.path,
 			Std.int(imageGrid.tileWidth), 
 			Std.int(imageGrid.tileHeight), 
@@ -123,6 +123,9 @@ class AnimationView extends View
 		// Pause/resume animation
 		if(curAnim.paused == spritemap.active)
 			spritemap.active = !curAnim.paused;
+
+		if(spritemap.frame != animation.frame)
+			animation.frame = spritemap.frame;
 
 		super.nodeUpdate();
 	}
