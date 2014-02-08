@@ -34,6 +34,8 @@ class Log
 		return error(msg);
 	}
 
+	// If this is inline, I get ->
+	// error: no viable conversion from 'Dynamic' to 'Void' (aka 'null')
 	public static function error(msg:String = "Unspecified error")
 	{
 		throw(msg);
@@ -63,5 +65,14 @@ class Log
 		#if (cpp || neko)
 			flash.Lib.exit();
 		#end
+	}
+
+	public static function callStack(returnOnly:Bool = false): String
+	{
+		var stack = CallStack.callStack();
+		var str = (stack == null ? "N/A" : CallStack.toString(stack));
+		if(returnOnly == false)
+			write(str);
+		return str;
 	}
 }
