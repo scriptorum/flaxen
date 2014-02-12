@@ -90,8 +90,8 @@ class ComponentSet
 
 				else if (Reflect.isFunction(component))
 				{
-					var f:Void->Dynamic = cast component;
-					instance = f();
+					var f:Entity->Dynamic = cast component;
+					instance = f(entity);
 				}
 
 				entity.add(instance);
