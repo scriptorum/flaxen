@@ -492,13 +492,21 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	 * ENTITY STATS
 	 */ 
 
-	// Returns the number of nodes matching a node list
-	// Supply a Node object
-	public function countNodes<T:Node<T>>(nodeClass:Class<T>): Int
+	// Returns the number of nodes matching the supplied Node class
+	public function countNodes<T:Node<T>>(?nodeClass:Class<T>): Int
 	{
 		var count:Int = 0;
 	 	for(node in ash.getNodeList(nodeClass))
 	 		count++;
+	 	return count;
+	}
+
+	// Returns the number of entities in the Ash system
+	public function countEntities(): Int
+	{
+		var count:Int = 0;
+		for(entity in ash.entities)
+			count++;
 	 	return count;
 	}
 

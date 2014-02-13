@@ -13,11 +13,11 @@ import flaxen.util.ArrayUtil;
 class LogUtil
 {
     #if !flash
-        public static function dumpLog(engine:ash.core.Engine, filename:String, depth:Int = 1, preventRecursion = true): Void
+        public static function dumpLog(flaxen:flaxen.core.Flaxen, filename:String, depth:Int = 1, preventRecursion = true): Void
         {
             var fo:FileOutput = File.write(filename);
-            fo.writeString("ASH ENTITIES:\n");
-            for(entity in engine.entities)
+            fo.writeString(flaxen.countEntities() + " ASH ENTITIES:\n");
+            for(entity in flaxen.ash.entities)
             {
                 var str:String = dumpEntity(entity, depth, preventRecursion);
                 fo.writeString(str + "\n");
