@@ -144,6 +144,8 @@ class ComponentSet
 				{
 					var f:Entity->Dynamic = cast component;
 					instance = f(entity);
+					if(instance == null)
+						continue;
 				}
 
 				entity.add(instance);
