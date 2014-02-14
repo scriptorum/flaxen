@@ -455,12 +455,12 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
 	// Adds a set of components to the entity. The ComponentSet is specified by name
 	// and must have been previously defined by newComponentSet().
-	public function addComponents(entity:Entity, setName:String): Entity
+	public function installSet(entity:Entity, setName:String): Entity
 	{
 		var set = getComponentSet(setName);
 		if(set == null)
 			Log.error("Component set not found:" + setName);
-		set.addToEntity(entity);
+		set.install(entity);
 		return entity;
 	}
 
@@ -469,7 +469,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		?prefix:String, addToAsh:Bool = true): Entity 
 	{
 		var e = newEntity(prefix, addToAsh);
-		return addComponents(e, setName);
+		return installSet(e, setName);
 	}
 
 	// Convenience method, creating new singleton entity and installing component set in one
@@ -477,7 +477,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		entityName:String, addToAsh:Bool = true): Entity 
 	{
 		var e = newSingleton(entityName, addToAsh);
-		return addComponents(e, setName);
+		return installSet(e, setName);
 	}
 
 	public function getComponentSet(name:String): ComponentSet
