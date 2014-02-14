@@ -1,3 +1,14 @@
+/**
+	General interpolation class. This example moves myEntity to the upper left corner
+	over the course of two seconds, after which the Tween component removes itself from 
+	myEntity. Tweens require the TweeningSystem to be active.
+
+		var pos = myEntity.get(Position);
+		var tween = new Tween(pos, { x:0, y:0 }, 2);
+		tween.destroyComponent = true;
+		myEntity.add(t);
+
+*/
 package flaxen.component;
 
 import ash.core.Engine;
