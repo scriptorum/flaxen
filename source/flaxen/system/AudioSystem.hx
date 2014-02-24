@@ -66,14 +66,14 @@ class AudioSystem extends FlaxenSystem
 		if(globalAudio.muted)
 			return;
 
-		var nmeSound = Assets.getSound(sound.file);
-		if(nmeSound == null)
+		var flSound = Assets.getSound(sound.file);
+		if(flSound == null)
 		{
 			handleFailure(entity, sound, "Cannot load sound");
 			return;			
 		}
 
-		var channel = nmeSound.play(sound.offset, (sound.loop ? 0x3FFFFFFF : 0));
+		var channel = flSound.play(sound.offset, (sound.loop ? 0x3FFFFFFF : 0));
 		if(channel == null)
 		{
 			handleFailure(entity, sound, "Cannot create channel");			

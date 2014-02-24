@@ -64,6 +64,8 @@ class Log
 	{
 		#if (cpp || neko)
 			flash.Lib.exit();
+		// #else if flash
+		// Lib.fscommand("quit");
 		#end
 	}
 

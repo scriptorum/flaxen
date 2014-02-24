@@ -1,3 +1,7 @@
+/**
+ TODO Move Profile and ProfileStats to a better location
+*/
+
 package flaxen.service;
 
 import com.haxepunk.HXP;

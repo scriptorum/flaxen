@@ -33,10 +33,12 @@ import flaxen.core.Flaxen;
 import flaxen.core.FlaxenHandler;
 import flaxen.core.FlaxenSystem;
 import flaxen.core.Log;
+import flaxen.system.ProfileSystem; // Needed for stats
 
 class UpdateSystem extends FlaxenSystem
 {
 	private var handlers:Map<ApplicationMode, FlaxenCallback>;
+	private var stats:ProfileStats;
 
 	public function new(f:Flaxen)
 	{ 
@@ -46,6 +48,10 @@ class UpdateSystem extends FlaxenSystem
 	override public function init()
 	{
 		handlers = new Map<ApplicationMode, FlaxenCallback>();
+
+		#if profiler
+		stats = f.resolveEntity(Flaxen.PROFILER).get(ProfileStats);
+		#end
 	}
 
 	override public function update(_)
@@ -60,7 +66,18 @@ class UpdateSystem extends FlaxenSystem
 		Log.assertNonNull(mode);
 		var handler:FlaxenCallback = handlers.get(mode);
 		if(handler != null)
-			handler(flaxen);
+		{
+			// #if profiler
+			// 	var profile = stats.getOrCreate("UpdateHandler:" + mode);
+			// 	profile.open();
+			// #end
+
+			handler(flaxen);			
+
+			// #if profiler
+			// 	profile.close();
+			// #end
+		}
 	}
 
 	public function registerHandler(handler:FlaxenCallback, ?mode:ApplicationMode): Void

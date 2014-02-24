@@ -12,19 +12,21 @@ import flaxen.util.ArrayUtil;
 
 class LogUtil
 {
-    #if !flash
         public static function dumpLog(flaxen:flaxen.core.Flaxen, filename:String, depth:Int = 1, preventRecursion = true): Void
         {
-            var fo:FileOutput = File.write(filename);
-            fo.writeString(flaxen.countEntities() + " ASH ENTITIES:\n");
-            for(entity in flaxen.ash.entities)
-            {
-                var str:String = dumpEntity(entity, depth, preventRecursion);
-                fo.writeString(str + "\n");
-            }
-            fo.close();
+            #if flash
+               haxe.Log.trace("dumpLog not supported in Flash");
+            #else
+                var fo:FileOutput = File.write(filename);
+                fo.writeString(flaxen.countEntities() + " ASH ENTITIES:\n");
+                for(entity in flaxen.ash.entities)
+                {
+                    var str:String = dumpEntity(entity, depth, preventRecursion);
+                    fo.writeString(str + "\n");
+                }
+                fo.close();
+            #end
         }
-    #end
 
     public static function assert(cond: Bool, ?pos:haxe.PosInfos)
     {

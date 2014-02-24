@@ -44,4 +44,10 @@ class Rotation
 	{
 		return new Rotation(0);
 	}
+
+	public static function full(): Rotation
+	{
+		return new Rotation(360);
+	}
+
 }

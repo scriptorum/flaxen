@@ -20,17 +20,18 @@ import flaxen.service.InputService;
 
 class ProfileSystem extends FlaxenSystem
 {
-	private static var stats:ProfileStats = new ProfileStats();
 	public static var triggerKey:Int = Key.P;
 
-	public var profile:Profile;
-	public var opener:Bool;
+	private var stats:ProfileStats;
+	private var profile:Profile;
+	private var opener:Bool;
 
 	public function new(flaxen:Flaxen, name:String, opener:Bool)
 	{
 		super(flaxen);
 
-		profile = stats.getOrCreate(name);
+		this.stats = flaxen.resolveEntity(Flaxen.PROFILER).get(ProfileStats);
+		this.profile = stats.getOrCreate(name);
 		this.opener = opener;
 	}
 

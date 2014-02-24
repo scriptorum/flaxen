@@ -44,8 +44,8 @@ class Emitter
     public var elapsed:Float = 0; // time elapsed since emitter start
     public var accum:Float = 0; // accumulator, used internally
 
-    public function new(particle:String)
+    public function new(particlePath:String)
     {
-        this.particle = particle;
+        this.particle = particlePath;
     }
 }

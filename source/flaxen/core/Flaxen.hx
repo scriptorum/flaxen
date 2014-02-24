@@ -54,10 +54,11 @@ enum FlaxenSystemGroup { Early; Standard; Late; }
 
 class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 {
-	public static inline var DEFAULT_ENTITY_NAME:String = "fEntity"; // entity default name or prefix
+	public static inline var DEFAULT_ENTITY:String = "fEntity"; // entity default name or prefix
 	public static inline var CONTROL:String = "fControl"; // control entity name prefix
 	public static inline var APPLICATION:String = "fApplication"; // Application mode entity
-	public static inline var GLOBAL_AUDIO_NAME:String = "fGlobalAudio"; // Global audio entity
+	public static inline var PROFILER:String = "fProfiler";
+	public static inline var GLOBAL_AUDIO:String = "fGlobalAudio"; // Global audio entity
 
 	private var coreSystemId:Int = 0;
 	private var userSystemId:Int = 10000;
@@ -95,6 +96,13 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		ash.getNodeList(DependentsNode).nodeRemoved.add(dependentsNodeRemoved);
 
 		getApp(); // Create entity with Application component
+
+		// Prepare profile stats if requires
+		#if profiler
+			var stats = new ProfileStats();
+			var pe = resolveEntity(PROFILER);
+			pe.add(stats);
+		#end
 
 		// Add built-in entity component systems
 		addSystems(options.earlySystems, Early); 
@@ -341,7 +349,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	}
 
 	// Returns a unique entity name, with an optionally specified prefix
-	public function getEntityName(prefix:String = DEFAULT_ENTITY_NAME,
+	public function getEntityName(prefix:String = DEFAULT_ENTITY,
 		unique:Bool = true): String
 	{
 		var name:String = prefix + (unique ? Std.string(nextEntityId++) : "");
@@ -455,7 +463,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
 	// Adds a set of components to the entity. The ComponentSet is specified by name
 	// and must have been previously defined by newComponentSet().
-	public function installSet(entity:Entity, setName:String): Entity
+	public function addSet(entity:Entity, setName:String): Entity
 	{
 		var set = getComponentSet(setName);
 		if(set == null)
@@ -465,19 +473,19 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	}
 
 	// Convenience method, creating new entity and installing component set in one
-	public function newEntityWithSet(setName:String, 
+	public function newSetEntity(setName:String, 
 		?prefix:String, addToAsh:Bool = true): Entity 
 	{
 		var e = newEntity(prefix, addToAsh);
-		return installSet(e, setName);
+		return addSet(e, setName);
 	}
 
 	// Convenience method, creating new singleton entity and installing component set in one
-	public function newSingletonWithSet(setName:String, 
+	public function newSetSingleton(setName:String, 
 		entityName:String, addToAsh:Bool = true): Entity 
 	{
 		var e = newSingleton(entityName, addToAsh);
-		return installSet(e, setName);
+		return addSet(e, setName);
 	}
 
 	public function getComponentSet(name:String): ComponentSet
@@ -749,10 +757,10 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	// or stop audio after a cutoff
 	public function getGlobalAudio(): GlobalAudio
 	{
-		var entity:Entity = getEntity(GLOBAL_AUDIO_NAME);
+		var entity:Entity = getEntity(GLOBAL_AUDIO);
 		if(entity == null)
 		{
-			entity = new Entity(GLOBAL_AUDIO_NAME);
+			entity = new Entity(GLOBAL_AUDIO);
 			entity.add(new GlobalAudio());
 			entity.add(Transitional.ALWAYS);
 			addEntity(entity);

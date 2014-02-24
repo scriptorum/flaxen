@@ -3,6 +3,7 @@ package flaxen.render.view;
 import com.haxepunk.HXP;
 import flash.geom.Rectangle;
 
+import flaxen.component.ImageGrid;
 import flaxen.component.Emitter;
 import flaxen.component.Rotation;
 import flaxen.component.Display;
@@ -17,6 +18,8 @@ class EmitterView extends View
 	private var emitter:Emitter;
 	private var change:Emitter; // Tests for changes
 	private var display:com.haxepunk.graphics.Emitter;
+	private var frameWidth:Int = 0;
+	private var frameHeight:Int = 0;
 
 	override public function begin()
 	{
@@ -45,6 +48,17 @@ class EmitterView extends View
 			graphic = display = new com.haxepunk.graphics.Emitter(emitter.particle, pWidth, pHeight);
 	        display.newType(FX, [0]);
 	        displayChanged = true;
+		}
+
+		// Check for an optional ImageGrid component
+		// If found, supply frame information to the emitter
+		var newFrameWidth:Int = 0;
+		var newFrameHeight:Int = 0;
+		if(hasComponent(ImageGrid))
+		{
+			var grid = getComponent(ImageGrid);
+			newFrameWidth = grid.tileWidth;
+			newFrameHeight = grid.tileHeight;
 		}
 
 		var lifespanChanged:Bool = false;
@@ -110,6 +124,13 @@ class EmitterView extends View
 			if(emitter.accum < secondsPerParticle)
 				emitter.accum = secondsPerParticle;
 			change.maxParticles = emitter.maxParticles;
+		}
+
+		if(displayChanged || newFrameWidth != frameWidth || newFrameHeight != frameHeight)
+		{
+			frameWidth = newFrameWidth;
+			frameHeight = newFrameHeight;
+			display.setSource(emitter.particle, frameWidth, frameHeight);
 		}
 	}
 
