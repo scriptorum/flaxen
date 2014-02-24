@@ -24,15 +24,25 @@ class ActionQueue
 	public var name:String; // optional object name for logging
 	public var running:Bool = true;
 
-	public function new(actions:Array<Action> = null)
+	public static function create(destroyEntity = false, destroyComponent = false, ?name:String,
+		autoStart:Bool = true): ActionQueue
 	{
-		if(actions != null)
-		{
-			for(action in actions)
-				add(action);
-		}
+		return new ActionQueue(destroyEntity, destroyComponent, name, autoStart);
+	}
+	
+	public function new(destroyEntity = false, destroyComponent = false, ?name:String,
+		autoStart:Bool = true)
+	{
+		this.destroyEntity = destroyEntity;
+		this.destroyComponent = destroyComponent;
+		this.name = (name == null ? "fActionQueue"  + Std.string(++created) : name);
+		this.running = autoStart;
+	}
 
-		this.name = "fActionQueue"  + Std.string(++created);
+	public function addActions(actions:Array<Action>)
+	{
+		for(action in actions)
+			add(action);
 	}
 
 	public function add(action:Action): ActionQueue
