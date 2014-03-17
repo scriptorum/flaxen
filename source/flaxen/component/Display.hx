@@ -11,8 +11,15 @@ class Display
 	public var view:View;
 	public var destroyEntity:Bool = false;
 
-	public function new(view:View)
+	public function new(view:View, updateId:Int = -1)
 	{
+		recycle(view, updateId);
+	}
+
+	public function recycle(view:View, updateId:Int = -1)
+	{
+		this.updateId = updateId;
 		this.view = view;
+		this.destroyEntity = false;
 	}
 }

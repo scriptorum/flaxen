@@ -28,7 +28,7 @@ class FlaxenScene extends Scene
 
 	override public function update()
 	{
-		ash.update(HXP.elapsed); // Update Ash (entity system)
+ 		ash.update(HXP.elapsed); // Update Ash (entity system)
 		super.update(); // Update HaxePunk (game library)
 	}
 

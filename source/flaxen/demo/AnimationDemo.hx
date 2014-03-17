@@ -41,25 +41,25 @@ class AnimationDemo extends Flaxen
 			.add(function() { return Position.center(); }) // create new Position, via function
 			.add(ImageGrid.create(60, 60));
 
-		// could also have done newSingletonWithSet("ball", "ball"), instead of addComponents
+		// could also have done newSingletonWithSet("ball", "ball"), instead of addSet
 		var ball = newSingleton("master")
 			.add(new Data(false))
 			.add(new Animation(northRoll, 30));
-		addComponents(ball, "ball"); // add components to set
+		addSet(ball, "ball"); // add components to set
 
-		newEntityWithSet("ball")
+		newSetEntity("ball")
 			.add(new Animation(eastRoll, 30, LoopType.Both))
 			.get(Position).y = HXP.height / 3;
 
-		newEntityWithSet("ball")
+		newSetEntity("ball")
 			.add(new Animation(eastRoll, 30, LoopType.BothBackward))
 			.get(Position).y = HXP.height / 3 * 2;
 
-		newEntityWithSet("ball")
+		newSetEntity("ball")
 			.add(new Animation(northRoll, 30, LoopType.Backward))
 			.get(Position).x = HXP.width / 3;
 
-		newEntityWithSet("ball")
+		newSetEntity("ball")
 			.add(new Animation(eastRoll, 30, LoopType.Backward))
 			.get(Position).x = HXP.width / 3 * 2;
 

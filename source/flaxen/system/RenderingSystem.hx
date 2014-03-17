@@ -38,6 +38,7 @@ class RenderingSystem extends FlaxenSystem
 
 	private function removeView(view:View)
 	{
+		view.destroy();
 		HXP.scene.remove(view);
 	}
 
@@ -82,7 +83,7 @@ class RenderingSystem extends FlaxenSystem
 	 		if(!Std.is(display.view, viewClass))
 	 		{
 	 			entity.remove(Display);
-	 			display = createView(entity, viewClass);
+	 			display = createView(entity, viewClass, display);
 	 		}
 
 	 		// Just a regular update
@@ -98,13 +99,19 @@ class RenderingSystem extends FlaxenSystem
 	}	
 
 	// Create a new View and wrap it in a Display component
-	private function createView(entity:Entity, viewClass:Class<View>): Display
+	private function createView(entity:Entity, viewClass:Class<View>, ?display:Display): Display
 	{
 		var view:View = Type.createInstance(viewClass, [entity]);
 		HXP.scene.add(view);
-		var display = new Display(view);
-		display.updateId = updateId;
-		entity.add(display);
+
+		if(display == null)
+		{
+			display = new Display(view, updateId);
+			entity.add(display);
+		}
+		else 
+			display.recycle(view, updateId); // reuse display object
+
 		return display;
-	}		
+	}
 }

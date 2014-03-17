@@ -30,22 +30,23 @@ class AnimationView extends View
 	}
 
 	private function setAnim()
-	{		
-		graphic = spritemap = new Spritemap(image.path,
-			Std.int(imageGrid.tileWidth), 
-			Std.int(imageGrid.tileHeight), 
-			animationFinished);
-		spritemap.flipped = image.flipped;
-
+	{
 		Log.assert(animation.speed != Math.POSITIVE_INFINITY, "Inifinite speed for spritemap " + image.path);
 		Log.assert(animation.speed != Math.NEGATIVE_INFINITY, "Negative infinite speed for spritemap " + image.path);
 		Log.assert(animation.speed != Math.NaN, "NaN speed for spritemap " + image.path);
 
-		spritemap.add("play", animation.frameArr, animation.speed, animation.loop != LoopType.None);
-		spritemap.play("play");
+		destroy();
 
-		setImageDimensions(image, imageGrid);
-		animation.restart = animation.complete = false;
+		if(spritemap == null)
+			graphic = spritemap = new Spritemap(image.path,
+				Std.int(imageGrid.tileWidth), 
+				Std.int(imageGrid.tileHeight), 
+				animationFinished);
+		else setImageDimensions(image, imageGrid);
+
+		spritemap.flipped = image.flipped;
+		spritemap.playFrames(animation.frameArr, animation.speed, animation.loop != LoopType.None, true);
+		animation.paused = animation.restart = animation.complete = false;
 	}
 
 	private function animationFinished(): Void
@@ -65,13 +66,13 @@ class AnimationView extends View
 		switch(animation.stopType)
 		{
 			case Clear:
-			graphic = null;
+			spritemap.stop();
 
 			case First:
-			spritemap.setAnimFrame("play", 0);
+			spritemap.index = 0;
 
 			case Last:
-			spritemap.setAnimFrame("play", animation.frameArr.length - 1);
+			spritemap.index = animation.frameArr.length - 1;
 		}	
 		animation.stop = false;
 		animation.complete = true;
@@ -121,12 +122,21 @@ class AnimationView extends View
 			setAnim();
 
 		// Pause/resume animation
-		if(curAnim.paused == spritemap.active)
-			spritemap.active = !curAnim.paused;
+		if(spritemap != null)
+		{
+			if(curAnim.paused == spritemap.active)
+				spritemap.active = !curAnim.paused;
 
-		if(spritemap.frame != animation.frame)
-			animation.frame = spritemap.frame;
+			if(spritemap.frame != animation.frame)
+				animation.frame = spritemap.frame;
+		}
 
 		super.nodeUpdate();
+	}
+
+	override public function destroy()
+	{
+		super.destroy();
+		spritemap = null;
 	}
 }

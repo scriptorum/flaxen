@@ -44,6 +44,11 @@ class MathUtil
         return (a > b ? a - b : b - a);
     }
 
+    public static function isEven(a:Int): Bool
+    {
+    	return (Math.floor(a/2)*2) == a;
+    }
+
     // Returns true if both floats match within tolerance decimal places.
     public static function matches(a:Float, b:Float, tolerance:Int = 0): Bool
     {

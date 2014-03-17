@@ -250,4 +250,12 @@ class View extends com.haxepunk.Entity
 			#end
 		}
 	}
+
+	// Override for special behavior when a view is destroyed
+	public function destroy()
+	{
+		if(graphic != null)
+			graphic.destroy();
+		graphic = null;
+	}
 }
