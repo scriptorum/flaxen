@@ -22,7 +22,7 @@ class AnimationView extends View
 	private var animation:Animation;
 	private var image:Image;
 	private var imageGrid:ImageGrid;
-	private var spritemap:Spritemap;
+	public var spritemap:Spritemap;
 
 	override public function begin()
 	{

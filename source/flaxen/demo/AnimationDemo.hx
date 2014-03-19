@@ -41,7 +41,7 @@ class AnimationDemo extends Flaxen
 			.add(function() { return Position.center(); }) // create new Position, via function
 			.add(ImageGrid.create(60, 60));
 
-		// could also have done newSingletonWithSet("ball", "ball"), instead of addSet
+		// could also have done newSetSingleton("ball", "ball"), instead of addSet
 		var ball = newSingleton("master")
 			.add(new Data(false))
 			.add(new Animation(northRoll, 30));
@@ -73,7 +73,6 @@ class AnimationDemo extends Flaxen
 				var anim = ball.get(Animation);
 				anim.setFrames(data.value ? eastRoll : northRoll);
 				Log.write("Change animation frames to " + anim.frames);
-				Log.write(LogUtil.dumpEntity(ball));
 			}
 
 			if(InputService.pressed(Key.DIGIT_2))
@@ -82,7 +81,6 @@ class AnimationDemo extends Flaxen
 				var anim = ball.get(Animation);
 				anim.paused = !anim.paused;
 				Log.write((anim.paused ? "Pausing" : "Unpausing") + " animation");
-				Log.write(LogUtil.dumpEntity(ball));
 			}
 
 			if(InputService.pressed(Key.DIGIT_3))
@@ -91,7 +89,6 @@ class AnimationDemo extends Flaxen
 				var anim = ball.get(Animation);
 				anim.setLoopType(anim.loop == None ? Forward : None, Last);
 				Log.write("Changing animation loop type to " + anim.loop);
-				Log.write(LogUtil.dumpEntity(ball));
 			}
 
 			if(InputService.pressed(Key.DIGIT_4))
@@ -100,7 +97,6 @@ class AnimationDemo extends Flaxen
 				var anim = ball.get(Animation);
 				anim.restart = true;
 				Log.write("Restarting animation");
-				Log.write(LogUtil.dumpEntity(ball));
 			}
 
 			if(InputService.pressed(Key.DIGIT_5))
@@ -116,7 +112,24 @@ class AnimationDemo extends Flaxen
 				anim.loop = None;
 				anim.restart = true;
 				Log.write("Changed animation stop behavior to " + anim.stopType);
-				Log.write(LogUtil.dumpEntity(ball));
+			}
+
+			if(InputService.pressed(Key.DIGIT_6))
+			{
+				var ball = demandEntity("master");
+				var view:flaxen.render.view.AnimationView = 
+					cast ball.get(flaxen.component.Display).view;
+				view.spritemap.stop(true);
+				Log.write("Stopping anim with reset");
+			}
+
+			if(InputService.pressed(Key.DIGIT_7))
+			{
+				var ball = demandEntity("master");
+				var view:flaxen.render.view.AnimationView = 
+					cast ball.get(flaxen.component.Display).view;
+				view.spritemap.stop(false);
+				Log.write("Stopping anim without reset");
 			}
 		});
 	}
