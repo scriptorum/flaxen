@@ -2,11 +2,16 @@ package flaxen.util;
 
 class MathUtil
 {
-	public static function rnd<T:Float,Int>(min:T, max:T): T
+	// Returns a random int or float value
+	// If "a" and "b" are defined, returns a value no smaller than "a" and no larger 
+	// than "b."" If "a" is undefined, returns a value between 0 and "a."
+	public static function rnd<T:Float,Int>(a:T, ?b:T): T
 	{
-		return cast(Std.is(min,Int) ? 
-			(Math.floor(Math.random() * (max - min + 1) + min)) :
-			(Math.random() * (max - min) + min));
+		if(b == null)
+			return cast(Math.random() * a);
+		return cast(Std.is(a, Int) ? 
+			(Math.floor(Math.random() * (b - a + 1) + a)) :
+			(Math.random() * (b - a) + a));
 	}	
 
     public static function roundTo(value:Float, precision:Int): Float
