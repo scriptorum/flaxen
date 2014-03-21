@@ -101,12 +101,17 @@ class ComponentSet
 
 	// Does not add an instance. Instead, when installed, removes all steps 
 	// from an entity. Completely blanks out an entity. Do this before any add calls.
-	public function removeAll(): ComponentSet
+	// If an array of component classes is supplied, these components will be
+	// spared removal
+ 	public function removeAll(?except:Array<Class<Dynamic>>): ComponentSet
 	{
 		return addFunction(function(e:Entity)
 		{ 
 			for(c in e.getAll())
-				e.remove(c);
+			{
+				if(except == null || !Lambda.exists(except, cast Type.getClass(c)))
+					e.remove(c);
+			}
 			return null;
 		});
 	}
@@ -151,5 +156,33 @@ class ComponentSet
 				entity.add(instance);
 			}				
 		}
+	}
+
+	// TODO This reports "[func]" if it encounters a remove or removeAll, this 
+	// could be fixed by adding all steps as independent class objects.
+	public function toString(): String
+	{
+		var str:String = "";
+		var sep:String = "";
+		for(step in steps)
+		{
+			var stepStr = step;
+			if(Std.is(step, Array))
+			{
+				var arr:Array<Dynamic> = cast step;
+				stepStr = arr[0] + "(" + arr.slice(1).join(", ") + ")";
+			}
+			else if(Std.is(step, Class))
+				stepStr = step + "()";
+			else if(Reflect.isFunction(step))
+			{
+				var f:Entity->Dynamic = cast step;				
+				stepStr = "[func]";
+			}
+
+			str += sep + stepStr;
+			sep = ", ";
+		}
+		return str;
 	}
 }

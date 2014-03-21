@@ -495,6 +495,11 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 			Log.error("ComponentSet " + name + " not found");
 		return set;
 	}
+
+	public function getComponentSetKeys(): Iterator<String>
+	{
+		return sets.keys();
+	}
 	
 	/*
 	 * ENTITY STATS
