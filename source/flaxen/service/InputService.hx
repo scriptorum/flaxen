@@ -1,6 +1,5 @@
 package flaxen.service;
 
-import com.haxepunk.HXP;
 import com.haxepunk.utils.Key;
 import com.haxepunk.utils.Input;
 import flash.events.MouseEvent;
@@ -20,14 +19,14 @@ class InputService
 	{
 		// RIGHT MOUSE NOT AVAILABLE FOR FLASH??? NOT EVEN 11.2??? C'MON.
 		#if !flash
-			HXP.stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, cb);
+			com.haxepunk.HXP.stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, cb);
 		#end
 	}
 
 	public static function onRightClickRemove(cb:Dynamic->Void)
 	{
 		#if !flash
-			HXP.stage.removeEventListener(MouseEvent.RIGHT_MOUSE_DOWN, cb);
+			com.haxepunk.HXP.stage.removeEventListener(MouseEvent.RIGHT_MOUSE_DOWN, cb);
 		#end
 	}
 
@@ -39,9 +38,9 @@ class InputService
 	public static var clicked(get, null):Bool;
 	private static function get_clicked():Bool { return Input.mouseReleased; }
 
-	public static function check(input:Dynamic):Bool { return Input.check(input); }
-	public static function pressed(input:Dynamic):Bool { return Input.pressed(input); }
-	public static function released(input:Dynamic):Bool { return Input.released(input); }
+	public static function check(input:InputType):Bool { return Input.check(input); }
+	public static function pressed(input:InputType):Bool { return Input.pressed(input); }
+	public static function released(input:InputType):Bool { return Input.released(input); }
 	public static function lastKey(): Int { return Input.lastKey; }
 
 	public static function clearLastKey(): Void { Input.lastKey = 0; }

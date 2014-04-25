@@ -1,7 +1,6 @@
 package flaxen.demo; 
 
 import ash.core.Entity;
-import com.haxepunk.HXP;
 import com.haxepunk.utils.Key;
 import flaxen.common.LoopType;
 import flaxen.component.Alpha;
@@ -37,9 +36,9 @@ class AnimationDemo extends Flaxen
 
 		newComponentSet("ball")
 			.add(new Image("art/ball.png")) // Share image between all balls
-			.add(Offset.center) // create new Offset for each ball, no parameters
-			.add(function() { return Position.center(); }) // create new Position, via function
-			.add(ImageGrid.create(60, 60));
+			.addFunction(function(_) { return Offset.center(); }) // create new Offset for each
+			.addFunction(function(_) { return Position.center(); }) // create new Position for each
+			.add(ImageGrid.create(60, 60)); // Share image grid
 
 		// could also have done newSetSingleton("ball", "ball"), instead of addSet
 		var ball = newSingleton("master")
@@ -49,19 +48,19 @@ class AnimationDemo extends Flaxen
 
 		newSetEntity("ball")
 			.add(new Animation(eastRoll, 30, LoopType.Both))
-			.get(Position).y = HXP.height / 3;
+			.get(Position).y = com.haxepunk.HXP.height / 3;
 
 		newSetEntity("ball")
 			.add(new Animation(eastRoll, 30, LoopType.BothBackward))
-			.get(Position).y = HXP.height / 3 * 2;
+			.get(Position).y = com.haxepunk.HXP.height / 3 * 2;
 
 		newSetEntity("ball")
 			.add(new Animation(northRoll, 30, LoopType.Backward))
-			.get(Position).x = HXP.width / 3;
+			.get(Position).x = com.haxepunk.HXP.width / 3;
 
 		newSetEntity("ball")
 			.add(new Animation(eastRoll, 30, LoopType.Backward))
-			.get(Position).x = HXP.width / 3 * 2;
+			.get(Position).x = com.haxepunk.HXP.width / 3 * 2;
 
 		setUpdateCallback(function(f)
 		{
@@ -107,7 +106,8 @@ class AnimationDemo extends Flaxen
 				{
 					case Clear: First;
 					case First: Last;
-					case Last: Clear;
+					case Last: Clear; // Skipping Pause
+					case Pause: Clear; // Not really useful for demo, same effect as Last
 				}
 				anim.loop = None;
 				anim.restart = true;

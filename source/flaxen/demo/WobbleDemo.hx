@@ -16,7 +16,6 @@
 package flaxen.demo; 
 
 import ash.core.Entity;
-import com.haxepunk.HXP;
 import flaxen.core.Flaxen;
 import flaxen.component.Image;
 import flaxen.component.Position;
@@ -38,11 +37,11 @@ class WobbleDemo extends Flaxen
 
 	override public function ready()
 	{
-		setInputHandler(handleInput);
+		setUpdateCallback(handleInput);
 
 		var e:Entity = resolveEntity(logo) // get or create entity
 			.add(new Image("art/flaxen.png"))
-			.add(new Position(HXP.halfWidth, HXP.halfHeight))
+			.add(new Position(com.haxepunk.HXP.halfWidth, com.haxepunk.HXP.halfHeight))
 			.add(Offset.center());
 
 		wobble(e, { x:0.8, y:1.2 });

@@ -12,7 +12,6 @@
 package flaxen.demo; 
 
 import ash.core.Entity;
-import com.haxepunk.HXP;
 import com.haxepunk.utils.Key;
 import flaxen.core.Flaxen;
 import flaxen.component.Image;
@@ -76,11 +75,11 @@ class LayoutDemo extends Flaxen
 				.add(new Position(0,60)).add(new Size(160, 160));
 		}
 
-		setInputHandler(function(_)
+		setUpdateCallback(function(_)
 		{
 			if(InputService.lastKey() == Key.F)
 			{
-				HXP.fullscreen = !HXP.fullscreen;
+				com.haxepunk.HXP.fullscreen = !com.haxepunk.HXP.fullscreen;
 				InputService.clearLastKey();
 			}
 		});

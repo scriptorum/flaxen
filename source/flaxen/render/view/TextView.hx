@@ -12,7 +12,6 @@ import flaxen.component.Alpha;
 import flaxen.component.Size;
 import flaxen.render.ShadowText;
 import flash.text.TextFormatAlign;
-import com.haxepunk.HXP;
 
 class TextView extends View
 {
@@ -38,7 +37,7 @@ class TextView extends View
 		{
 			// TODO Support ScrollFactor
 			graphic = display = new ShadowText(curMessage, 0, 0, Std.int(curStyle.size * curScale), 
-				curStyle.color, (curStyle.font == null ? HXP.defaultFont : curStyle.font), 
+				curStyle.color, (curStyle.font == null ? com.haxepunk.HXP.defaultFont : curStyle.font), 
 				Std.int(curWidth * curScale), Std.int(curHeight * curScale), 
 				curStyle.halign, curStyle.wordWrap, 1, curStyle.leading,
 				curStyle.shadowOffset, curStyle.shadowColor);
@@ -102,10 +101,10 @@ class TextView extends View
 
 			// HACK Because HaxePunk does not properly scale text on CPP targets
 			#if !flash
-				if(curScaleX != HXP.screen.fullScaleX || curScaleY != HXP.screen.fullScaleY)
+				if(curScaleX != com.haxepunk.HXP.screen.fullScaleX || curScaleY != com.haxepunk.HXP.screen.fullScaleY)
 				{
-					curScaleX = HXP.screen.fullScaleX;
-					curScaleY = HXP.screen.fullScaleY;
+					curScaleX = com.haxepunk.HXP.screen.fullScaleX;
+					curScaleY = com.haxepunk.HXP.screen.fullScaleY;
 					curScale = (curScaleX + curScaleY) / 2;
 					updateDisplay = true;
 					forceNew = true;

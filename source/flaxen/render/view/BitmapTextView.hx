@@ -7,7 +7,6 @@ import flaxen.component.Image;
 import flaxen.component.Size;
 import flaxen.component.Text;
 import flaxen.render.BitmapText;
-import com.haxepunk.HXP;
 
 class BitmapTextView extends View
 {

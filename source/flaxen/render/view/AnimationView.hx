@@ -7,7 +7,6 @@
 */
 package flaxen.render.view;
 
-import com.haxepunk.HXP;
 import com.haxepunk.graphics.Spritemap;
 
 import flaxen.component.Animation;
@@ -66,13 +65,17 @@ class AnimationView extends View
 		switch(animation.stopType)
 		{
 			case Clear:
-			spritemap.stop();
+			spritemap.stop(true);			
+			spritemap.visible = false;
 
 			case First:
-			spritemap.index = 0;
+			spritemap.stop(true);
 
 			case Last:
 			spritemap.index = animation.frameArr.length - 1;
+
+			case Pause:
+			spritemap.stop();
 		}	
 		animation.stop = false;
 		animation.complete = true;
@@ -118,7 +121,7 @@ class AnimationView extends View
 		}
 
 		// Change/update animation
-		else if(updateDisplay || animation.restart)
+		else if(updateDisplay)
 			setAnim();
 
 		// Pause/resume animation

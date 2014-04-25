@@ -7,7 +7,6 @@ package flaxen.render;
 import flash.text.TextFormatAlign;
 import com.haxepunk.graphics.Text;
 import com.haxepunk.graphics.Graphiclist;
-import com.haxepunk.HXP;
 import flaxen.common.TextAlign;
 import flaxen.core.Log;
 
@@ -24,7 +23,7 @@ class ShadowText extends Graphiclist
 		shadowOffset:Int = 2, shadowColor:Int = 0x000000)
 	{
 		super();
-		this.font = (font == null ? HXP.defaultFont : font);
+		this.font = (font == null ? com.haxepunk.HXP.defaultFont : font);
 		var align = (alignment == null ? Left : alignment);
 		texts = new Array<Text>();
 		if(shadowOffset != 0)

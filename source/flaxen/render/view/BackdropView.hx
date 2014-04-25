@@ -3,7 +3,6 @@ package flaxen.render.view;
 import flaxen.component.Image;
 
 import com.haxepunk.graphics.Backdrop;
-import com.haxepunk.HXP;
 
 class BackdropView extends View
 {
@@ -27,14 +26,15 @@ class BackdropView extends View
 
 		// Rebuild backdrop after scale change detected. This is a HACK to fix a bug in
 		// HaxePunk. Backdrop should detect when a screen resize occurs but it does not.
-		else if(curWidth != HXP.screen.width || curHeight != HXP.screen.height)
-			setBackdrop(image);
+		else if(curWidth != com.haxepunk.HXP.screen.width || 
+			curHeight != com.haxepunk.HXP.screen.height)
+				setBackdrop(image);
 	}
 
 	private function setBackdrop(image:Image)
 	{
-		curWidth = HXP.screen.width; // HAXEPUNK FIX
-		curHeight = HXP.screen.height; // HAXEPUNK FIX
+		curWidth = com.haxepunk.HXP.screen.width; // HAXEPUNK FIX
+		curHeight = com.haxepunk.HXP.screen.height; // HAXEPUNK FIX
 		graphic = new Backdrop(image.path);
 		setImageDimensions(image);
 		curImage = image;

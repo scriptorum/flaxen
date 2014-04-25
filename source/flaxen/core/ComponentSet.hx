@@ -31,6 +31,7 @@ class ComponentSet
 
 	// Adds a component instance to the component set. Note that all entities using this set
 	// will be sharing the same single instance of this component. See addClass.
+	// TODO Verify this is not a Class or Function being passed in.
 	public function add<T>(component:T): ComponentSet
 	{
 		steps.push(component);
@@ -41,6 +42,7 @@ class ComponentSet
 	// The function will be executed when the set is installed into an entity. If the 
 	// function returns a component instance, it will be added to the entity. If it
 	// returns null, it will be ignored.
+	// TODO Allow functions with no parameters as well
 	public function addFunction(func:Entity->Dynamic): ComponentSet
 	{
 		steps.push(func);

@@ -12,7 +12,7 @@
 		e.graphic = new flaxen.render.BitmapText("art/impact20yellow.png", 0, 0,
 			"AAABBBCCC Hi there!" + t + t + t + t + t + t + t + t + t + t, 	
 			640, 480, true, Center, Center, -4, -2);
-		HXP.scene.add(e);
+		com.haxepunk.HXP.scene.add(e);
 
 	ALSO SEE:
 	 - Solar has also put together his own bitmap text class you might like:
@@ -28,7 +28,6 @@ import flaxen.common.TextAlign;
 import flash.display.BitmapData;
 import flash.geom.Point;
 import flash.geom.Rectangle;
-import com.haxepunk.HXP;
 import com.haxepunk.RenderMode;
 import com.haxepunk.graphics.Image;
 import com.haxepunk.graphics.atlas.Atlas;
@@ -106,7 +105,7 @@ class BitmapText extends Image
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0, 
 		space:Dynamic = "M", monospace:Bool = false, ?charSet:String)
 	{
-		fontBitmap = (Std.is(image, BitmapData) ? image : HXP.getBitmap(image));
+		fontBitmap = (Std.is(image, BitmapData) ? image : com.haxepunk.HXP.getBitmap(image));
 		if(fontBitmap == null)
 			Log.error("Cannot parse null fontBitmap");
 
@@ -186,11 +185,15 @@ class BitmapText extends Image
 			if (blit)
 	    	{
 	    		createBuffer();
-	    		setBitmapSource(content);
+	    		_sourceRect = content.rect;
+	    		_source = content;
 	    		updateBuffer();
 	    	}
 	    	else
-				setAtlasRegion(Atlas.loadImageAsRegion(content));
+	    	{
+	    		_region = Atlas.loadImageAsRegion(content);
+	    		_sourceRect = new Rectangle(0, 0, _region.width, _region.height);
+	    	}
 		}
 
 		return this;
@@ -380,13 +383,13 @@ class BitmapText extends Image
 	        #end
 		#end
 
-    	// TODO clear old bitmap if size hasn't changed
-    	content = HXP.createBitmap(contentWidth, contentHeight, true);
+    	// TODO erase old bitmap if size hasn't changed, instead of constructing a new one
+    	content = com.haxepunk.HXP.createBitmap(contentWidth, contentHeight, true);
 
-    	HXP.point.y = 0;
+    	com.haxepunk.HXP.point.y = 0;
     	for(i in 0...lines.length)
     	{
-    		HXP.point.x = switch(halign)
+    		com.haxepunk.HXP.point.x = switch(halign)
     		{
     			case Right: contentWidth - lineWidths[i];
     			case Center: (contentWidth - lineWidths[i]) / 2;
@@ -398,28 +401,39 @@ class BitmapText extends Image
     		{
     			if(ch == SPACE_CHAR)
     			{
-    				HXP.point.x += spaceWidth; // Do not add kerning to spaces
+    				com.haxepunk.HXP.point.x += spaceWidth; // Do not add kerning to spaces
     				charIndex = 1;
     			}
     			else
     			{
     				if(charIndex++ >= 2)
-    					HXP.point.x += kerning;
+    					com.haxepunk.HXP.point.x += kerning;
 
 	    			var glyph:Rectangle = getGlyph(ch);
 	    			if(glyph != null)
 	    			{
-	    				content.copyPixels(fontBitmap, glyph, HXP.point, null, null, true);
-    					HXP.point.x += (monospace ? spaceWidth : glyph.width);
+	    				content.copyPixels(fontBitmap, glyph, com.haxepunk.HXP.point, null, null, true);
+    					com.haxepunk.HXP.point.x += (monospace ? spaceWidth : glyph.width);
     				}
     			}
     		}
 
-    		HXP.point.y += fontBitmap.height + leading;
+    		com.haxepunk.HXP.point.y += fontBitmap.height + leading;
     	}
     }
 
-    public override function render(target:BitmapData, point:Point, camera:Point)
+	override public function renderAtlas(layer:Int, point:Point, camera:Point)
+	{
+    	super.renderAtlas(layer, adjustPoint(point), camera);
+	}
+
+    override public function render(target:BitmapData, point:Point, camera:Point)
+    {
+    	super.render(target, adjustPoint(point), camera);
+    }
+
+    // Adjust the render point based on the alignment and scaling of the text box
+    private function adjustPoint(point:Point): Point
     {
     	// Adjust horizontal registration point
     	if(halign == Center)
@@ -435,7 +449,6 @@ class BitmapText extends Image
     	else if(valign == Baseline)
     		point.y -= (contentHeight - baseline) * scaleY;
 
-    	// Pthbthth
-    	super.render(target, point, camera);
+    	return point;
     }
 }

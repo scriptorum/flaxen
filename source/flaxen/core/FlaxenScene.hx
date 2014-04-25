@@ -6,7 +6,6 @@ package flaxen.core;
 
 import flaxen.core.Flaxen;
 import ash.core.Engine;
-import com.haxepunk.HXP;
 import com.haxepunk.Scene;
 
 class FlaxenScene extends Scene
@@ -28,7 +27,7 @@ class FlaxenScene extends Scene
 
 	override public function update()
 	{
- 		ash.update(HXP.elapsed); // Update Ash (entity system)
+ 		ash.update(com.haxepunk.HXP.elapsed); // Update Ash (entity system)
 		super.update(); // Update HaxePunk (game library)
 	}
 

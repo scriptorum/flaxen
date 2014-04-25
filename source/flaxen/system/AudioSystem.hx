@@ -66,7 +66,12 @@ class AudioSystem extends FlaxenSystem
 		if(globalAudio.muted)
 			return;
 
+trace("Loading sound " + sound.file);
+var start = flash.Lib.getTimer();
 		var flSound = Assets.getSound(sound.file);
+var stop = flash.Lib.getTimer();
+trace(" - Finished in " + (stop - start)+ "ms");
+
 		if(flSound == null)
 		{
 			handleFailure(entity, sound, "Cannot load sound");

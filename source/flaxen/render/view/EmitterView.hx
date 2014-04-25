@@ -1,6 +1,5 @@
 package flaxen.render.view;
 
-import com.haxepunk.HXP;
 import flash.geom.Rectangle;
 
 import flaxen.component.ImageGrid;
@@ -42,7 +41,7 @@ class EmitterView extends View
 			}
 
 			change = new Emitter(emitter.particle);
-			var bm = HXP.getBitmap(emitter.particle);
+			var bm = com.haxepunk.HXP.getBitmap(emitter.particle);
 			var pWidth:Int = emitter.scale == null ? bm.width : cast (bm.width * emitter.scale.x);
 			var pHeight:Int = emitter.scale == null ? bm.height : cast (bm.height * emitter.scale.y);
 			graphic = display = new com.haxepunk.graphics.Emitter(emitter.particle, pWidth, pHeight);
@@ -146,8 +145,8 @@ class EmitterView extends View
 				// Possibly fire more particles out
 				if(display.particleCount < emitter.maxParticles)
 				{
-		        	emitter.elapsed += HXP.elapsed;
-		        	emitter.accum += HXP.elapsed;
+		        	emitter.elapsed += com.haxepunk.HXP.elapsed;
+		        	emitter.accum += com.haxepunk.HXP.elapsed;
 		        	var needed:Int = Math.floor(emitter.accum * emitter.particlesPerSec);
 		        	emitter.accum -= needed / emitter.particlesPerSec;
 

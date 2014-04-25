@@ -15,7 +15,6 @@ package flaxen.core;
 
 import ash.core.Entity;
 import ash.core.Node;
-import com.haxepunk.HXP;
 import flaxen.common.Easing;
 import flaxen.component.ActionQueue;
 import flaxen.component.Alpha;
@@ -112,16 +111,16 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		super(options.width, options.height, options.fps, options.fixed,
 			#if forceBuffer com.haxepunk.RenderMode.BUFFER #else null #end);
 
-		HXP.screen.smoothing = options.smoothing;
+		com.haxepunk.HXP.screen.smoothing = options.smoothing;
 	}
 
 	override public function init()
 	{
 		#if console
-			HXP.console.enable();
+			com.haxepunk.HXP.console.enable();
 		#end
 
-		HXP.scene = new FlaxenScene(this); // hook Ash into HaxePunk
+		com.haxepunk.HXP.scene = new FlaxenScene(this); // hook Ash into HaxePunk
 		InputService.init();
 	}	
 
@@ -180,9 +179,9 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
     override private function resize()
     {
     	if(baseWidth == 0)
-			baseWidth = HXP.stage.stageWidth;
+			baseWidth = com.haxepunk.HXP.stage.stageWidth;
     	if(baseHeight == 0)
-			baseHeight = HXP.stage.stageHeight;
+			baseHeight = com.haxepunk.HXP.stage.stageHeight;
 
     	// fullScaleResize();
     	// nonScalingResize();
@@ -198,34 +197,34 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
     public function nonScalingResize()
     {
-        HXP.screen.scaleX = HXP.screen.scaleY = 1;
-    	if(HXP.width == 0 || HXP.height == 0)
-	        HXP.resize(HXP.stage.stageWidth, HXP.stage.stageHeight);
+        com.haxepunk.HXP.screen.scaleX = com.haxepunk.HXP.screen.scaleY = 1;
+    	if(com.haxepunk.HXP.width == 0 || com.haxepunk.HXP.height == 0)
+	        com.haxepunk.HXP.resize(com.haxepunk.HXP.stage.stageWidth, com.haxepunk.HXP.stage.stageHeight);
     }
 
     public function fluidResize()
     {
-    	if(HXP.width == 0 || HXP.height == 0)
-	        HXP.resize(HXP.stage.stageWidth, HXP.stage.stageHeight);
+    	if(com.haxepunk.HXP.width == 0 || com.haxepunk.HXP.height == 0)
+	        com.haxepunk.HXP.resize(com.haxepunk.HXP.stage.stageWidth, com.haxepunk.HXP.stage.stageHeight);
 
-	  	HXP.windowWidth = HXP.stage.stageWidth;
-        HXP.windowHeight = HXP.stage.stageHeight;
+	  	com.haxepunk.HXP.windowWidth = com.haxepunk.HXP.stage.stageWidth;
+        com.haxepunk.HXP.windowHeight = com.haxepunk.HXP.stage.stageHeight;
 
         // Determine tall or wide layout
-	    layoutOrientation = (HXP.stage.stageWidth < HXP.stage.stageHeight ? Portrait : Landscape); 
+	    layoutOrientation = (com.haxepunk.HXP.stage.stageWidth < com.haxepunk.HXP.stage.stageHeight ? Portrait : Landscape); 
 	    checkScreenOrientation();
 
 	    // Determine best-fit scaling 
-	    var wScale = HXP.stage.stageWidth / baseWidth;
-	    var hScale = HXP.stage.stageHeight / baseHeight;
+	    var wScale = com.haxepunk.HXP.stage.stageWidth / baseWidth;
+	    var hScale = com.haxepunk.HXP.stage.stageHeight / baseHeight;
 	    var scale = Math.min(wScale, hScale);
-        HXP.screen.scaleX = HXP.screen.scaleY = scale;
+        com.haxepunk.HXP.screen.scaleX = com.haxepunk.HXP.screen.scaleY = scale;
 
         // Center all layouts on screen
 	    layoutOffset = new Position(0,0);
 	    if(scale == hScale)
-	    	layoutOffset.x = (HXP.stage.stageWidth / HXP.screen.scaleY - baseWidth) / 2;
-	    else layoutOffset.y = (HXP.stage.stageHeight / HXP.screen.scaleX - baseHeight) / 2;
+	    	layoutOffset.x = (com.haxepunk.HXP.stage.stageWidth / com.haxepunk.HXP.screen.scaleY - baseWidth) / 2;
+	    else layoutOffset.y = (com.haxepunk.HXP.stage.stageHeight / com.haxepunk.HXP.screen.scaleX - baseHeight) / 2;
 
         updateLayouts(); // Update orientation and offset for all layouts
     }
@@ -239,7 +238,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	    	baseWidth = baseHeight;
 	    	baseHeight = tmp;
     	}
-    	HXP.resize(baseWidth, baseHeight);
+    	com.haxepunk.HXP.resize(baseWidth, baseHeight);
     }
 
     /*

@@ -9,7 +9,6 @@ package flaxen.component;
 
 import flaxen.util.DynUtil;
 import flaxen.common.LoopType;
-import com.haxepunk.HXP;
 
 // When an animation stops, defines final frame behavior. When loop is LoopType.None, the animation 
 // stops after one sequence. Otherwise you have set stop manually. Pausing the animation will not 
@@ -19,6 +18,7 @@ enum AnimationStopType
 	Clear;	// The animation disappears (default)
 	Last;	// The animation freezes on the last frame
 	First;	// The animation freezes on the first frame
+	Pause;  // the animation remains on its current frame as if paused (but it's stopped/complete)
 }
 
 class Animation
@@ -54,7 +54,7 @@ class Animation
 	public function new(frames:Dynamic, ?speed:Float, ?loop:LoopType, ?stopType:AnimationStopType)
 	{
 		this.frames = frames;
-		this.speed = (speed == null ? HXP.assignedFrameRate : speed);
+		this.speed = (speed == null ? com.haxepunk.HXP.assignedFrameRate : speed);
 		this.loop = (loop == null ? LoopType.Forward : loop);
 		this.stopType = (stopType == null ? Clear : stopType);
 		update();

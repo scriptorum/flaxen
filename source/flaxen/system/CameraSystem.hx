@@ -1,7 +1,6 @@
 
 package flaxen.system;
 
-import com.haxepunk.HXP;
 import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
 import flaxen.core.FlaxenSystem;
@@ -32,7 +31,7 @@ class CameraSystem extends FlaxenSystem
 		var app = flaxen.getApp();
 		if(app.modeInitialized())
 		{
-			HXP.camera.x = targetX = HXP.camera.y = targetY = 0;
+			com.haxepunk.HXP.camera.x = targetX = com.haxepunk.HXP.camera.y = targetY = 0;
 			CameraService.stopAnim();
 			return;
 		}
@@ -43,8 +42,8 @@ class CameraSystem extends FlaxenSystem
 	 		// if(node.entity.name == CameraFocus.MANUAL_FOCUS_ENTITY)
 	 		// 	manualFocus = true;
 
-	 		x = node.position.x - HXP.halfWidth;
-	 		y = node.position.y - HXP.halfHeight;
+	 		x = node.position.x - com.haxepunk.HXP.halfWidth;
+	 		y = node.position.y - com.haxepunk.HXP.halfHeight;
 	 		break;	 		
 	 	}
 
@@ -55,7 +54,7 @@ class CameraSystem extends FlaxenSystem
 			CameraService.animCameraTo(targetX, targetY, 0.8);
 		}	 	
 
-		// if(HXP.camera.x != targetX || HXP.camera.y != targetY)
+		// if(com.haxepunk.HXP.camera.x != targetX || com.haxepunk.HXP.camera.y != targetY)
 		// {
 		// }
 	}

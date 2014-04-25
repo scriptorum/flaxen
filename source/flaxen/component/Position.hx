@@ -1,8 +1,6 @@
 
 package flaxen.component;
 
-import com.haxepunk.HXP;
-
 class Position
 {
 	public var x:Float;
@@ -84,42 +82,42 @@ class Position
 
 	public static inline function top(): Position
 	{
-		return new Position(HXP.halfWidth, 0);
+		return new Position(com.haxepunk.HXP.halfWidth, 0);
 	}
 
 	public static inline function topRight(): Position
 	{
-		return new Position(HXP.width, 0);
+		return new Position(com.haxepunk.HXP.width, 0);
 	}
 
 	public static inline function left(): Position
 	{
-		return new Position(0, HXP.halfHeight);
+		return new Position(0, com.haxepunk.HXP.halfHeight);
 	}
 
 	public static inline function center(): Position
 	{
-		return new Position(HXP.halfWidth, HXP.halfHeight);
+		return new Position(com.haxepunk.HXP.halfWidth, com.haxepunk.HXP.halfHeight);
 	}
 
 	public static inline function right(): Position
 	{
-		return new Position(HXP.height, HXP.halfHeight);
+		return new Position(com.haxepunk.HXP.height, com.haxepunk.HXP.halfHeight);
 	}
 
 	public static inline function bottomLeft(): Position
 	{
-		return new Position(0, HXP.height);
+		return new Position(0, com.haxepunk.HXP.height);
 	}
 
 	public static inline function bottom(): Position
 	{
-		return new Position(HXP.halfWidth, HXP.height);
+		return new Position(com.haxepunk.HXP.halfWidth, com.haxepunk.HXP.height);
 	}
 
 	public static inline function bottomRight(): Position
 	{
-		return new Position(HXP.width, HXP.height);
+		return new Position(com.haxepunk.HXP.width, com.haxepunk.HXP.height);
 	}
 
 	// #if checkNaN

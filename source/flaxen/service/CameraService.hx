@@ -1,7 +1,6 @@
 package flaxen.service;
 
 import flaxen.service.InputService;
-import com.haxepunk.HXP;
 import com.haxepunk.utils.Ease;
 import com.haxepunk.Tween;
 import com.haxepunk.tweens.TweenEvent;
@@ -18,18 +17,18 @@ class CameraService
 
 	public static function rightClick(evt:MouseEvent)
 	{
-		animCameraRel(InputService.mouseX - HXP.halfWidth, InputService.mouseY - HXP.halfHeight, .65);
+		animCameraRel(InputService.mouseX - com.haxepunk.HXP.halfWidth, InputService.mouseY - com.haxepunk.HXP.halfHeight, .65);
 	}
 
 	public static function animCameraRel(x, y, duration)
 	{
-		animCameraTo(HXP.camera.x + x, HXP.camera.y + y, duration);
+		animCameraTo(com.haxepunk.HXP.camera.x + x, com.haxepunk.HXP.camera.y + y, duration);
 	}
 
 	public static function animCameraTo(x, y, duration)
 	{
 		stopAnim();
-		_camTween = HXP.tween(HXP.camera, { x:x, y:y }, duration, 
+		_camTween = com.haxepunk.HXP.tween(com.haxepunk.HXP.camera, { x:x, y:y }, duration, 
 			{ ease: Ease.expoOut, complete:cameraTweenFinish });
 	}
 
@@ -43,7 +42,7 @@ class CameraService
 		if(_camTween == null)
 			return;
 
-		HXP.tweener.removeTween(_camTween);
+		com.haxepunk.HXP.tweener.removeTween(_camTween);
 
 		_camTween = null;
 	}

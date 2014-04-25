@@ -3,8 +3,6 @@
 */
 package flaxen.component;
 
-import com.haxepunk.HXP;
-
 class Size
 {
 	public var width:Float;
@@ -31,6 +29,6 @@ class Size
 
 	public static function screen(): Size
 	{
-		return new Size(HXP.width, HXP.height);
+		return new Size(com.haxepunk.HXP.width, com.haxepunk.HXP.height);
 	}
 }

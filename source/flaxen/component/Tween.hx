@@ -108,7 +108,7 @@ class Tween
 
  		if(elapsed >= duration)
  		{
-			if(loop == LoopType.None || ++loopCount >= stopAfterLoops)
+			if(loop == LoopType.None || (stopAfterLoops > 0 && ++loopCount >= stopAfterLoops))
 			{				
  				complete = true;
  				return;

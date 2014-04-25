@@ -1,7 +1,6 @@
 package flaxen.demo; 
 
 import ash.core.Entity;
-import com.haxepunk.HXP;
 import flaxen.core.Flaxen;
 import flaxen.component.Image;
 import flaxen.component.Position;
@@ -37,7 +36,7 @@ class BitmapTextDemo extends Flaxen
 			.add(new Text("This is regular TTF text."))
 			.add(Position.topLeft());
 
-		setInputHandler(function(f)
+		setUpdateCallback(function(f)
 		{
 			if(InputService.clicked)
 			{

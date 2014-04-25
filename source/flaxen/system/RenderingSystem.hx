@@ -2,7 +2,6 @@ package flaxen.system;
 
 import ash.core.Entity;
 import ash.core.Node;
-import com.haxepunk.HXP;
 import flaxen.component.Display;
 import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
@@ -39,7 +38,7 @@ class RenderingSystem extends FlaxenSystem
 	private function removeView(view:View)
 	{
 		view.destroy();
-		HXP.scene.remove(view);
+		com.haxepunk.HXP.scene.remove(view);
 	}
 
 	override public function update(_)
@@ -102,7 +101,7 @@ class RenderingSystem extends FlaxenSystem
 	private function createView(entity:Entity, viewClass:Class<View>, ?display:Display): Display
 	{
 		var view:View = Type.createInstance(viewClass, [entity]);
-		HXP.scene.add(view);
+		com.haxepunk.HXP.scene.add(view);
 
 		if(display == null)
 		{

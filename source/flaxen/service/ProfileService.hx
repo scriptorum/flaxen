@@ -4,7 +4,6 @@
 
 package flaxen.service;
 
-import com.haxepunk.HXP;
 import flaxen.core.Log;
 
 class ProfileService
@@ -77,7 +76,7 @@ class ProfileService
 
 	public static function format(time:Float): String
 	{
-		return cast HXP.round(time, 2);
+		return cast com.haxepunk.HXP.round(time, 2);
 	}
 }
 

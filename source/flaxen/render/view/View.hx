@@ -17,7 +17,6 @@ import flaxen.component.Layout;
 import flaxen.component.Image;
 import flaxen.component.ImageGrid;
 import flaxen.core.Log;
-import com.haxepunk.HXP;
 import com.haxepunk.Graphic;
 
 import ash.core.Entity;
@@ -178,7 +177,7 @@ class View extends com.haxepunk.Entity
 		}
 
 		// Update position
-		if(hasComponent(Position))
+		if(hasComponent(flaxen.component.Position))
 		{
 			// Update offset
 			var offsetX:Float = 0;
@@ -194,12 +193,12 @@ class View extends com.haxepunk.Entity
 
 			if(hasComponent(Layout))
 			{
-				var o = getComponent(Layout);
+				var o:Layout = cast getComponent(Layout);
 				offsetX += o.current.x;
 				offsetY += o.current.y;
 			}
 
-			var pos = getComponent(Position);
+			var pos:flaxen.component.Position = cast getComponent(Position);
 			var newx = pos.x + offsetX;
 			var newy = pos.y + offsetY;
 
@@ -222,7 +221,7 @@ class View extends com.haxepunk.Entity
 	// Optionally calculates and updates the tilesAcross/Down in an ImageGrid component
 	public function setImageDimensions(image:Image, ?imageGrid:ImageGrid)
 	{
-		var bitmap = HXP.getBitmap(image.path);
+		var bitmap = com.haxepunk.HXP.getBitmap(image.path);
 		#if debug
 			if(bitmap == null)
 				Log.error("Bitmap not found (" + image.path + ")");

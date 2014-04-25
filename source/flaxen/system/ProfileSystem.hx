@@ -11,7 +11,6 @@
  */
 package flaxen.system;
 
-import com.haxepunk.HXP;
 import com.haxepunk.utils.Key;
 import flaxen.core.Flaxen;
 import flaxen.core.Log;
@@ -118,7 +117,7 @@ class ProfileStats
 
 	public function format(time:Float): String
 	{
-		return cast HXP.round(time, 2);
+		return cast com.haxepunk.HXP.round(time, 2);
 	}
 }
 
