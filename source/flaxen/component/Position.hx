@@ -1,15 +1,16 @@
-
 package flaxen.component;
 
 class Position
 {
-	public var x:Float;
-	public var y:Float;
+	private var _x:Float;
+	private var _y:Float;
+	public var x(get,set):Float;
+	public var y(get,set):Float;
 
 	public function new(x:Float, y:Float)
 	{
-		this.x = x;
-		this.y = y;
+		this._x = x;
+		this._y = y;
 	}
 
 	public function subtract(x:Float, y:Float): Position
@@ -66,6 +67,45 @@ class Position
 		return Math.sqrt(dx * dx + dy * dy);
 	}
 
+	// Accessors added so we can override them in FollowablePosition subclass
+	// I don't really like this, but Haxe won't allow inlined functions to be overridden
+	// TODO Add a PositionImpl interface, and move the utility functions to a "using" MixIn.
+	public function set_x(x:Float): Float
+	{
+		return this._x = x;
+	}
+
+	public function set_y(y:Float): Float
+	{
+		return this._y = y;
+	}
+
+	public function set(x:Float, y:Float)
+	{
+		this._x = x;
+		this._y = y;
+	}
+
+	public function get_x(): Float
+	{
+		return _x;
+	}
+
+	public function get_y(): Float
+	{
+		return _y;
+	}
+
+	public function toString(): String
+	{
+		return toXY();
+	}
+
+	public function toXY(): String
+	{
+		return x + "," + y;
+	}
+
 	//
 	// Some convenience methods
 	//
@@ -119,21 +159,4 @@ class Position
 	{
 		return new Position(com.haxepunk.HXP.width, com.haxepunk.HXP.height);
 	}
-
-	// #if checkNaN
-	// 	private var _y:Float;
-	// 	public var y(get,set):Float;
-	// 	public function set_y(y:Float): Float { 
-	// 		if(Math.isNaN(y)) throw "Position.y is not a number"; return _y = y; }
-	// 	public function get_y(): Float { return _y; }
-
-	// 	private var _x:Float;
-	// 	public var x(get,set):Float;
-	// 	public function set_x(x:Float): Float { 
-	// 		if(Math.isNaN(x)) throw "Position.x is not a number"; return _x = x; }
-	// 	public function get_x(): Float { return _x; }
-	// #else
-	// 	public var x:Float;
-	// 	public var y:Float;
-	// #end
 }
