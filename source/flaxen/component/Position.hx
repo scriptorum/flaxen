@@ -1,7 +1,10 @@
 package flaxen.component;
 
+import ash.signals.Signal1;
+
 class Position
 {
+	public var signal:Signal1<Position>;
 	private var _x:Float;
 	private var _y:Float;
 	public var x(get,set):Float;
@@ -9,6 +12,7 @@ class Position
 
 	public function new(x:Float, y:Float)
 	{
+		signal = new Signal1<Position>();
 		this._x = x;
 		this._y = y;
 	}
@@ -67,23 +71,26 @@ class Position
 		return Math.sqrt(dx * dx + dy * dy);
 	}
 
-	// Accessors added so we can override them in FollowablePosition subclass
-	// I don't really like this, but Haxe won't allow inlined functions to be overridden
-	// TODO Add a PositionImpl interface, and move the utility functions to a "using" MixIn.
+	// Accessors added for basic signalling. Not really happy to put this in a generic component.
 	public function set_x(x:Float): Float
 	{
-		return this._x = x;
+		this._x = x;
+		signal.dispatch(this);
+		return _x;
 	}
 
 	public function set_y(y:Float): Float
 	{
-		return this._y = y;
+		this._y = y;
+		signal.dispatch(this);
+		return _y;
 	}
 
 	public function set(x:Float, y:Float)
 	{
 		this._x = x;
 		this._y = y;
+		signal.dispatch(this);
 	}
 
 	public function get_x(): Float
@@ -97,11 +104,6 @@ class Position
 	}
 
 	public function toString(): String
-	{
-		return toXY();
-	}
-
-	public function toXY(): String
 	{
 		return x + "," + y;
 	}
