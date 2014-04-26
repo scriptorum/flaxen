@@ -40,14 +40,14 @@ class Tween
 	public var loopCount(default, null):Int = 0;
 
 	public function new(source:Dynamic, target:Dynamic, duration:Float, 
-		easing:EasingFunction = null, autoStart:Bool = true)
+		easing:EasingFunction = null, loop:LoopType = null, autoStart:Bool = true)
 	{
 		this.source = source;
 		this.target = target;
 		this.duration = duration;
 		Log.assert(duration > 0);
 		this.easing = (easing == null ? Easing.linearTween : easing);
-		this.loop = LoopType.None;
+		this.loop = (loop == null ? LoopType.None : loop);
 		this.name = "tween"  + Std.string(++created);
 		
 		if(autoStart)
