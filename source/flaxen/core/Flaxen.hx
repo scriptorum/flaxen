@@ -32,6 +32,7 @@ import flaxen.component.Timestamp;
 import flaxen.component.Transitional;
 import flaxen.component.Tween;
 import flaxen.component.Sound;
+import flaxen.common.LoopType;
 import flaxen.core.ComponentSet;
 import flaxen.core.FlaxenHandler;
 import flaxen.core.FlaxenOptions;
@@ -869,11 +870,11 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	// Creates a new Tween and adds a new Entity to hold it
 	// This Entity will be destroyed when the tween completes
 	public function newTween(source:Dynamic, target:Dynamic, duration:Float, 
-		easing:EasingFunction = null, autoStart:Bool = true, name:String = null, 
-		parent:String = null): Tween
+		easing:EasingFunction = null, loop:LoopType = null, autoStart:Bool = true,
+		name:String = null, parent:String = null): Tween
 	{
 		var e = (name == null ? newEntity("tween") : newSingleton(name));
-		var tween = new Tween(source, target, duration, easing, autoStart);
+		var tween = new Tween(source, target, duration, easing, loop, autoStart);
 		tween.name = e.name;
 		tween.destroyEntity = true;
 		e.add(tween);
