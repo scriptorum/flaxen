@@ -2,7 +2,7 @@
 	Do not add this system directly, it is included automatically when using -Dprofiler.
 	The profile system gives you a look at how much time each system is using. Hit P
 	to dump to the log the current profile results. You can change the dump key by 
-	setting ProfileSystem.dumpKey at your application boostrap.
+	setting ProfileSystem.triggerKey at your application boostrap.
 
 	TODO:
 		- Remove dependence on other Systems
@@ -40,10 +40,17 @@ class ProfileSystem extends FlaxenSystem
 			profile.open();
 		else profile.close();
 
+
+		// Press trigger key to dump profiler stats, add SHIFT modifier to instead reset (clear) stats
 		if(InputService.lastKey() == triggerKey)
 		{
+			if(InputService.check(Key.SHIFT))
+			{
+				Log.log("Resetting profiler stats");
+				stats.reset();
+			}
+			else stats.dump();
 			InputService.clearLastKey();
-			stats.dump();
 		}
 	}
 }
