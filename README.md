@@ -358,7 +358,7 @@ e.add(Offset.center());
 e.add(new Origin(.55,.25,true));
 ```
 
-Or if you knew the exactly pixel position of the eye on a 100x200 image:
+Or if you knew the exact pixel position of the eye on a 100x200 image:
 
 ```haxe
 e.add(new Origin(55,50));
