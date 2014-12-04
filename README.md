@@ -94,8 +94,83 @@ removeEntity("moon"); // returns true if removed, false if not found
 demandRemoveEntity("moon"); // Log error not found, otherwise remove
 ```
 
+Flaxen comes with many pre-built components, but you'll want to add your own to the mix. At its core, a component is simply an object with public data fields, and a constructor. Let's say you wanted a component to track the player, monster, or NPC health:
+
+```haxe
+class Health
+{
+    public var value:Int;
+    public function new(value:Int)
+    {
+        this.value = value;
+    }
+}
+```
+
+Sometimes a component doesn't need to contain any data, it's mere presence is helpful enough as a marker. To make such components, you can use a StaticComponent. Extending this class will give you a constructor and a static variable called instance.
+
+```haxe
+class IsCorpse extends StaticComponent
+{
+}
+```
+
+You can add your components to any entity, and modify them just like any pre-built component:
+
+```haxe
+e1.add(new Health(100));
+
+var health = e2.get(Health);
+health.value = 50;
+
+e3.add(IsCorpse.instance);
+```
+
+###Systems
+When you initialize Flaxen, it adds a set of pre-built systems to Ash: ModeSystem, UpdateSystem, ActionSystem, TweeningSystem, RenderingSystem, and AudioSystem. There are additional pre-built systems you can add. Once added, the update function in each of these systems will run in a loop, processing entities and responding appropriately. To add a system is really, really hard:
+
+```haxe
+addSystem(MySystem);
+```
+
+You should build your own systems and nodes to handle game logic. Let's say you wanted to check if any entities are dying by creating a DeathSystem:
+
+```haxe
+class DeathSystem extends System
+{
+    public function new(f:Flaxen)
+    { 
+        super(f); 
+    }
+
+    override public function update(time:Float)
+    {
+        for(node in ash.getNodeList(HealthNode))
+        {
+            if(node.health.value <= 0)
+            {
+            	var e = node.entity;
+            	e.remove(Health);
+            	e.add(IsCorpse.instance);
+            	newSound("gasp-ack-dying.wav");
+            }
+        }
+    }
+}
+```
+
+Systems employ a speedy filtering mechanism called Nodes to get at just the entities that apply to them.
+
+```haxe
+class HealthNode extends Node<HealthNode>
+{
+    public var health:Health;
+}
+```
+Only entities with a health component will be returned by getNodeList(). In this case we only have one component we're looking for, but you could specify multiple components, and they would all have to be present in the entity for getNodeList to include it. Ignore the fact that it looks weird having a class extend a typed version of itself, that's a strange Ash-ism but it works. Just effin weird. Super weird.
+
 ###Showing an Image
-Here's a simple image. The whole source image is centered on the screen. The entity is given a middle offset (instead of an upper-left corner), which the RenderingSystem takes into account when positioning the Image. Offset is not required to show a simple image, but Image and Position are. Under the hood this creates a HaxePunk Image.
+Here's a simple image. The whole source image is centered on the screen. The entity is given a middle offset (instead of an upper-left corner), which the RenderingSystem takes into account when positioning the Image. Offset is not required to show a simple image, but Image and Position are. Under the hood this creates a HaxePunk [Image](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html).
 
 ```haxe
 var e:Entity = newEntity()
@@ -104,7 +179,7 @@ var e:Entity = newEntity()
 	.add(Offset.center());
 ```
 
-To show part of an image, say a sprite on a sprite sheet, you could add a clipping region to the image:
+To show part of an image, say a sprite on a sprite sheet, you could add a [clipping region](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html#new) to the image:
 
 ```haxe
 var image = new Image("art/flaxen.png", new Rectangle(0,0,50,50));
@@ -123,7 +198,7 @@ var e:Entity = newEntity()
 ```
 
 ###Showing a Grid of Images
-Under the hood, we use a HaxePunk Tilemap. The entity requires an Image and Position, but also needs a Grid and an ImageGrid. Don't get me started on ImageGrid again. Anyhow, Image again points to a sprite sheet with multiple images. ImageGrid is again the size of one of these sprites on the sheet. And Grid is a general purpose 2D array of Ints that corresponds to the tile #s you want to show at any given position of the grid. For example, if you have four tiles in tiles.png and want to show a 3x3 grid of tiles, this might very well do that:
+Under the hood, we use a HaxePunk [Tilemap](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Tilemap.html). The entity requires an Image and Position, but also needs a Grid and an ImageGrid. Don't get me started on ImageGrid again. Anyhow, Image again points to a sprite sheet with multiple images. ImageGrid is again the size of one of these sprites on the sheet. And Grid is a general purpose 2D array of Ints that corresponds to the tile #s you want to show at any given position of the grid. For example, if you have four tiles in tiles.png and want to show a 3x3 grid of tiles, this might very well do that:
 
 ```haxe
 var e:Entity = newEntity()
@@ -136,7 +211,7 @@ e.add(grid);
 ```
 
 ###Playing an Animation
-A HaxePunk Spritemap will be created if you put together an entity with an Image, Position and ImageGrid, but instead of Tile you use an Animation. Animations can be removed automatically (if desired) when they complete or looped.
+A HaxePunk [Spritemap](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Spritemap.html) will be created if you put together an entity with an Image, Position and ImageGrid, but instead of Tile you use an Animation. Animations can be removed automatically (if desired) when they complete or looped.
 
 ```haxe
 var e:Entity = new Entity()
@@ -147,7 +222,7 @@ var e:Entity = new Entity()
 ```
 
 ###Repeating an Image Over the Screen
-In HaxePunk this is a Backdrop object. It requires an Image and a Repeating component:
+In HaxePunk this is a [Backdrop](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Backdrop.html) object. It requires an Image and a Repeating component:
 
 ```haxe
 var e:Entity = newEntity()
@@ -156,7 +231,7 @@ var e:Entity = newEntity()
 ```
 
 ###Adding Text
-For TrueType text you need Position and a Text object. By default it will use the HaxePunk font (04B_03__.ttf).
+For TrueType text you need Position and a [Text](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Text.html) object. By default it will use the [default HaxePunk font](http://haxepunk.com/documentation/api/com/haxepunk/HXP.html#defaultFont).
 
 ```haxe
 var textEntity:Entity = newEntity()
@@ -191,7 +266,7 @@ TextStyle.createBitmap(false, Right, Top, 0, -2, 0, "2", false, "0123456789")
 ```
 
 ###Adding a Particle Emitter
-The particle system is based off of HaxePunk's Emitter. It requires Position and Emitter components. The image is supplied to the Emitter object, which in retrospect should be supplied by an Image, but then folks might think they could do tiles or clips which it doesn't support. Anyhow this puffs a little smoke:
+The particle system is based off of HaxePunk's [Emitter](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Emitter.html). It requires Position and Emitter components. The image is supplied to the Emitter object, which in retrospect should be supplied by an Image, but then folks might think they could do tiles or clips which it doesn't support. Anyhow this puffs a little smoke:
 
 ```haxe
 var emitter = new Emitter("art/particle-smoke.png");
@@ -208,22 +283,69 @@ emitter.alphaStart = 0.2;
 newSingleton("emitter").add(somePosition).add(emitter);
 ```
 
-###Other Features
+###Layers
+HaxePunk organizes its visual elements onto [layers](http://haxepunk.com/documentation/api/com/haxepunk/Entity.html#layer), so you can put things in front or behind other things. Exciting. To alter the default layer (0), add a Layer component to your entity.
 
-There are several notable features here that I need to document. First, most entities (not Emitter) can have optional components added to them that affect their appearance:
+```haxe
+var e:Entity = newEntity()
+	.add(new Image("art/flaxen.png"))
+	.add(Position.topLeft())
+	.add(new Layer(5));
+```
 
-* Scale
-* Rotation
+###Image Manipulations
+Most [Image](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html)-based entities (not Emitter) can have optional components added to them that affect their appearance:
+
+####Scale
+Changes the horizontal and vertical scaling of the image by percentage. 1.0 is full size, 0.5 is half size, 2.0 is twice the size.
+
+```haxe
+new Scale(0.1, 10.0) // One-tenth the width, but ten times the height
+Scale.half() // Half the width
+```
+
+####Working the Camera
+Moving the camera works the same way here as in HaxePunk, simply alter [HXP.camera](http://haxepunk.com/documentation/api/com/haxepunk/HXP.html#camera).
+
+Entities have a default scroll factor of 0, which means they move with the camera. To create a parallax effect when you move the camera, you can add a ScrollFactor component. This manipulates the graphic's [scrollx](http://haxepunk.com/documentation/api/com/haxepunk/Graphic.html#scrollX)/[scrolly](http://haxepunk.com/documentation/api/com/haxepunk/Graphic.html#scrolly) attributes.
+
+```haxe
+e.add(new ScrollFactor(0.5, 0.5)); // Object moves at half the speed of the camera movement
+HXP.setCamera(10, 10);
+```
+
+Or for smooth camera movement, employ the CameraService:
+
+```haxe
+CameraService.animCameraTo(10, 10, 1.0); // one second camera movement
+```
+
+To have the camera follow an entity as it moves, add the built-in CameraSystem:
+
+```haxe
+addSystem(new CameraSystem());
+changeCameraFocus(e); // Removes old focus, adds CameraFocus component to e
+```
+
+####Rotation
+You can [rotate](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html#angle) an entity by adding a Rotation component. This is in from degrees, from 0 to 360. Because we're programmers, not mathemeticians, gurshdurnit!
+
+```haxe
+e.add(new Rotation(90)); // quarter right turn
+e.add(Rotation.random()); // What what what?!
+```
+
+####Other Manipulations Left To Document
 * Offset
 * Origin
 * Size
 * Alpha
 * Invisible
-* ScrollFactor
 * Size
-* Rotation
 
-All visual entities can have a Layer (incuding Emitter). Also there are these other unmentioned features:
+##Other Features
+
+Also there are these other unmentioned features:
 
 * ActionQueue lets you chain events, add/remove components/entities, wait for components to reach a certain state, do timed delays and make callbacks to your functions. I like. Scotchy scotch scotch.
 * The mode system lets you specify different start/stop and input handlers based on your game mode (scene), mark entities as transitional, and do a few other funky things. 
