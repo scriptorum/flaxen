@@ -300,8 +300,8 @@ Most [Image](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.h
 Changes the horizontal and vertical scaling of the image by percentage. 1.0 is full size, 0.5 is half size, 2.0 is twice the size.
 
 ```haxe
-new Scale(0.1, 10.0) // One-tenth the width, but ten times the height
-Scale.half() // Half the width
+e.add(new Scale(0.1, 10.0)); // One-tenth the width, but ten times the height
+e.add(Scale.half()); // Half the width
 ```
 
 ####Working the Camera
@@ -328,23 +328,71 @@ changeCameraFocus(e); // Removes old focus, adds CameraFocus component to e
 ```
 
 ####Rotation
-You can [rotate](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html#angle) an entity by adding a Rotation component. This is in from degrees, from 0 to 360. Because we're programmers, not mathemeticians, gurshdurnit!
+You can [rotate](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html#angle) an entity by adding a Rotation component. This is in degrees, from 0 to 360. Because we're programmers, not mathemeticians, gurshdurnit!
 
 ```haxe
 e.add(new Rotation(90)); // quarter right turn
 e.add(Rotation.random()); // What what what?!
 ```
 
-####Other Manipulations Left To Document
-* Offset
-* Origin
-* Size
-* Alpha
-* Invisible
-* Size
+####Offset
+Images are drawn with the upper-left corner of the image aligning with the entity position. To change this [offset](http://haxepunk.com/documentation/api/com/haxepunk/Graphic.html#x), say to center the image on that point, add an Offset component which is added to the position.
+
+```haxe
+e1.add(new Offset(-10,-10)); // moves image up/left 10 pixels, so a 20x020 image appears centered at the Position
+
+e2.add(Offset.center()); // shorthand for above, but works with any image size
+e2.add(new Position(50,50)); // Image is centered over 50,50
+
+e3.add(new Offset(-1,0,true)); // image is top/right-aligned
+```
+####Origin
+The [origin](http://haxepunk.com/documentation/api/com/haxepunk/Entity.html#originX) is the transformation point for the entity. Rotation and scaling apply to this origin point. Unlike in HaxePunk which applies an offset whenever the origin is altered, Flaxen origin is kept distinct from its offset. I don't know, it just bugged me that the two were tied together, so I changed it, violently and without remorse.
+
+Let's say you had a picture of your brother winking, and you wanted to rotate the image about his other eye which is open. Let's further say the open eye, relative to the size of the image, is at a position 55% to the right and 25% down:
+
+```haxe
+e.add(new Image("mybrothertheidiot.png"));
+e.add(Position.center());
+e.add(Offset.center());
+e.add(new Origin(.55,.25,true));
+```
+
+Or if you knew the exactly pixel position of the eye on a 100x200 image:
+
+```haxe
+e.add(new Origin(55,50));
+```
+
+####Size
+Size is an alternate way to scale the image by specifying the precise image dimensions you desire.
+
+```haxe
+var size = new Size(100,200)
+e1.add(size);
+size.scale(0.50) // Change to 50x100
+
+e2.add(Size.screen()); // Match screen dimensions
+```
+
+####Alpha
+The Alpha component lets you change the level of opacity of the image. You know, the transparency. Also called [alpha](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html#alpha).
+fr
+```haxe
+e1.add(new Alpha(.1)); // Very transparent
+e2.add(Alpha.clear()); // Totally transparent
+e3.add(Alpha.opaque()); // Solid. AS A ROCK! That's what my love is... what, nobody remembers Ashford and Simpson?
+e4.add(Alpha.half()); // 50% alpha
+```
+
+####Invisible
+Unlike Alpha(0), this component indicates the entity should not be rendered at all. It's not [visible](http://haxepunk.com/documentation/api/com/haxepunk/Entity.html#visible).
+
+```haxe
+e.add(Invisible.instance);
+```
 
 ##Other Features
-
 Also there are these other unmentioned features:
 
 * ActionQueue lets you chain events, add/remove components/entities, wait for components to reach a certain state, do timed delays and make callbacks to your functions. I like. Scotchy scotch scotch.
