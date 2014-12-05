@@ -1,29 +1,37 @@
 #Flaxen
-Flaxen is a Haxe 3 project that combines a game engine ([HaxePunk](https://github.com/HaxePunk/HaxePunk)) with an entity component system ([Ash-Haxe](https://github.com/nadako/Ash-HaXe)). 
-
 ##Overview
-Flaxen started as base code I just used for game jams; pardon the dust as I try to make this more useful.
+> You've got Haxepunk in my Ash! You got Ash in my Haxepunk!
+
+Flaxen is a Haxe 3 project that combines [HaxePunk](https://github.com/HaxePunk/HaxePunk) (a game engine) with [Ash-Haxe](https://github.com/nadako/Ash-HaXe) (an entity component system or ECS). Flaxen wraps a HaxePunk engine and provides an interface to manipulate Ash entities. Add some built-in components, and HaxePunk objects  maaaaaaagically appear on the screen. This is due to the (also built-in) nodes and systems that map these Ash entities to their HaxePunk counterparts, behind-the-scenes. With Ash, you get a full ECS, instilling complex game behaviors and interaction by building your own systems and components.
+
+Flaxen started as base code I just used for game jams. Pardon the dust as I try to make this project more useful to others.  Most of this I typed up without testing it, so that makes me a rotten person.
 
 ###Ash
-In a typical ECS (entity component system), you create entities to represent any kind of game object, whether it represent an on-screen game entity or any kind of ad-hoc data you'd like to manipulate in an ECS model. To make the entities do things, first you add components to the entities. Components are simple objects that define the characteristics (behaviors/states) of the entity they belong to. Then you build systems, which process groups of entities that contain some specific set of components, observe changes in these components, and respond appropriately. A common example is movement: give an entity Position and Velocity components, and create a MovementSystem that looks for entities having both of these components (this is the Ash concept of a "node"); for each such entity found, the system updates the Position component based on the values in the Velocity component. For more information about ECS and Ash in particular, here's a [good overview](http://www.richardlord.net/blog/why-use-an-entity-framework) by Richard Lord, the author of original Ash.
+In a typical ECS, you create entities to represent any kind of game object, whether they are on-screen elements or any state data you'd like to manipulate. To make the entities do things, first you add components to the entities. Components are simple objects that define the characteristics of the entity they belong to. Then you build systems, which observe changes in these components and respond appropriately. Rather than looking through all entities, Ash uses "nodes" to ensure a system only acts upon entities that match its criteria. 
+
+A common example is movement. Give an entity Position and Velocity components. Create a MovementNode referencing both of those. Then add a MovementSystem that looks through all matching entities, updating each Position component based on the values of the Velocity component. For more information about ECS and Ash in particular, here's a [good overview](http://www.richardlord.net/blog/why-use-an-entity-framework) by Richard Lord, the author of original Ash. Ash-Haxe is a Haxe port.
 
 ###HaxePunk
-HaxePunk is a game library that provides a number of useful constructs. It can be used on its own, separate from Flaxen; visit the [HaxePunk website](http://HaxePunk.com). You don't need to know HaxePunk to use Flaxen (although it can help). Flaxen provides built-in components that abstract access to Image, Text, Backdrop, Emitter, Tilemap and Spritemap. Additional HaxePunk objects are available that Flaxen does not support.
-
-###Flaxen
-Flaxen wraps a HaxePunk engine and provides an interface to manipulate Ash entities. Built-in components like Image, Layer and Position can be added to entities, and built-in nodes and systems like the RenderingSystem maps these entities to their HaxePunk counterparts. Flaxen also provides its own HaxePunk scene.
+HaxePunk is a game library that provides a number of useful constructs. It can be used on its own, separate from Flaxen; visit the [HaxePunk website](http://HaxePunk.com). You don't need to know HaxePunk to use many parts of Flaxen, but it is *super duper* helpful. Flaxen provides built-in components that abstract access to Image, Text, Backdrop, Emitter, Tilemap and Spritemap. Additional HaxePunk objects are available that Flaxen does not support. HaxePunk is a really great library and if you want cross-platform game development but don't care about a full entity component system, just skip Flaxen and use ([HaxePunk](https://github.com/HaxePunk/HaxePunk)) directly. I won't be mad. Seriously.
 
 ##Install Flaxen
-Flaxen is not currently in the haxelib library. To install it from github:
+Sorry, Flaxen is not currently in the haxelib library! To install it from github:
 
 ```bash
 haxelib git flaxen https://github.com/scriptorum/flaxen
 ```
 
-It requires Haxe 3 and has dependencies on [OpenFL](http://www.openfl.org/documentation/getting-started/installing-openfl/), [HaxePunk](https://github.com/HaxePunk/HaxePunk) and [Ash-Haxe](https://github.com/nadako/Ash-HaXe). Install those libraries. You go do that.
+It requires Haxe 3 and has dependencies on [OpenFL](http://www.openfl.org/documentation/getting-started/installing-openfl/), [HaxePunk](https://github.com/HaxePunk/HaxePunk) and [Ash-Haxe](https://github.com/nadako/Ash-HaXe). These depencies must be installed for Flaxen to compile. The last time I installed them I had to do the following magickery which may be out of date:
 
-##How to Use It
-Here's some meager information to get you started! Most of this I typed up without testing it, so that makes me a rotten person.
+```bash
+haxelib install openfl
+haxelib run openfl setup
+haxelib install HaxePunk
+haxelib run HaxePunk setup
+haxelib install ash
+```
+
+##Flaxen Fundamentals
 
 ###Create Flaxen
 Subclassing Flaxen is the recommended method to initialize it.
@@ -39,19 +47,37 @@ class MyFlaxenApp extends Flaxen
 	override public function ready()
 	{
 		// Setup here...
+		var e:Entity = newSingleton("player"); ...
 	}
 }
 ```
 
-###Entities and Components
+In the ready() method is where you add systems, create entities, and populate entities with components.
 
-You can create a new named entity with newSingleton. This entity will be added to Ash.
+You may override the constructor to provide custom Flaxen settings. It's also *possible* to intialize Flaxen without subclassing, but then Flaxen does not wait for HaxePunk to initialize the scene, which may have repercussions. Ye be warned! 
+
+```haxe
+var f = new Flaxen();
+var e:Entity = f.newSingleton("player");
+```
+
+###Accessing Ash
+
+The ash [engine](https://github.com/nadako/Ash-HaXe/blob/master/src/ash/core/Engine.hx) contains all your entities and systems. You can access it directly from Flaxen at any time.
+
+```haxe
+ash.entityAdded.add(myAshEntityAddedHandler); // get notified when an entitiy is added
+```
+
+###Entities
+
+First, you need some entities! You can create a new, named entity with newSingleton. This entity will be added to Ash.
 
 ```haxe
 newSingleton("mySingleton");
 ```
 
-Quite often you won't care about the name, so use newEntity. You could also supply a string which will be used to prefix the autogenerated name, which makes it easier when debugging.
+When you don't care about the name, use newEntity, which optionally accepts a string to prefix the autogenerated name. (Prefixes just make it easier to debug.)
 
 ```haxe
 var e1 = newEntity();
@@ -66,35 +92,40 @@ e = demandEntity("moon"); // returns entity if found or logs error
 e = resolveEntity("moon"); // returns entity, if not found creates it
 ```
 
-Ash entities can have components added to them immediately: 
+And entities can be removed three ways. Here's two of them. (I didn't feel like typing why the third way is a bad idea, and instead I spent the time typing this.)
 
 ```haxe
-var e = newEntity().add(new Compo1()).add(new Compo2());
-e.add(precreatedComponentInstance);
+removeEntity("moon"); // returns true if removed, false if not found
+demandRemoveEntity("moon"); // log error if not found, otherwise remove
+```
+
+###Components
+
+Components are constructed like any object, and are added to entities. Ash entities also support adding components to them after creation with chaining:
+
+```haxe
+var e = newEntity()
+	.add(new Hair(Color.SALTNPEPPA)) // newly created component
+	.add(BadBack.instance); // cached component singleton
+var middleAge = new Age(45);
+e.add(middleAge);
 ```
 
 You can get components from entities a number of ways:
 
 ```haxe
-c = e.get(Compo1);
-c = getComponent("moon", Compo1);
-c = demandComponent("moon", Compo1);
+var c1 = e.get(Hair); // Gets component or returns null
+var c2 = getComponent("eric", BadBack); // Find entity and component therein, or return null
+var c3 = demandComponent("eric", Age); // Find entity and component therein, or throw error 
 ```
 
-Components are removed through the Ash entity: 
+Components are removed from entities through the Ash [entity](https://github.com/nadako/Ash-HaXe/blob/master/src/ash/core/Entity.hx): 
 
 ```haxe
-e.remove(Compo1);
+e.remove(BadBack); // I'm cured!
 ```
 
-And entities are removed a few ways:
-```haxe
-ash.removeEntity("moon"); // The ash object is public, go nuts
-removeEntity("moon"); // returns true if removed, false if not found
-demandRemoveEntity("moon"); // Log error not found, otherwise remove
-```
-
-Flaxen comes with many pre-built components, but you'll want to add your own to the mix. At its core, a component is simply an object with public data fields, and a constructor. Let's say you wanted a component to track the player, monster, or NPC health:
+Flaxen comes with many useful components, but you'll want to add your own to the mix. At its core, a component is simply an object with public data fields, and a constructor. Let's say you wanted a component to track the player, monster, or NPC health. This component has only one field in it, so it's just called *value*:
 
 ```haxe
 class Health
@@ -107,7 +138,7 @@ class Health
 }
 ```
 
-Sometimes a component doesn't need to contain any data, it's mere presence is helpful enough as a marker. To make such components, you can use a StaticComponent. Extending this class will give you a constructor and a static variable called instance.
+Sometimes a component doesn't need to contain any data, its mere presence is helpful enough as a marker. To make such components, you can use a StaticComponent. Extending this class will give you a constructor and a static variable called instance.
 
 ```haxe
 class IsCorpse extends StaticComponent
@@ -126,19 +157,31 @@ health.value = 50;
 e3.add(IsCorpse.instance);
 ```
 
-###Systems
-When you initialize Flaxen, it adds a set of pre-built systems to Ash: ModeSystem, UpdateSystem, ActionSystem, TweeningSystem, RenderingSystem, and AudioSystem. There are additional pre-built systems you can add. Once added, the update function in each of these systems will run in a loop, processing entities and responding appropriately. To add a system is really, really hard:
+###Systems and Nodes
+
+When you initialize Flaxen, it adds a set of pre-built systems to Ash. There are additional pre-built systems you can add. Once added, the update function in each of these systems will run in a loop, processing entities and responding appropriately.
+
+* ModeSystem
+* UpdateSystem
+* ActionSystem
+* TweeningSystem
+* RenderingSystem
+* AudioSystem
+
+ To add a system is pretty durn simple. 
 
 ```haxe
 addSystem(MySystem);
 ```
 
-You should build your own systems and nodes to handle game logic. Let's say you wanted to check if any entities are dying by creating a DeathSystem:
+Systems are processed in the order they are added.
+
+Build your own systems and nodes to handle game logic. Let's say you wanted to check if any entities have recently died.
 
 ```haxe
 class DeathSystem extends System
 {
-    public function new(f:Flaxen)
+    public function new(f:Flaxen) // Access flaxen through "f"
     { 
         super(f); 
     }
@@ -152,7 +195,7 @@ class DeathSystem extends System
             	var e = node.entity;
             	e.remove(Health);
             	e.add(IsCorpse.instance);
-            	newSound("gasp-ack-dying.wav");
+            	f.newSound("gasp-ack-dying.wav");
             }
         }
     }
@@ -167,10 +210,13 @@ class HealthNode extends Node<HealthNode>
     public var health:Health;
 }
 ```
+
 Only entities with a health component will be returned by getNodeList(). In this case we only have one component we're looking for, but you could specify multiple components, and they would all have to be present in the entity for getNodeList to include it. Ignore the fact that it looks weird having a class extend a typed version of itself, that's a strange Ash-ism but it works. Just effin weird. Super weird.
 
+## Integration With HaxePunk
+
 ###Showing an Image
-Here's a simple image. The whole source image is centered on the screen. The entity is given a middle offset (instead of an upper-left corner), which the RenderingSystem takes into account when positioning the Image. Offset is not required to show a simple image, but Image and Position are. Under the hood this creates a HaxePunk [Image](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html).
+To put up a simple HaxePunk [Image](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html), you need to add Image and Position components to the entity. Here's one, which is centered on the screen:
 
 ```haxe
 var e:Entity = newEntity()
@@ -179,6 +225,8 @@ var e:Entity = newEntity()
 	.add(Offset.center());
 ```
 
+An image is normally placed with the upper-left corner matching the position. In this case, the entity is given a center offset, which the RenderingSystem takes into account when drawing the Image. Offset is an optional component.
+
 To show part of an image, say a sprite on a sprite sheet, you could add a [clipping region](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html#new) to the image:
 
 ```haxe
@@ -186,7 +234,9 @@ var image = new Image("art/flaxen.png", new Rectangle(0,0,50,50));
 e.add(image);
 ```
 
-Or more simply you could add a Tile and an ImageGrid. The number of tiles across and down are calculated at run-time based on the image dimensions and ImageGrid size. Yes, ImageGrid should really be called CellSize or something. Don't you think I know it's poorly named? I'm the one who named it! Hmph! Uh ... where was I? Oh yes:
+Or you could define an ImageGrid and specify a Tile. An ImageGrid represents the size of an individual tile in pixels. The number of tiles across and down are calculated at run-time based on the image dimensions. The Tile tells us which tile to use, with 0 the tile in the upper left, 1 the next tile to the right, and so on.
+
+Yes, ImageGrid should really be called TileSize or something. Don't you think I know it's poorly named? I'm the one who named it! Hmph! Uh ... where was I? Oh yes:
 
 ```haxe
 var e:Entity = newEntity()
@@ -198,7 +248,10 @@ var e:Entity = newEntity()
 ```
 
 ###Showing a Grid of Images
-Under the hood, we use a HaxePunk [Tilemap](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Tilemap.html). The entity requires an Image and Position, but also needs a Grid and an ImageGrid. Don't get me started on ImageGrid again. Anyhow, Image again points to a sprite sheet with multiple images. ImageGrid is again the size of one of these sprites on the sheet. And Grid is a general purpose 2D array of Ints that corresponds to the tile #s you want to show at any given position of the grid. For example, if you have four tiles in tiles.png and want to show a 3x3 grid of tiles, this might very well do that:
+
+Under the hood, we use a HaxePunk [Tilemap](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Tilemap.html) to show a rectangular grid with each tile containing an image. This usage requires Image, Position, ImageGrid, and Grid components. *Don't get me started on ImageGrid again.* 
+
+Grid is a general purpose 2D array of Ints that corresponds to the tile numbers you want to show at any given tile position. For example, if you have four tiles in tiles.png and want to show a 3x3 grid of tiles, this might very well do that:
 
 ```haxe
 var e:Entity = newEntity()
@@ -206,23 +259,31 @@ var e:Entity = newEntity()
 	.add(Position.topLeft());
 	.add(new ImageGrid(50, 50));
 var grid = new Grid(3, 3);
-grid.load("0,0,0;1,2,1;3,3,3");
+grid.load("1,3,1;2,0,2;1,3,1");
 e.add(grid);
 ```
 
+Such high confidence.
+
 ###Playing an Animation
-A HaxePunk [Spritemap](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Spritemap.html) will be created if you put together an entity with an Image, Position and ImageGrid, but instead of Tile you use an Animation. Animations can be removed automatically (if desired) when they complete or looped.
+
+A HaxePunk [Spritemap](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Spritemap.html) will be created if you put together an entity with Image, Position, ImageGrid, and Animation components.
+
+Animations can be looped. In this instance, the animation plays forwards and backwards. After the animation completes, the the entity holding it is removed from Ash.
 
 ```haxe
+var anim = new Animation("2,4-7,9", 30, LoopType.Both);
+anim.destroyEntity = true; // when animation completes
 var e:Entity = new Entity()
 	.add(new Image("art/anim.png"))
 	.add(Position.zero())
-	.add(ImageGrid.create(50, 50));
-	.add(new Animation("2,4-7,9", 30, LoopType.Both));
+	.add(new ImageGrid(50, 50));
+	.add(anim);
 ```
 
 ###Repeating an Image Over the Screen
-In HaxePunk this is a [Backdrop](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Backdrop.html) object. It requires an Image and a Repeating component:
+
+In HaxePunk this is a [Backdrop](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Backdrop.html) object that covers the whole screen, tiling the same image. It requires Image and Repeating components. Since Repeating has no data, it is defined as a static singleton component.
 
 ```haxe
 var e:Entity = newEntity()
@@ -230,8 +291,10 @@ var e:Entity = newEntity()
 	.add(Repeating.instance);
 ```
 
+
 ###Adding Text
-For TrueType text you need Position and a [Text](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Text.html) object. By default it will use the [default HaxePunk font](http://haxepunk.com/documentation/api/com/haxepunk/HXP.html#defaultFont).
+
+For TrueType [Text](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Text.html), you need Position and Text components. By default, it will use the [default HaxePunk font](http://haxepunk.com/documentation/api/com/haxepunk/HXP.html#defaultFont).
 
 ```haxe
 var textEntity:Entity = newEntity()
@@ -239,7 +302,7 @@ var textEntity:Entity = newEntity()
 	.add(new Text("I have something to say"));
 ```
 
-This could be styled using a TextStyle object. Style options include word wrapping, justification, and an optional drop shadow.
+This could be styled using a TextStyle object. Style options include word wrapping, justification, an optional drop shadow, etc.
 
 ```haxe
 var style = TextStyle.createTTF(0xFFFF00, 40, "myfont.ttf", Center);
@@ -251,7 +314,7 @@ Flaxen has its own bitmapped text. This requires an additional Image component, 
 ```haxe
 var e:Entity = new Entity()
 	.add(new Image("art/myfont.png"))
-	.add(Size.screen().scale(.8))
+	.add(Size.screen().scale(.8)) // resize to 80% of screen size for no good reason
 	.add(Position.center())
 	.add(new Text("I have nothing to say"))
 	.add(TextStyle.createBitmap(true, Center, Center, -4, -2));
@@ -259,14 +322,15 @@ var e:Entity = new Entity()
 
 Note that a bitmap font image must contain the characters of the BitmapText.ASCII_CHAR_SET, from left to right, with a clean and non-overlapping gap between letters. It will scan the character widths when the font is first used. You can also supply an alternate character set, to specify which characters are in the image. 
 
-The folowing gives a numeric character set, and defines the width of the space to be equal to the "2" character. (Normally it's one third of the "M", but this set lacks an M, so pthbth...)
+The folowing gives a numeric character set, and defines the width of the space to be equal one-third the width of the "2" character. Normally, a character set uses the "M" as a space guide, but this set lacks the "M," so pthbth...
 
 ```haxe
 TextStyle.createBitmap(false, Right, Top, 0, -2, 0, "2", false, "0123456789")
 ```
 
 ###Adding a Particle Emitter
-The particle system is based off of HaxePunk's [Emitter](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Emitter.html). It requires Position and Emitter components. The image is supplied to the Emitter object, which in retrospect should be supplied by an Image, but then folks might think they could do tiles or clips which it doesn't support. Anyhow this puffs a little smoke:
+
+The particle system is based off of HaxePunk's [Emitter](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Emitter.html). It requires Position and Emitter components. Emitter is unusual in that it does not use an Image, but rather the path to the image asset is supplied to the Emitter object itself. Anyhow here's a puff of smoke effect:
 
 ```haxe
 var emitter = new Emitter("art/particle-smoke.png");
@@ -280,10 +344,13 @@ emitter.stopAfterSeconds = 0.3;
 emitter.emitRadiusRand = radius / 10;
 emitter.alphaStart = 0.2;
 
-newSingleton("emitter").add(somePosition).add(emitter);
+newSingleton("emitter")
+	.add(Position.center())
+	.add(emitter);
 ```
 
 ###Layers
+
 HaxePunk organizes its visual elements onto [layers](http://haxepunk.com/documentation/api/com/haxepunk/Entity.html#layer), so you can put things in front or behind other things. Exciting. To alter the default layer (0), add a Layer component to your entity.
 
 ```haxe
@@ -293,41 +360,48 @@ var e:Entity = newEntity()
 	.add(new Layer(5));
 ```
 
-###Image Manipulations
-Most [Image](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html)-based entities (not Emitter) can have optional components added to them that affect their appearance:
+###Working the Camera
 
-####Scale
-Changes the horizontal and vertical scaling of the image by percentage. 1.0 is full size, 0.5 is half size, 2.0 is twice the size.
+You can move the camera directly in HaxePunk, by simply altering [HXP.camera](http://haxepunk.com/documentation/api/com/haxepunk/HXP.html#camera). 
 
 ```haxe
-e.add(new Scale(0.1, 10.0)); // One-tenth the width, but ten times the height
-e.add(Scale.half()); // Half the width
-```
-
-####Working the Camera
-Moving the camera works the same way here as in HaxePunk, simply alter [HXP.camera](http://haxepunk.com/documentation/api/com/haxepunk/HXP.html#camera).
-
-Entities have a default scroll factor of 0, which means they move with the camera. To create a parallax effect when you move the camera, you can add a ScrollFactor component. This manipulates the graphic's [scrollx](http://haxepunk.com/documentation/api/com/haxepunk/Graphic.html#scrollX)/[scrolly](http://haxepunk.com/documentation/api/com/haxepunk/Graphic.html#scrolly) attributes.
-
-```haxe
-e.add(new ScrollFactor(0.5, 0.5)); // Object moves at half the speed of the camera movement
 HXP.setCamera(10, 10);
 ```
 
-Or for smooth camera movement, employ the CameraService:
+For smoother camera movement, employ the CameraService:
 
 ```haxe
 CameraService.animCameraTo(10, 10, 1.0); // one second camera movement
+```
+
+Entities have a default scroll factor of 0, which means these objects move with the camera (such as a HUD element). To create a parallax effect when you move the camera, you can add a ScrollFactor component, which affects the Graphic's [scrollx](http://haxepunk.com/documentation/api/com/haxepunk/Graphic.html#scrollX)/[scrolly](http://haxepunk.com/documentation/api/com/haxepunk/Graphic.html#scrolly) attributes. This entity will move 50 pixels for every 100 pixels the camera moves:
+
+```haxe
+e.add(new ScrollFactor(0.5, 0.5));
 ```
 
 To have the camera follow an entity as it moves, add the built-in CameraSystem:
 
 ```haxe
 addSystem(new CameraSystem());
-changeCameraFocus(e); // Removes old focus, adds CameraFocus component to e
+changeCameraFocus(e);
 ```
 
-####Rotation
+##Image Manipulations
+
+Most [Image](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html)-based entities (not Emitter) can have optional components added to them that affect their appearance:
+
+###Scale
+
+Changes the horizontal and vertical scaling of the image by a percentage. 1.0 is full size, 0.5 is half size, 2.0 is twice the size, etc.
+
+```haxe
+e.add(new Scale(0.1, 10.0)); // One-tenth the width, but ten times the height
+e.add(Scale.half()); // Half the width
+```
+
+###Rotation
+
 You can [rotate](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html#angle) an entity by adding a Rotation component. This is in degrees, from 0 to 360. Because we're programmers, not mathemeticians, gurshdurnit!
 
 ```haxe
@@ -335,8 +409,11 @@ e.add(new Rotation(90)); // quarter right turn
 e.add(Rotation.random()); // What what what?!
 ```
 
-####Offset
-Images are drawn with the upper-left corner of the image aligning with the entity position. To change this [offset](http://haxepunk.com/documentation/api/com/haxepunk/Graphic.html#x), say to center the image on that point, add an Offset component which is added to the position.
+###Offset
+
+Images are drawn with the upper-left corner of the image aligning with the entity position. To change this [alignment point](http://haxepunk.com/documentation/api/com/haxepunk/Graphic.html#x) add an Offset component, which will be added to the final position.
+
+For example, to center an image:
 
 ```haxe
 e1.add(new Offset(-10,-10)); // moves image up/left 10 pixels, so a 20x020 image appears centered at the Position
@@ -344,27 +421,30 @@ e1.add(new Offset(-10,-10)); // moves image up/left 10 pixels, so a 20x020 image
 e2.add(Offset.center()); // shorthand for above, but works with any image size
 e2.add(new Position(50,50)); // Image is centered over 50,50
 
-e3.add(new Offset(-1,0,true)); // image is top/right-aligned
+e3.add(new Offset(-1,0,true)); // as percentage; image is top/right-aligned
 ```
-####Origin
+
+###Origin
+
 The [origin](http://haxepunk.com/documentation/api/com/haxepunk/Entity.html#originX) is the transformation point for the entity. Rotation and scaling apply to this origin point. Unlike in HaxePunk which applies an offset whenever the origin is altered, Flaxen origin is kept distinct from its offset. I don't know, it just bugged me that the two were tied together, so I changed it, violently and without remorse.
 
-Let's say you had a picture of your brother winking, and you wanted to rotate the image about his other eye which is open. Let's further say the open eye, relative to the size of the image, is at a position 55% to the right and 25% down:
+Let's say you had a picture of your brother winking, and you wanted to rotate the image about his other eye which is open. Let's further say the open eye, relative to the size of the image, is at a position 50% to the right and 25% down:
 
 ```haxe
 e.add(new Image("mybrothertheidiot.png"));
 e.add(Position.center());
 e.add(Offset.center());
-e.add(new Origin(.55,.25,true));
+e.add(new Origin(.5,.25,true));
 ```
 
-Or if you knew the exact pixel position of the eye on a 100x200 image:
+Or if you know the image dimensions and want to specific the exact pixel position of the eye:
 
 ```haxe
-e.add(new Origin(55,50));
+e.add(new Origin(50,25)); // with a 100x100 image
 ```
 
-####Size
+###Size
+
 Size is an alternate way to scale the image by specifying the precise image dimensions you desire.
 
 ```haxe
@@ -375,9 +455,10 @@ size.scale(0.50) // Change to 50x100
 e2.add(Size.screen()); // Match screen dimensions
 ```
 
-####Alpha
-The Alpha component lets you change the level of opacity of the image. You know, the transparency. Also called [alpha](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html#alpha).
-fr
+###Alpha
+
+The Alpha component lets you change the level of opacity of the image. You know, the transparency, opacity, translucency, see-thru-itude. Also called [alpha](http://haxepunk.com/documentation/api/com/haxepunk/graphics/Image.html#alpha).
+
 ```haxe
 e1.add(new Alpha(.1)); // Very transparent
 e2.add(Alpha.clear()); // Totally transparent
@@ -385,34 +466,64 @@ e3.add(Alpha.opaque()); // Solid. AS A ROCK! That's what my love is... what, nob
 e4.add(Alpha.half()); // 50% alpha
 ```
 
-####Invisible
+###Invisible
+
 Unlike Alpha(0), this component indicates the entity should not be rendered at all. It's not [visible](http://haxepunk.com/documentation/api/com/haxepunk/Entity.html#visible).
 
 ```haxe
 e.add(Invisible.instance);
 ```
 
-##Other Features
-Also there are these other unmentioned features:
+##Other Useful Things
 
-* ActionQueue lets you chain events, add/remove components/entities, wait for components to reach a certain state, do timed delays and make callbacks to your functions. I like. Scotchy scotch scotch.
+###ActionQueue
+The ActionQueue lets you chain events, add and remove components/entities, wait for components to reach a certain state, do timed delays, and make callbacks to your functions. I like. Scotchy scotch scotch. ActionQueue is a component. It must be added to an entity to be processed. Here's a basic action queue that waits for a sound to complete before removing an entity. 
+
+```haxe
+var aq = newActionQueue() // makes entity which it destroys when queue finishes
+    .waitForProperty(deathSound, "complete", true) // wait for sound to finish
+    .removeEntity(dyingMonster);
+```
+
+The method newActionQueue creates a new entity to put the ActionQueue into. It also marks the queue as destroyEntity, so it will destroy the containing entity when it completes.
+
+You can also make an action queue manually, which is helpful in several cases.
+
+```haxe
+var aq1 = new ActionQueue()
+    .delay(1.0) // wait 1 second
+    .addCallback(myFunc); // call myFunc after 1 second
+var e = new Entity()
+    .add(aq1);
+fuction myFunc(): Void
+{
+    e.remove(aq1);
+    // ... repurpose entity
+}
+```
+
+See [ActionQueue.hx](https://github.com/scriptorum/flaxen/blob/master/source/flaxen/component/ActionQueue.hx) for a full list of commands.
+
+##Undocumented Features
+Well I still got a bunch of features to document.
+
 * The mode system lets you specify different start/stop and input handlers based on your game mode (scene), mark entities as transitional, and do a few other funky things. 
 * Flaxen has its own Tween component for interpolating values, but you can still use HaxePunk's tweener if you want.
 * Sounds can be managed through a Sound component.
-* CameraSystem supports the use of a CameraFocus component to follow the camera.
 * Dependency relationships between entities can be defined in order to remove dependents as a group.
 * A layout manager for help switching between mobile orientations.
 * ComponentSets for pre-defining entity transformations and invoking them at runtime.
 * And moaaar stuff that barely works!
 
 ## For More Help
-Some simple demos are included. Flaxen has changed a lot, but you can look at my Ludum Dare compo entries (on GitHub) for a few more examples. This is a work in progress and you should expect it to continue to evolve and break code.
+Some simple demos are included. Flaxen has changed a lot, but you can look at my [Ludum Dare](http://ludumdare.com/compo/author/scriptorum/) compo entries with source on [GitHub](https://github.com/scriptorum) for a few more examples. This is a work in progress and you should expect it to continue to evolve and break code.
 
 ##Dependencies
 Flaxen would not be possible without the work of these awesome projects:
 * [HaxePunk](https://github.com/HaxePunk/HaxePunk) 
 * [Ash-Haxe](https://github.com/nadako/Ash-HaXe)
 * [OpenFL](http://www.openfl.org/)
+* [Haxe](http://haxe.org)
 
 ##The MIT License (MIT)
 
