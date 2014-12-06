@@ -29,6 +29,13 @@ class Position
 		return this;
 	}
 
+	public function copy(pos:Position): Position
+	{
+		this.x = pos.x;
+		this.y = pos.y;
+		return this;
+	}
+
 	public function clone(): Position
 	{
 		return new Position(x, y);
