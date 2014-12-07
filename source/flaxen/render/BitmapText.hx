@@ -314,6 +314,7 @@ class BitmapText extends Image
 						}
 					}
 
+
 					if(seekingCharStart)
 					{
 						if(!blankLine)
@@ -322,7 +323,8 @@ class BitmapText extends Image
 							seekingCharStart = false;
 						}
 					}
-					else if(blankLine)
+
+					else if(blankLine || x == (fontBitmap.width - 1))
 					{
 						seekingCharStart = true;
 						var glyphWidth = x - startX; // Glyph width without kerning
