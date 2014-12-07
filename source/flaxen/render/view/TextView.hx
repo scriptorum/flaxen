@@ -11,7 +11,7 @@ import flaxen.component.Text;
 import flaxen.component.Alpha;
 import flaxen.component.Size;
 import flaxen.render.ShadowText;
-import flash.text.TextFormatAlign;
+import openfl.text.TextFormatAlign;
 
 class TextView extends View
 {

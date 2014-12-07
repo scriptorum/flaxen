@@ -2,7 +2,7 @@ package flaxen.service;
 
 import com.haxepunk.utils.Key;
 import com.haxepunk.utils.Input;
-import flash.events.MouseEvent;
+import openfl.events.MouseEvent;
 
 class InputService
 {

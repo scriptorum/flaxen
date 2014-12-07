@@ -6,15 +6,15 @@
 
 package inscrutablegames;
 
-import flash.display.BitmapData;
-import flash.display.Graphics;
-import flash.display.Sprite;
-import flash.text.TextField;
-import flash.text.TextFormatAlign;
-import flash.text.TextFormat;
-import flash.text.Font;
-import flash.events.Event;
-import flash.geom.Rectangle;
+import openfl.display.BitmapData;
+import openfl.display.Graphics;
+import openfl.display.Sprite;
+import openfl.text.TextField;
+import openfl.text.TextFormatAlign;
+import openfl.text.TextFormat;
+import openfl.text.Font;
+import openfl.events.Event;
+import openfl.geom.Rectangle;
 import openfl.display.Tilesheet;
 
 @:bitmap("assets/art/inscrutablegames.png") class LogoImage extends BitmapData {}
@@ -65,12 +65,12 @@ class Preloader extends Sprite
 		
 	public function getHeight():Float
 	{
-		return flash.Lib.current.stage.stageHeight;
+		return openfl.Lib.current.stage.stageHeight;
 	}
 	
 	public function getWidth():Float
 	{
-		return flash.Lib.current.stage.stageWidth;
+		return openfl.Lib.current.stage.stageWidth;
 	}
 		
 	public function onInit()

@@ -63,7 +63,7 @@ class Log
 	public static function quit()
 	{
 		#if (cpp || neko)
-			flash.Lib.exit();
+			openfl.Lib.exit();
 		// #else if flash
 		// Lib.fscommand("quit");
 		#end

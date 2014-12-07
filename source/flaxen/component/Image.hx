@@ -4,7 +4,7 @@
 */
 package flaxen.component;
 
-import flash.geom.Rectangle;
+import openfl.geom.Rectangle;
 
 class Image
 {

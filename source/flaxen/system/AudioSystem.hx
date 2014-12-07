@@ -11,9 +11,9 @@ import flaxen.node.SoundNode;
 import ash.core.Node;
 import ash.core.Entity;
 import openfl.Assets;
-import flash.media.SoundChannel;
-import flash.media.SoundTransform;
-import flash.events.Event;
+import openfl.media.SoundChannel;
+import openfl.media.SoundTransform;
+import openfl.events.Event;
 
 class AudioNode extends Node<AudioNode>
 {
@@ -67,9 +67,9 @@ class AudioSystem extends FlaxenSystem
 			return;
 
 trace("Loading sound " + sound.file);
-var start = flash.Lib.getTimer();
+var start = openfl.Lib.getTimer();
 		var flSound = Assets.getSound(sound.file);
-var stop = flash.Lib.getTimer();
+var stop = openfl.Lib.getTimer();
 trace(" - Finished in " + (stop - start)+ "ms");
 
 		if(flSound == null)

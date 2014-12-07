@@ -4,7 +4,7 @@ import flaxen.service.InputService;
 import com.haxepunk.utils.Ease;
 import com.haxepunk.Tween;
 import com.haxepunk.tweens.TweenEvent;
-import flash.events.MouseEvent;
+import openfl.events.MouseEvent;
 
 class CameraService
 {

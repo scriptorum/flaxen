@@ -319,7 +319,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return e;
 	}
 
-	// Ensures the named singleton exists and is empty of components
+	// Destroys the named singleton and recreates it, empty, without any components
 	public function resetSingleton(name:String): Entity
 	{
 		removeEntity(name);
@@ -426,6 +426,12 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		if(!e.has(component))
 			Log.error("Demanded component not found:" + component + " in entity " + name);
 		return e.get(component);
+	}
+
+	// Returns true if the entity exists and it has the indicated component
+	public function hasComponent<T>(name:String, component:Class<T>): Bool
+	{
+		return (getComponent(name, component) != null);
 	}
 
 	// Removes an entity, looked up by name

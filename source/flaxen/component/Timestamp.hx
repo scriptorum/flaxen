@@ -11,7 +11,7 @@ class Timestamp
 
 	public static function now(): Int
 	{
-		return flash.Lib.getTimer();
+		return openfl.Lib.getTimer();
 	}
 
 	public static function create(): Timestamp

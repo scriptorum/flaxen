@@ -1,6 +1,6 @@
 package flaxen.component;
 
-import flash.media.SoundChannel;
+import openfl.media.SoundChannel;
 import flaxen.component.Timestamp;
 
 // Low level "SoundChannel" wrapper

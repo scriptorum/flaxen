@@ -1,6 +1,6 @@
 package flaxen.service;
 
-import flash.net.SharedObject;
+import openfl.net.SharedObject;
 
 class SaveService
 {

@@ -15,4 +15,10 @@ class Velocity
 	{
 		return (Math.abs(x) < i && Math.abs(y) < i);
 	}
+
+	public function set(x:Float, y:Float)
+	{
+		this.x = x;
+		this.y = y;
+	}
 }

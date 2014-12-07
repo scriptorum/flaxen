@@ -8,6 +8,9 @@
 		tween.destroyComponent = true;
 		myEntity.add(t);
 
+	TODO: Add ability to fast-forward Tween to particular time-step. AND/OR
+		  Add ability to specify start values instead of using current values in source.
+
 */
 package flaxen.component;
 

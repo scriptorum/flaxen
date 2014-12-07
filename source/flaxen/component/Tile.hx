@@ -1,6 +1,6 @@
 package flaxen.component;
 
-import flash.geom.Rectangle;
+import openfl.geom.Rectangle;
 import flaxen.component.Tile;
 import flaxen.component.ImageGrid;
 import flaxen.core.Log;

@@ -1,6 +1,6 @@
 package flaxen.render.view;
 
-import flash.geom.Rectangle;
+import openfl.geom.Rectangle;
 
 import flaxen.component.Tile;
 import flaxen.component.ImageGrid;
@@ -40,10 +40,11 @@ class ImageView extends View
 		var updateDisplay = false;
 
 		var curImage = getComponent(Image);
-		if(curImage != image || curImage.clip != clip)
+		if(curImage != image || ((clip == null) != (curImage.clip == null)) ||
+			(curImage.clip != null && !curImage.clip.equals(clip)))
 		{
 			image = curImage;
-			clip = curImage.clip;
+			clip = (curImage != null && curImage.clip != null) ? curImage.clip.clone() : null;
 			updateDisplay = true;
 		}
 

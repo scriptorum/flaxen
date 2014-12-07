@@ -1,6 +1,6 @@
 package flaxen.render.view;
 
-import flash.geom.Rectangle;
+import openfl.geom.Rectangle;
 
 import flaxen.component.ImageGrid;
 import flaxen.component.Emitter;

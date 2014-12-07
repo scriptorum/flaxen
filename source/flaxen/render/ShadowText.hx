@@ -4,7 +4,7 @@
   
 package flaxen.render;
 
-import flash.text.TextFormatAlign;
+import openfl.text.TextFormatAlign;
 import com.haxepunk.graphics.Text;
 import com.haxepunk.graphics.Graphiclist;
 import flaxen.common.TextAlign;

@@ -94,7 +94,7 @@ class Profile
 
 	public function open(): Profile
 	{
-		startTime = flash.Lib.getTimer();
+		startTime = openfl.Lib.getTimer();
 		return this;
 	}
 
@@ -104,7 +104,7 @@ class Profile
 		if(startTime == -1)
 			return this;
 
-		var endTime = flash.Lib.getTimer();
+		var endTime = openfl.Lib.getTimer();
 		totalTime += (endTime - startTime);
 		totalCalls++;
 		startTime = -1;
