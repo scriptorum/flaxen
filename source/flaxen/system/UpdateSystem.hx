@@ -56,7 +56,7 @@ class UpdateSystem extends FlaxenSystem
 
 	override public function update(_)
 	{
-		var app:Application = flaxen.getApp();
+		var app:Application = f.getApp();
 		updateHandler(app.curMode);
 		updateHandler(Always);
 	}
@@ -72,7 +72,7 @@ class UpdateSystem extends FlaxenSystem
 			// 	profile.open();
 			// #end
 
-			handler(flaxen);			
+			handler(f);			
 
 			// #if profiler
 			// 	profile.close();

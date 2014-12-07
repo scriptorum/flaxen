@@ -13,7 +13,7 @@ class ArrayUtil
         while (--i > 0)
         {
                 t = arr[i];
-                arr[i] = arr[j = MathUtil.rnd(0, i-1)];
+                arr[i] = arr[j = MathUtil.rnd(0, arr.length - 1)];
                 arr[j] = t;
         }
 	}

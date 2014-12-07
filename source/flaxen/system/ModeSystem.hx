@@ -57,7 +57,7 @@ class ModeSystem extends FlaxenSystem
 
 	override public function update(time:Float)
 	{
-		var app:Application = flaxen.getApp();
+		var app:Application = f.getApp();
 		while(app.nextMode != null)
 		{
 			// Stop current mode
@@ -95,7 +95,7 @@ class ModeSystem extends FlaxenSystem
 
 		var handler:FlaxenCallback = stopHandlers.get(mode);
 		if(handler != null)
-			handler(flaxen);		
+			handler(f);		
 	}
 
 	private function runStartHandler(mode:ApplicationMode): Void
@@ -105,7 +105,7 @@ class ModeSystem extends FlaxenSystem
 
 		var handler:FlaxenCallback = startHandlers.get(mode);
 		if(handler != null)
-			handler(flaxen);
+			handler(f);
 	}
 
 	public function registerStartHandler(handler:FlaxenCallback, mode:ApplicationMode): Void

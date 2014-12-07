@@ -6,13 +6,12 @@ import ash.core.System;
 class FlaxenSystem extends System
 {
 	public var ash:Engine; // Ash framework
-	public var flaxen:Flaxen; // Flaxen framework - extends HaxePunk
-	public var f:Flaxen; // Shorthand for convenience
+	public var f:Flaxen; // Flaxen
 
 	public function new(flaxen:Flaxen)
 	{
 		super();
-		this.f = this.flaxen = flaxen;
+		this.f = flaxen;
 		this.ash = flaxen.ash;
 		init();
 	}

@@ -68,7 +68,7 @@ class ComponentSet
 		return this;
 	}
 
-	// Adds all the steps from one entity into the set. Note that these steps
+	// Adds all the components from one entity into the set. Note that these components
 	// are added immediately, so if you add or remove from the supplied entity at a 
 	// later point, these changes will not be reflected in the component set.
 	public function addEntity(entity:Entity): ComponentSet
@@ -101,7 +101,7 @@ class ComponentSet
 		});
 	}
 
-	// Does not add an instance. Instead, when installed, removes all steps 
+	// Does not add an instance. Instead, when installed, removes all components 
 	// from an entity. Completely blanks out an entity. Do this before any add calls.
 	// If an array of component classes is supplied, these components will be
 	// spared removal
@@ -118,7 +118,7 @@ class ComponentSet
 		});
 	}
 
-	// Installs the steps into the entity
+	// Installs the components into the entity
 	public function install(entity:Entity)
 	{
 		for(component in steps)
@@ -135,7 +135,7 @@ class ComponentSet
 			{
 				var instance:Dynamic = component;
 
-				// Handle install-time instantion of steps
+				// Handle install-time instantion of components
 				if(Std.is(component, Array))
 				{
 					var a:Array<Dynamic> = cast component;
