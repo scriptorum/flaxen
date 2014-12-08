@@ -319,7 +319,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return e;
 	}
 
-	// Destroys the named singleton and recreates it, empty, without any components
+	// Destroys the named singleton (if it exists) and recreates it, empty, without any components
 	public function resetSingleton(name:String): Entity
 	{
 		removeEntity(name);
@@ -801,14 +801,14 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		if(e == null)
 			return false;
 
-		var pos = e.get(Position);
-		var image = e.get(Image);
+		var pos:Position = e.get(Position);
+		var image:Image = e.get(Image);
 		if(image == null && e.has(Animation))
 			image = e.get(Animation).image;
 		if(pos == null || image == null)
 			return false;
 
-		var off = e.get(Offset);
+		var off:Offset = e.get(Offset);
 		if(off != null)
 		{
 			if(off.asPercentage)
@@ -835,11 +835,11 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		if(!InputService.clicked)
 			return false;
 
-		var e = getEntity(entityName);
+		var e:Entity = getEntity(entityName);
 		if(e == null)
 			return false;
 
-		var alpha = e.get(Alpha);
+		var alpha:Alpha = e.get(Alpha);
 		if(alpha != null && alpha.value < minAlpha)
 			return false;
 	 			
