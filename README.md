@@ -157,28 +157,28 @@ health.value = 50;
 e3.add(IsCorpse.instance);
 ```
 
-`**Note on Sharing Components**`
+####Note on Sharing Components####
+
 In some cases, component instances *can* be shared between entities. If you want multiple entities to have the same position and move at the same time, they could share a Position component:
 
 ```haxe
-var pos = new Position(50,50);
-newEntity().add(pos);
-newEntity().add(pos);
-pos.add(50,0); // both entities move 50 pixels to the right
+var pos = Position.zero();
+var e1 = newEntity().add(pos).add(anImage);
+var e2 = newEntity().add(pos).add(otherImage);
+pos.add(5,0); // both entities move 5 pixels to the right
 ```
 
-Components that have no values can and should be shared (which is why I built the StaticComponent class).
-
-Sharing components that are processed by systems may have a deleterious effect. Consider Velocity:
+Sharing components that are processed by systems may have a deleterious effect. Consider this consequence of sharing Position:
 
 ```haxe
-var p = new Position.zero();
-newEntity.add(p).add(new Velocity
-newEntity.add(Position.zero()).add(v);
+var vel = new Velocity(5,0);
+e1.add(vel);
+e2.add(vel);
 ```
 
-When the MovementSystem processes these components, 
+Since both entities have a Position and a Velocity, the MovementSystem processes both entities. The Velocity is applied to the shared Position object twice, effectively doubling its speed. The trick here is to only add Velocity to one of the entities, or even create a new entity for this purpose.
 
+Components that have no values can and should be shared (which is why I built the StaticComponent class).
 
 ###Systems and Nodes
 
