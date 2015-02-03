@@ -36,7 +36,7 @@ Flaxen would not be possible without the work of these awesome projects:
 
 ##The MIT License (MIT)
 
-Copyright (c) 2014 Eric Lund
+Copyright (c) 2013-2015 Eric Lund
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
