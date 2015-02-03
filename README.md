@@ -4,6 +4,13 @@
 
 Flaxen blends an entity/component system with a Haxe-based game engine, powered by [HaxePunk](https://github.com/HaxePunk/HaxePunk) and [Ash](https://github.com/nadako/Ash-HaXe). 
 
+### Features
+* ECS-driven design. Create entities, add components to them, and build systems to process and transform those entities.
+* Built-in components and systems to automatically display and integrate with HaxePunk graphics. The RenderingSystem supports HaxePunk's Tilemap, Spritemap, Backdrop, Text, and Emitter.
+* Access to additional HaxePunk attributes with built-in components to adjust alpha, position, layer, active visibility, rotation, scaling, scroll factor, overall size, registration point, sound, and transformation origin.
+* Other features like component-level tweening, audio support, action chaining, transitions, dependent entity management, system-level profiling service, and batch entity transformations via component sets.
+* Full access to the Ash engine and HaxePunk objects.
+
 ### Developing with Components
 Flaxen makes it simple to create entities and add components to them. The built-in RenderingSystem automatically creates the appropriate HaxePunk objects behind the scenes. This example displays an image and centers it on the screen.
 
@@ -25,9 +32,9 @@ class BasicImageDemo extends Flaxen
 }
 ```
 
-For more information, documentation is finally up in the [wiki](https://github.com/scriptorum/flaxen/wiki).
+To get started, documentation is up [on the wiki](https://github.com/scriptorum/flaxen/wiki).
 
-##Dependencies
+##Dependencies/Credits
 Flaxen would not be possible without the work of these awesome projects:
 * [HaxePunk](https://github.com/HaxePunk/HaxePunk) 
 * [Ash-Haxe](https://github.com/nadako/Ash-HaXe)
