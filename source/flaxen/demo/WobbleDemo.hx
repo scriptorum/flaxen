@@ -1,18 +1,6 @@
 /*
- *	You don't have to subclass Flaxen and use ready() if you don't want to:
- *
- *		var flaxen = new Flaxen();
- *	 	flaxen.setStartHandler(function(f:Flaxen)
- *	 	{
- *	 		f.newEntity()....
- *		});
- *
- *	If you don't care to use the init system, you can just start creating entities:
- *
- *		var f = new Flaxen();
- *	 	f.newEntity()....
+ *	Shows a wobbling image, demonstrating showing an image, scaling, tweening and input.
  */
-
 package flaxen.demo; 
 
 import ash.core.Entity;

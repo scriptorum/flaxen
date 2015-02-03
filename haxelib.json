@@ -1,0 +1,15 @@
+{
+  "name": "Flaxen",
+  "url" : "https://github.com/scriptorum/flaxen",
+  "license": "MIT",
+  "tags": ["ecs", "entity", "component", "system", "game", "haxepunk", "ash", "openfl"],
+  "description": "Flaxen blends an entity/component system with a Haxe-based game engine, powered by HaxePunk and Ash.",
+  "version": "0.0.1",
+  "releasenote": "Initial Haxelib release",
+  "contributors": ["scriptorum"],
+  "dependencies": {
+    "HaxePunk": "",
+    "ash": "",
+  }
+}
+
