@@ -2,9 +2,9 @@
 ##Overview
 > You've got Haxepunk in my Ash! You got Ash in my Haxepunk!
 
-Flaxen is a Haxe 3 project that combines [HaxePunk](https://github.com/HaxePunk/HaxePunk) (a game engine) with [Ash-Haxe](https://github.com/nadako/Ash-HaXe) (an entity component system or ECS).  
+Flaxen blends an entity/component system with a Haxe-based game engine, powered by [HaxePunk](https://github.com/HaxePunk/HaxePunk) and [Ash](https://github.com/nadako/Ash-HaXe). 
 
-### Example
+### Developing with Components
 Flaxen makes it simply to create entities and add components to them. The built-in RenderingSystem automatically creates the appropriate HaxePunk objects behind the scenes. This example displays an object and centers it on the screen.
 
 ```haxe
@@ -25,8 +25,7 @@ class BasicImageDemo extends Flaxen
 }
 ```
 
-##Documenntation
-Documentation is finally up in the [wiki](https://github.com/scriptorum/flaxen/wiki)!
+For more information, documentation is finally up in the [wiki](https://github.com/scriptorum/flaxen/wiki).
 
 ##Dependencies
 Flaxen would not be possible without the work of these awesome projects:
