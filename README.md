@@ -5,7 +5,7 @@
 Flaxen blends an entity/component system with a Haxe-based game engine, powered by [HaxePunk](https://github.com/HaxePunk/HaxePunk) and [Ash](https://github.com/nadako/Ash-HaXe). 
 
 ### Developing with Components
-Flaxen makes it simple to create entities and add components to them. The built-in RenderingSystem automatically creates the appropriate HaxePunk objects behind the scenes. This example displays an object and centers it on the screen.
+Flaxen makes it simple to create entities and add components to them. The built-in RenderingSystem automatically creates the appropriate HaxePunk objects behind the scenes. This example displays an image and centers it on the screen.
 
 ```haxe
 class BasicImageDemo extends Flaxen
