@@ -1,5 +1,5 @@
 {
-  "name": "Flaxen",
+  "name": "flaxen",
   "url" : "https://github.com/scriptorum/flaxen",
   "license": "MIT",
   "tags": ["ecs", "entity", "component", "system", "game", "haxepunk", "ash", "openfl"],
