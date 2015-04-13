@@ -7,8 +7,10 @@
 
     <assets path="assets/art" rename="art" type="image" include="*.png" />
     <assets path="assets/audio" rename="sound" type="sound" include="*.wav" />
-    <assets path="assets/audio" rename="music" type="music" include="*.mp3" />
-    <assets path="assets/font" rename="font" type="font" include="*.ttf" />
+    <assets path="assets/audio" rename="music" type="music" include="*.mp3" if="flash"/>
+    <assets path="assets/audio" rename="music" type="music" include="*.ogg" unless="flash"/>
+    <assets path="assets/font" rename="font" type="font" include="*.ttf" unless="html5"/>
+    <assets path="assets/font" rename="font" type="font" include="*.woff|*.svg" if="html5"/>
     <assets path="assets/data" rename="data" type="text" include="*.xml|*.txt" exclude="*.bak"/>
     <icon path="assets/art/icon.svg"/>  
 
@@ -21,10 +23,10 @@
 
     <app title="Flaxen Demo" file="FlaxenDemo" main="flaxen.demo.AnimationDemo" company="Inscrutable Games" swf-version="11.2"/>
 
-    <app preloader="inscrutablegames.Preloader" if="flash"/>
-
     <window fps="60" resizable="false" background="0x222244" orientation="landscape"/>
-    <window width="640" height="480" unless="mobile" />
+    <window width="640" height="480" if="desktop" />
+    <window width="0" height="0" if="html5" />
     <window fullscreen="true" if="mobile" />
+
 </project>
 

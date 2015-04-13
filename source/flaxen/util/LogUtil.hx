@@ -12,21 +12,24 @@ import flaxen.util.ArrayUtil;
 
 class LogUtil
 {
-        public static function dumpLog(flaxen:flaxen.core.Flaxen, filename:String, depth:Int = 1, preventRecursion = true): Void
-        {
-            #if native
-                var fo:FileOutput = File.write(filename);
-                fo.writeString(flaxen.countEntities() + " ASH ENTITIES:\n");
-                for(entity in flaxen.ash.entities)
-                {
-                    var str:String = dumpEntity(entity, depth, preventRecursion);
-                    fo.writeString(str + "\n");
-                }
-                fo.close();
-            #else
-               haxe.Log.trace("dumpLog not supported for this target");
-            #end
-        }
+    public static function dumpLog(flaxen:flaxen.core.Flaxen, filename:String, depth:Int = 1, preventRecursion = true): Void
+    {
+        #if native
+            var fo:FileOutput = File.write(filename);
+            fo.writeString(dumpEntities(flaxen, depth, preventRecursion));
+            fo.close();
+        #else
+           haxe.Log.trace("dumpLog not supported for this target");
+        #end
+    }
+
+    public static function dumpEntities(flaxen:flaxen.core.Flaxen, depth:Int = 1, preventRecursion = true): String
+    {
+        var result:String = flaxen.countEntities() + " ASH ENTITIES:\n";
+        for(entity in flaxen.ash.entities)
+            result += dumpEntity(entity, depth, preventRecursion) + "\n";
+        return result;
+    }
 
     public static function assert(cond: Bool, ?pos:haxe.PosInfos)
     {
@@ -76,6 +79,7 @@ class LogUtil
 
     // The <RECURSION> check isn't quite that - it will say RECURSION if it's not recursed,
     // but there are multiple copies within the same object. TODO: Change to <DUPE>?
+    // This doesn't seem to be working in Flash targets.
 	private static function internalDump(o:Dynamic, recursed:Array<Dynamic>, depth:Int, indent:String = ""): String
 	{
 		if (o == null)

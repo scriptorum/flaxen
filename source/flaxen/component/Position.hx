@@ -1,20 +1,14 @@
 package flaxen.component;
 
-import ash.signals.Signal1;
-
 class Position
 {
-	public var signal:Signal1<Position>;
-	private var _x:Float;
-	private var _y:Float;
-	public var x(get,set):Float;
-	public var y(get,set):Float;
+	public var x:Float;
+	public var y:Float;
 
 	public function new(x:Float, y:Float)
 	{
-		signal = new Signal1<Position>();
-		this._x = x;
-		this._y = y;
+		this.x = x;
+		this.y = y;
 	}
 
 	public function subtract(x:Float, y:Float): Position
@@ -78,36 +72,10 @@ class Position
 		return Math.sqrt(dx * dx + dy * dy);
 	}
 
-	// Accessors added for basic signalling. Not really happy to put this in a generic component.
-	public function set_x(x:Float): Float
-	{
-		this._x = x;
-		signal.dispatch(this);
-		return _x;
-	}
-
-	public function set_y(y:Float): Float
-	{
-		this._y = y;
-		signal.dispatch(this);
-		return _y;
-	}
-
 	public function set(x:Float, y:Float)
 	{
-		this._x = x;
-		this._y = y;
-		signal.dispatch(this);
-	}
-
-	public function get_x(): Float
-	{
-		return _x;
-	}
-
-	public function get_y(): Float
-	{
-		return _y;
+		this.x = x;
+		this.y = y;
 	}
 
 	public function toString(): String

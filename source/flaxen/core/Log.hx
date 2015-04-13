@@ -6,6 +6,7 @@
 package flaxen.core;
 
 import haxe.CallStack;
+import openfl.system.System;
 
 class Log
 {
@@ -60,13 +61,9 @@ class Log
 		#end
 	}
 
-	public static function quit()
+	public static function quit(code:Int)
 	{
-		#if (cpp || neko)
-			openfl.Lib.exit();
-		// #else if flash
-		// Lib.fscommand("quit");
-		#end
+		System.exit(code);
 	}
 
 	public static function callStack(returnOnly:Bool = false): String

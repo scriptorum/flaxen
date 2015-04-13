@@ -34,31 +34,29 @@ class AnimationDemo extends Flaxen
 			.add(new Layer(100))
 			.add(Repeating.instance);
 
-		newComponentSet("ball")
+		newComponentSet("ballSet")
 			.add(new Image("art/ball.png")) // Share image between all balls
 			.addFunction(function(_) { return Offset.center(); }) // create new Offset for each
 			.addFunction(function(_) { return Position.center(); }) // create new Position for each
 			.add(ImageGrid.create(60, 60)); // Share image grid
 
-		// could also have done newSetSingleton("ball", "ball"), instead of addSet
-		var ball = newSingleton("master")
+		var ball = newSetSingleton("ballSet", "master")
 			.add(new Data(false))
 			.add(new Animation(northRoll, 30));
-		addSet(ball, "ball"); // add components to set
 
-		newSetEntity("ball")
+		newSetEntity("ballSet", "ball")
 			.add(new Animation(eastRoll, 30, LoopType.Both))
 			.get(Position).y = com.haxepunk.HXP.height / 3;
 
-		newSetEntity("ball")
+		newSetEntity("ballSet", "ball")
 			.add(new Animation(eastRoll, 30, LoopType.BothBackward))
 			.get(Position).y = com.haxepunk.HXP.height / 3 * 2;
 
-		newSetEntity("ball")
+		newSetEntity("ballSet", "ball")
 			.add(new Animation(northRoll, 30, LoopType.Backward))
 			.get(Position).x = com.haxepunk.HXP.width / 3;
 
-		newSetEntity("ball")
+		newSetEntity("ballSet", "ball")
 			.add(new Animation(eastRoll, 30, LoopType.Backward))
 			.get(Position).x = com.haxepunk.HXP.width / 3 * 2;
 
