@@ -1,0 +1,9 @@
+export/*
+export
+.gitignore
+.DS_Store
+*.bak
+haxelib.zip
+*.eot
+*.woff
+assets/font/*.svg
