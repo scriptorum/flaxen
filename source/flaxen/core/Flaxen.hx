@@ -1,6 +1,4 @@
 /**
-	- Look into supporting two frame rates, fixed for physics updates, and variable for all else.
-
 	FLAGS (lime test platform -DflagName):
 		    console - Includes the HaxePunk console; press ` to open; be sure to include assets/console
 		   profiler - Includes the ProfileSystem; press P to log profile stats

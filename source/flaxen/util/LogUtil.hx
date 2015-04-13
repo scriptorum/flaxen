@@ -3,7 +3,7 @@
 */
 package flaxen.util;
 
-#if !flash
+#if native
 import sys.io.File;
 import sys.io.FileOutput;
 #end
@@ -14,9 +14,7 @@ class LogUtil
 {
         public static function dumpLog(flaxen:flaxen.core.Flaxen, filename:String, depth:Int = 1, preventRecursion = true): Void
         {
-            #if flash
-               haxe.Log.trace("dumpLog not supported in Flash");
-            #else
+            #if native
                 var fo:FileOutput = File.write(filename);
                 fo.writeString(flaxen.countEntities() + " ASH ENTITIES:\n");
                 for(entity in flaxen.ash.entities)
@@ -25,6 +23,8 @@ class LogUtil
                     fo.writeString(str + "\n");
                 }
                 fo.close();
+            #else
+               haxe.Log.trace("dumpLog not supported for this target");
             #end
         }
 
