@@ -8,19 +8,22 @@ import flaxen.core.Log;
 // matches the mode being transitioned to.
 // 
 // To transition the application to a new mode:
-//	  import flaxen.component.Application; 
-//	    ...
-//    var app:Application = flaxen.getApp();
-//    app.changeMode(Play); 
+//	  flaxen.setMode(Play);
 // 
-// For a custom mode:
-//    typedef PlayMode = Mode("PlayMode");
-//    app.changeMode(PlayMode);
+// For a custom mode, a typedef is helpful:
+//    import flaxen.component.Application;
+//    typedef ConfigController = Mode("ConfigController");
+//    flaxen.setMode(ConfigController);
 //
-// To protect an item from being removed when the mode changes:
-//    app.add(Transitional.ALWAYS); // Never will be removed
-//    app.add(Transitional.NEXT); // Will be protected for next mode only, then protection is removed
-//    app.add(new Transitional(PlayMode)); // Will be protected only if next mode matches this mode
+// To protect an entity from being removed when the mode changes:
+//    entity.add(Transitional.ALWAYS); // Never will be removed
+//    entity.add(Transitional.NEXT); // Will be protected through transition to next mode, only, then protection is removed
+//    entity.add(new Transitional(PlayMode)); // Will be protected only if next mode matches this mode
+//
+// TODO The entire "transitional" system needs to be made clearer and cleaner. Also, the mode system needs to support
+//      layered/stacked modes. For example, hitting ESC brings an options window, and selecting calibrate controller 
+// 		brings an additional window. The original content is not removed in these cases although they may be "paused" or 
+//		otherwise recognize their activity has been commandeered. Hitting ESC progressively "unstacks" the layered modes.
 //
 class Transitional
 {

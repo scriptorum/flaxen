@@ -693,6 +693,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
 	// Queues up a transition to the new mode; causes the stop handler to execute, 
 	// eliminates unprotected entities, then executes the start handler.
+	// TODO Be able to specify matching and excluding kinds here
 	public function setMode(mode:ApplicationMode): Void
 	{
 		var app = getApp();

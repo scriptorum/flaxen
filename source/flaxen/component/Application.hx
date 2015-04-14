@@ -12,7 +12,7 @@ enum ApplicationModeType<T>
 	// will always be called, regardless of mode. See Flaxen.setHandler.
 	Always;
 
-	// These are built-in modes, use them if you like or define your own with custom
+	// These are built-in modes, use them if you like or define your own with Mode("custom")
 	Init; Intro; Menu; Play; Credits; Select; Options; CutScene; GameOver; Success; Failure;
 
 	// Define your own application modes here, such as Mode("LoadingScreen")

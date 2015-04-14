@@ -1,25 +1,24 @@
-//
-// I'm still not happy with the way transformation points/position points work here.
-//
 package flaxen.render.view;
 
-import flaxen.component.Layer;
-import flaxen.component.ScrollFactor;
-import flaxen.component.Origin;
-import flaxen.component.Scale;
-import flaxen.component.Size;
-import flaxen.component.Rotation;
-import flaxen.component.Offset;
-import flaxen.component.Position;
+import ash.core.Entity;
+import com.haxepunk.Graphic;
 import flaxen.component.Alpha;
-import flaxen.component.Invisible;
-import flaxen.component.Layout;
 import flaxen.component.Image;
 import flaxen.component.ImageGrid;
+import flaxen.component.Immutable;
+import flaxen.component.Invisible;
+import flaxen.component.Layer;
+import flaxen.component.Layout;
+import flaxen.component.Offset;
+import flaxen.component.Origin;
+import flaxen.component.Position;
+import flaxen.component.Rotation;
+import flaxen.component.Scale;
+import flaxen.component.ScrollFactor;
+import flaxen.component.Size;
 import flaxen.core.Log;
-import com.haxepunk.Graphic;
-
-import ash.core.Entity;
+import flaxen.render.view.View;
+import openfl.display.Bitmap;
 
 class View extends com.haxepunk.Entity
 {
@@ -64,6 +63,14 @@ class View extends com.haxepunk.Entity
 		visible = !hasComponent(Invisible);
 		if(!visible)
 			return;
+
+		var immutable:Immutable = entity.get(Immutable); 
+		if(immutable != null) 
+		{ 
+			if(!immutable.changed)
+				return;
+			immutable.changed = false;
+		}
 
 		var graphicChanged = false;
 		if(currentGraphic != graphic)
@@ -180,6 +187,7 @@ class View extends com.haxepunk.Entity
 		if(hasComponent(flaxen.component.Position))
 		{
 			// Update offset
+			// TODO Consider adding currentOffset for faster offset updating/checking
 			var offsetX:Float = 0;
 			var offsetY:Float = 0;
 			if(hasComponent(Offset))

@@ -24,6 +24,8 @@
 
 	If the Always mode is supplied, this mode is executed when updating ALL modes. The Always 
 	handler is called AFTER the main handler is called.
+
+	TODO: Add explanation of handlers and application modes to the wiki, because this is not very helpful.
 */
 
 package flaxen.system;

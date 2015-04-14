@@ -124,6 +124,7 @@ class ModeSystem extends FlaxenSystem
 	// An entity is protected if it has a Transitional component marked
 	// "Always" or if the Transitional mode is the same as the mode we're 
 	// transitioning to.
+	// TODO Jive this with Flaxen.removeTransitionedEntities();
 	public function removeUnprotected(mode:ApplicationMode): Void
 	{
 		for(e in ash.entities)
