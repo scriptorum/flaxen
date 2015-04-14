@@ -13,7 +13,7 @@ class ArrayUtil
         while (--i > 0)
         {
                 t = arr[i];
-                arr[i] = arr[j = MathUtil.rnd(0, arr.length - 1)];
+                arr[i] = arr[j = MathUtil.rndInt(0, arr.length - 1)];
                 arr[j] = t;
         }
 	}
@@ -22,7 +22,7 @@ class ArrayUtil
 	{
 		if(arr == null || arr.length == 0)
 			return null;
-		return arr[MathUtil.rnd(0, arr.length - 1)];
+		return arr[MathUtil.rndInt(0, arr.length - 1)];
 	}
 
     // Like Array.filter but returns an array of indeces to the array (keys), rather than the array valuentityService.
