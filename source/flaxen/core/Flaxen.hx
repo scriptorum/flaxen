@@ -502,7 +502,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	}
 	
 	/*
-	 * ENTITY STATS
+	 * NODE STATS/MANIPULATION
 	 */ 
 
 	// Returns the number of nodes matching the supplied Node class
@@ -520,6 +520,29 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		var count:Int = 0;
 		for(entity in ash.entities)
 			count++;
+	 	return count;
+	}
+
+	// Returns an array of all entities that match the node
+	public function getEntities<T:Node<T>>(?nodeClass:Class<T>): Array<Entity>
+	{
+		var result = new Array<Entity>();
+	 	for(node in ash.getNodeList(nodeClass))
+			result.push(node.entity);
+	 	return result;
+	}
+
+	// Removes all entities that match the node
+	// Returns the number removed
+	public function removeEntities<T:Node<T>>(?nodeClass:Class<T>): Int
+	{
+		var count:Int = 0;
+		var list = ash.getNodeList(nodeClass);
+	 	for(node in list)
+	 	{
+	 		list.remove(node);
+	 		count++;
+	 	}
 	 	return count;
 	}
 
