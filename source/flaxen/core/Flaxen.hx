@@ -813,18 +813,21 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	 */
 
 	// Entity hit test, does not currently respect the Scale component
-	// nor the ScaleFactor component.
-	public function hitTest(e:Entity, x:Float, y:Float): Bool
+	// nor the ScaleFactor component. Returns an object with the x/y offset
+	// of the clickpoint and image dimensios, respective to the position. Returns 
+	// null if the position does not fall within the entity.
+	public function hitTest(e:Entity, x:Float, y:Float): 
+		{ xOffset:Float, yOffset:Float, width:Float, height:Float }
 	{
 		if(e == null)
-			return false;
+			return null;
 
 		var pos:Position = e.get(Position);
 		var image:Image = e.get(Image);
 		if(image == null && e.has(Animation))
 			image = e.get(Animation).image;
 		if(pos == null || image == null)
-			return false;
+			return null;
 
 		var off:Offset = e.get(Offset);
 		if(off != null)
@@ -841,8 +844,31 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 			}
 		}
 
-		return(x >= pos.x && x < (pos.x + image.width) && 
-			y >= pos.y && y < (pos.y + image.height));
+		if(x >= pos.x && x < (pos.x + image.width) &&
+			y >= pos.y && y < (pos.y + image.height))
+				return { xOffset:x - pos.x, yOffset:y - pos.y, width:image.width, height:image.height };
+		else return null;
+		
+	}
+
+	// Given an entity with an image that represents a grid, returns the cell 
+	// coordinates being pointed at by the mouse, or null if the mouse position
+	// lies outside of the image.
+	public function getMouseCell(entityName:String, rows:Int, cols:Int): { x:Int, y:Int }
+	{
+		var e:Entity = getEntity(entityName);
+		if(e == null)
+			return null;
+
+		var result = hitTest(e, InputService.mouseX, InputService.mouseY);
+		if(result == null)
+			return null;
+
+		var cellWidth = result.width / cols;
+		var cellHeight = result.height / rows;
+
+		return { x:Std.int(Math.floor(result.xOffset / cellWidth)),
+			y:Std.int(Math.floor(result.yOffset / cellHeight)) };
 	}
 
 	// Rough button (or any item) click checker; does not handle layering or entity ordering
@@ -861,8 +887,8 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		if(alpha != null && alpha.value < minAlpha)
 			return false;
 	 			
-	 	return hitTest(e, InputService.mouseX, InputService.mouseY);
-	}	
+	 	return hitTest(e, InputService.mouseX, InputService.mouseY) != null;
+	}
 
 	// MOVE TO CameraService?
 	public function changeCameraFocus(entity:Entity): Void

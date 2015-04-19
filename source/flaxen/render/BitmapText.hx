@@ -151,7 +151,7 @@ class BitmapText extends Image
 
 	private function setTextInternal(text:String, updateSuper:Bool): BitmapText
 	{
-		this.text = text;
+		this.text = (text == null ? "" : text);
 		lines = new Array<String>();
 		lineWidths = new Array<Int>();
 		contentWidth = 0;	
@@ -184,9 +184,9 @@ class BitmapText extends Image
 		{
 			if (blit)
 	    	{
-	    		createBuffer();
 	    		_sourceRect = content.rect;
 	    		_source = content;
+	    		createBuffer();
 	    		updateBuffer();
 	    	}
 	    	else
@@ -300,7 +300,7 @@ class BitmapText extends Image
 			var x:Int = 0;
 			var glyphsExpected:Int = charSet.length;
 			for(ch in charSet.split(""))
-			{	
+			{
 				while(x < fontBitmap.width)
 				{
 					var blankLine:Bool = true;
@@ -384,6 +384,7 @@ class BitmapText extends Image
 		        	contentWidth = contentHeight = FLASH_SAFE_DIM;
 	        #end
 		#end
+
 
     	// TODO erase old bitmap if size hasn't changed, instead of constructing a new one
     	content = com.haxepunk.HXP.createBitmap(contentWidth, contentHeight, true);

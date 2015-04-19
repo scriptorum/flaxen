@@ -16,7 +16,8 @@
 	TODO:
 	  - Work on some practical implementations of this. Is the name variable even '
 	   	helpful? Maybe this should just be a plain interface? Or create a "buildValueClass()"
-	   	macro...
+	   	macro... note that if you're going to make a custom intent class, you probably don't 
+	   	need to extend Intent to do it.
 
  */
 

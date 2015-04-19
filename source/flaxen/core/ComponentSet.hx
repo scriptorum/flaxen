@@ -52,7 +52,7 @@ class ComponentSet
 	// Adds a class and parameters to the set. The class will be instantiated with the
 	// supplied paramters every time the set is installed in an entity. This prevents
 	// sharing of instances that happens when you call set.add(new MyComponent(A, B, C)).
-	// For example: set.addClass(MyComponent, A, B, C);
+	// For example: set.addClass(MyComponent, [A, B, C]);
 	public function addClass(clazz:Class<Dynamic>, ?args:Array<Dynamic>): ComponentSet
 	{
 		if(args == null || args.length == 0)

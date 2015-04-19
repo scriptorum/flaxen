@@ -1,10 +1,14 @@
 /**
+	NOTE
+	 - ActionQueues cannot be shared between entities.
+
 	TODO
 	 - Add description and give usage examples
 	 - change add to addAction
 	 - change addCallback to call
 	 - change addThread to thread
 	 - do not require engine as parameter to add/removeEntity, instead supply that to constructor
+	 - add an addTween() for better tween integration
 */
 package flaxen.component;
 

@@ -63,6 +63,7 @@ class TextStyle
 	}
 
 	// Convenience method for creating a new TextStyle for BitmapText
+	// TODO Swap params
 	public static function createBitmap(wordWrap:Bool = false, 
 		?halign:HorizontalTextAlign, ?valign:VerticalTextAlign, 
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0,

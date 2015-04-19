@@ -49,8 +49,11 @@ class LogUtil
     	return result + "}";
     }
 
-    public static function dumpHaxePunk(scene:com.haxepunk.Scene): String
+    public static function dumpHaxePunk(?scene:com.haxepunk.Scene): String
     {
+        if(scene == null)
+            scene = com.haxepunk.HXP.scene;
+            
     	var ret = "HAXEPUNK ENTITIES:\n";
     	var arr = new Array<com.haxepunk.Entity>();
     	scene.getAll(arr);
