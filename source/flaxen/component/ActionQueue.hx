@@ -16,12 +16,14 @@ import ash.core.Entity;
 import ash.core.Engine;
 import flaxen.component.Timestamp;
 
+typedef QueueTips = { first:Action, last:Action }
+
 class ActionQueue
 {
 	public static var created:Int = 0;
 
-	public var first:Action;
-	public var last:Action;
+	public var queue:QueueTips = { first:null, last:null };
+	public var priorityQueue:QueueTips = { first:null, last:null };
 	public var destroyEntity:Bool; // When queue is empty, destroy its entity
 	public var destroyComponent:Bool; // When queue is empty, destroy this component
 	public var complete:Bool = false; // True when queue goes empty
@@ -49,63 +51,68 @@ class ActionQueue
 			add(action);
 	}
 
-	public function add(action:Action): ActionQueue
+	// The priority flag is intended to allow a callback action to modify the queue
+	// while its still being processed. Priority actions are kept in a secondary 
+	// queue, and added to front of the main queue when the callback completes.
+	public function add(action:Action, priority:Bool = false): ActionQueue
 	{
-		if(first == null)
-			first = last = action;
+		var q = (priority ? priorityQueue : queue);
+
+		if(q.first == null)
+			q.first = q.last = action;
 		else
 		{
-			last.next = action;
-			last = action;
+			q.last.next = action;
+			q.last = action;
 		}
 
 		return this;
 	}
 
 	// Convenience adders
-	public function delay(duration:Float): ActionQueue
+	public function delay(duration:Float, priority:Bool = false): ActionQueue
 	{
-		return(add(new ActionDelay(duration)));
+		return add(new ActionDelay(duration), priority);
 	}
-	public function log(message:String): ActionQueue
+	public function log(message:String, priority:Bool = false): ActionQueue
 	{
-		return(add(new ActionLog(message)));
+		return add(new ActionLog(message), priority);
 	}
-	public function addComponent(entity:Entity, component:Dynamic): ActionQueue
+	public function addComponent(entity:Entity, component:Dynamic, priority:Bool = false): ActionQueue
 	{
-		return(add(new ActionAddComponent(entity, component)));
+		return add(new ActionAddComponent(entity, component), priority);
 	}
-	public function removeComponent(entity:Entity, component:Class<Dynamic>): ActionQueue
+	public function removeComponent(entity:Entity, component:Class<Dynamic>, priority:Bool = false): ActionQueue
 	{
-		return(add(new ActionRemoveComponent(entity, component)));
+		return add(new ActionRemoveComponent(entity, component), priority);
 	}
-	public function addEntity(engine:Engine, entity:Entity): ActionQueue
+	public function addEntity(engine:Engine, entity:Entity, priority:Bool = false): ActionQueue
 	{
-		return(add(new ActionAddEntity(engine, entity)));
+		return add(new ActionAddEntity(engine, entity), priority);
 	}
-	public function removeEntityByName(engine:Engine, entityName:String): ActionQueue
+	public function removeEntityByName(engine:Engine, entityName:String, priority:Bool = false): ActionQueue
 	{
-		return(add(new ActionRemoveEntityByName(engine, entityName)));
+		return add(new ActionRemoveEntityByName(engine, entityName), priority);
 	}
-	public function removeEntity(engine:Engine, entity:Entity): ActionQueue
+	public function removeEntity(engine:Engine, entity:Entity, priority:Bool = false): ActionQueue
 	{
-		return(add(new ActionRemoveEntity(engine, entity)));
+		return add(new ActionRemoveEntity(engine, entity), priority);
 	}
-	public function waitForProperty(object:Dynamic, property:String, value:Dynamic): ActionQueue
+	public function waitForProperty(object:Dynamic, property:String, value:Dynamic, priority:Bool = false): ActionQueue
 	{
-		return(add(new ActionWaitForProperty(object, property, value)));
+		return add(new ActionWaitForProperty(object, property, value), priority);
 	}
-	public function setProperty(object:Dynamic, property:String, value:Dynamic): ActionQueue
+	public function setProperty(object:Dynamic, property:String, value:Dynamic, priority:Bool = false): ActionQueue
 	{
-		return(add(new ActionSetProperty(object, property, value)));
+		return add(new ActionSetProperty(object, property, value), priority);
 	}
-	public function addCallback(func:Void->Void): ActionQueue
+	public function addCallback(func:Void->Void, priority:Bool = false): ActionQueue
 	{
-		return(add(new ActionCallback(func)));
+		return add(new ActionCallback(func), priority);
 	}
-	public function addThread(func:Void->Bool): ActionQueue // AKA waitForTrue(func)
+	public function addThread(func:Void->Bool, priority:Bool = false): ActionQueue // AKA waitForTrue(func)
 	{
-		return(add(new ActionThread(func)));
+		return add(new ActionThread(func), priority);
 	}
 
 	// Executes the next action(s) and returns true if the action queue is empty
@@ -118,22 +125,31 @@ class ActionQueue
 		if(!running)
 			return false;
 
-		while(first != null)
+		// Move priority actions to the front of the primary queue
+		if(priorityQueue.first != null)
+		{
+			priorityQueue.last.next = queue.first;
+			queue.first = priorityQueue.first;
+			queue.last = priorityQueue.last;
+			priorityQueue.first = priorityQueue.last = null;
+		}
+
+		while(queue.first != null)
 		{
 			// Execute next action
-			if(first.execute() == false)
+			if(queue.first.execute() == false)
 			{
 				complete = false;				
 				return false; // action is busy
 			}
 
 			// Move to next action
-			first = first.next;
-			if(first == null)
-				last = null;
+			queue.first = queue.first.next;
+			if(queue.first == null)
+				queue.last = null;
 		}
 
-		complete = (first == null);
+		complete = (queue.first == null);
 		return true;
 	}
 
