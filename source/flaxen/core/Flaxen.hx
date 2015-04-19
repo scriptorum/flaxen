@@ -403,7 +403,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
 	// Returns a component from a named entity, or null if entity or component not 
 	// found. Specify component by class, such as Position.class. Use this over
-	// entity.get() when you want to check for null once, since null.get() Log.error(s
+	// entity.get() when you want to check for null once, since null.get() is
 	// an error.
 	public function getComponent<T>(name:String, component:Class<T>): T
 	{

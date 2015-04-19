@@ -95,6 +95,10 @@ class ActionQueue
 	{
 		return(add(new ActionWaitForProperty(object, property, value)));
 	}
+	public function setProperty(object:Dynamic, property:String, value:Dynamic): ActionQueue
+	{
+		return(add(new ActionSetProperty(object, property, value)));
+	}
 	public function addCallback(func:Void->Void): ActionQueue
 	{
 		return(add(new ActionCallback(func)));
@@ -323,6 +327,32 @@ class ActionWaitForProperty extends Action
 	override public function toString(): String
 	{
 		return "ActionWaitForProperty (object:" + object + " property:" + property + " value:" + value + ")";
+	}
+}
+
+class ActionSetProperty extends Action
+{
+	public var object:Dynamic;
+	public var property:String;
+	public var value:Dynamic;
+
+	public function new(object:Dynamic, property:String, value:Dynamic)
+	{
+		super();
+		this.object = object;
+		this.property = property;
+		this.value = value;
+	}
+
+	override public function execute(): Bool
+	{
+		Reflect.setProperty(object, property, value);
+		return true;
+	}
+
+	override public function toString(): String
+	{
+		return "ActionSetProperty (object:" + object + " property:" + property + " value:" + value + ")";
 	}
 }
 

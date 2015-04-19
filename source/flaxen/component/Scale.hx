@@ -8,6 +8,11 @@ class Scale
 
 	public function new(x:Float = 1.0, y:Float = 1.0)
 	{
+		set(x, y);
+	}
+
+	public function set(x:Float, y:Float)
+	{
 		this.x = x;
 		this.y = y;
 	}
