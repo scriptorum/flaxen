@@ -441,10 +441,22 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return false;
 	}
 
+	// Removes an entity, looked up by name
+	// Throws an error if entity is not found
 	public function demandRemoveEntity(name:String): Void
 	{
 		if(removeEntity(name) == false)
 			Log.error("Cannot remove missing entity " + name);
+	}
+
+	// Adds a set of components to an entity, looked up by name
+	// Throws an error if entity is not found
+	public function addComponents(entityName:String, components:Array<Dynamic>): Entity
+	{
+		var e = demandEntity(entityName);
+		for(c in components)
+			e.add(c);
+		return e;
 	}
 
 	/*
