@@ -7,13 +7,13 @@
 	 - change add to addAction
 	 - change addCallback to call
 	 - change addThread to thread
-	 - do not require engine as parameter to add/removeEntity, instead supply that to constructor
+	 - do not require flaxen as parameter to add/removeEntity, instead supply that to constructor
 	 - add an addTween() for better tween integration
 */
 package flaxen.component;
 
 import ash.core.Entity;
-import ash.core.Engine;
+import flaxen.core.Flaxen;
 import flaxen.component.Timestamp;
 
 typedef QueueTips = { first:Action, last:Action }
@@ -22,6 +22,7 @@ class ActionQueue
 {
 	public static var created:Int = 0;
 
+	public var f:Flaxen;
 	public var queue:QueueTips = { first:null, last:null };
 	public var priorityQueue:QueueTips = { first:null, last:null };
 	public var destroyEntity:Bool; // When queue is empty, destroy its entity
@@ -29,19 +30,15 @@ class ActionQueue
 	public var complete:Bool = false; // True when queue goes empty
 	public var name:String; // optional object name for logging
 	public var running:Bool = true;
-
-	public static function create(destroyEntity = false, destroyComponent = false, ?name:String,
-		autoStart:Bool = true): ActionQueue
-	{
-		return new ActionQueue(destroyEntity, destroyComponent, name, autoStart);
-	}
 	
-	public function new(destroyEntity = false, destroyComponent = false, ?name:String,
-		autoStart:Bool = true)
+	public function new(f:Flaxen, destroyEntity = false, destroyComponent = false, 
+		autoStart:Bool = true, ?name:String)
 	{
+		this.f = f;
 		this.destroyEntity = destroyEntity;
 		this.destroyComponent = destroyComponent;
-		this.name = (name == null ? "fActionQueue"  + Std.string(++created) : name);
+		this.name = (name == null ? "__actionQueue"  + Std.string(++created) : name);
+
 		this.running = autoStart;
 	}
 
@@ -70,9 +67,9 @@ class ActionQueue
 	}
 
 	// Convenience adders
-	public function delay(duration:Float, priority:Bool = false): ActionQueue
+	public function wait(seconds:Float, priority:Bool = false): ActionQueue
 	{
-		return add(new ActionDelay(duration), priority);
+		return add(new ActionDelay(seconds), priority);
 	}
 	public function log(message:String, priority:Bool = false): ActionQueue
 	{
@@ -86,31 +83,31 @@ class ActionQueue
 	{
 		return add(new ActionRemoveComponent(entity, component), priority);
 	}
-	public function addEntity(engine:Engine, entity:Entity, priority:Bool = false): ActionQueue
+	public function addEntity(entity:Entity, priority:Bool = false): ActionQueue
 	{
-		return add(new ActionAddEntity(engine, entity), priority);
+		return add(new ActionAddEntity(f, entity), priority);
 	}
-	public function removeEntityByName(engine:Engine, entityName:String, priority:Bool = false): ActionQueue
+	public function removeEntity(entity:Entity, priority:Bool = false): ActionQueue
 	{
-		return add(new ActionRemoveEntityByName(engine, entityName), priority);
+		return add(new ActionRemoveEntity(f, entity), priority);
 	}
-	public function removeEntity(engine:Engine, entity:Entity, priority:Bool = false): ActionQueue
+	public function removeNamedEntity(entityName:String, priority:Bool = false): ActionQueue
 	{
-		return add(new ActionRemoveEntity(engine, entity), priority);
-	}
-	public function waitForProperty(object:Dynamic, property:String, value:Dynamic, priority:Bool = false): ActionQueue
-	{
-		return add(new ActionWaitForProperty(object, property, value), priority);
+		return add(new ActionRemoveNamedEntity(f, entityName), priority);
 	}
 	public function setProperty(object:Dynamic, property:String, value:Dynamic, priority:Bool = false): ActionQueue
 	{
 		return add(new ActionSetProperty(object, property, value), priority);
 	}
-	public function addCallback(func:Void->Void, priority:Bool = false): ActionQueue
+	public function waitForProperty(object:Dynamic, property:String, value:Dynamic, priority:Bool = false): ActionQueue
+	{
+		return add(new ActionWaitForProperty(object, property, value), priority);
+	}
+	public function call(func:Void->Void, priority:Bool = false): ActionQueue
 	{
 		return add(new ActionCallback(func), priority);
 	}
-	public function addThread(func:Void->Bool, priority:Bool = false): ActionQueue // AKA waitForTrue(func)
+	public function waitForCall(func:Void->Bool, priority:Bool = false): ActionQueue // AKA waitForTrue(func)
 	{
 		return add(new ActionThread(func), priority);
 	}
@@ -262,18 +259,18 @@ class ActionRemoveComponent extends Action
 class ActionAddEntity extends Action
 {
 	public var entity:Entity;
-	public var engine:Engine;
+	public var flaxen:Flaxen;
 
-	public function new(engine:Engine, entity:Entity)
+	public function new(flaxen:Flaxen, entity:Entity)
 	{
 		super();
-		this.engine = engine;
+		this.flaxen = flaxen;
 		this.entity = entity;
 	}
 
 	override public function execute(): Bool
 	{
-		engine.addEntity(entity);
+		flaxen.addEntity(entity);
 		return true;
 	}
 
@@ -283,36 +280,36 @@ class ActionAddEntity extends Action
 	}
 }
 
-class ActionRemoveEntityByName extends Action
+class ActionRemoveNamedEntity extends Action
 {
 	public var entityName:String;
-	public var engine:Engine;
+	public var flaxen:Flaxen;
 
-	public function new(engine:Engine, entityName:String)
+	public function new(flaxen:Flaxen, entityName:String)
 	{
 		super();
-		this.engine = engine;
+		this.flaxen = flaxen;
 		this.entityName = entityName;
 	}
 
 	override public function execute(): Bool
 	{
-		var entity = engine.getEntityByName(entityName);
-		engine.removeEntity(entity);
+		var entity = flaxen.getEntity(entityName);
+		flaxen.removeEntity(entity);
 		return true;
 	}
 
 	override public function toString(): String
 	{
-		return "ActionRemoveEntityByName (entity:" + entityName + ")";
+		return "ActionRemoveNamedEntity (entity:" + entityName + ")";
 	}
 }
 
-class ActionRemoveEntity extends ActionRemoveEntityByName
+class ActionRemoveEntity extends ActionRemoveNamedEntity
 {
-	public function new(engine:Engine, entity:Entity)
+	public function new(flaxen:Flaxen, entity:Entity)
 	{
-		super(engine, entity.name);
+		super(flaxen, entity.name);
 	}
 
 	override public function toString(): String
@@ -385,6 +382,8 @@ class ActionCallback extends Action
 
 	override public function execute(): Bool
 	{
+		// var aq = this;
+		// var f = this.f;
 		func();
 		return true;
 	}

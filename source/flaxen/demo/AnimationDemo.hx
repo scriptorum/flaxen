@@ -40,7 +40,7 @@ class AnimationDemo extends Flaxen
 			.addFunction(function(_) { return Position.center(); }) // create new Position for each
 			.add(ImageGrid.create(60, 60)); // Share image grid
 
-		var ball = newSetSingleton("ballSet", "master")
+		var ball = newSetEntity("ballSet", "master")
 			.add(new Data(false))
 			.add(new Animation(northRoll, 30));
 
@@ -64,7 +64,7 @@ class AnimationDemo extends Flaxen
 		{
 			if(InputService.pressed(Key.DIGIT_1))
 			{
-				var ball = demandEntity("master");
+				var ball = getEntity("master");
 				var data = ball.get(Data);
 				data.value = !data.value;
 				var anim = ball.get(Animation);
@@ -74,7 +74,7 @@ class AnimationDemo extends Flaxen
 
 			if(InputService.pressed(Key.DIGIT_2))
 			{
-				var ball = demandEntity("master");
+				var ball = getEntity("master");
 				var anim = ball.get(Animation);
 				anim.paused = !anim.paused;
 				Log.write((anim.paused ? "Pausing" : "Unpausing") + " animation");
@@ -82,7 +82,7 @@ class AnimationDemo extends Flaxen
 
 			if(InputService.pressed(Key.DIGIT_3))
 			{
-				var ball = demandEntity("master");
+				var ball = getEntity("master");
 				var anim = ball.get(Animation);
 				anim.setLoopType(anim.loop == None ? Forward : None, Last);
 				Log.write("Changing animation loop type to " + anim.loop);
@@ -90,7 +90,7 @@ class AnimationDemo extends Flaxen
 
 			if(InputService.pressed(Key.DIGIT_4))
 			{
-				var ball = demandEntity("master");
+				var ball = getEntity("master");
 				var anim = ball.get(Animation);
 				anim.restart = true;
 				Log.write("Restarting animation");
@@ -98,7 +98,7 @@ class AnimationDemo extends Flaxen
 
 			if(InputService.pressed(Key.DIGIT_5))
 			{
-				var ball = demandEntity("master");
+				var ball = getEntity("master");
 				var anim = ball.get(Animation);
 				anim.stopType = switch(anim.stopType)
 				{
@@ -114,7 +114,7 @@ class AnimationDemo extends Flaxen
 
 			if(InputService.pressed(Key.DIGIT_6))
 			{
-				var ball = demandEntity("master");
+				var ball = getEntity("master");
 				var view:flaxen.render.view.AnimationView = 
 					cast ball.get(flaxen.component.Display).view;
 				view.spritemap.stop(true);
@@ -123,7 +123,7 @@ class AnimationDemo extends Flaxen
 
 			if(InputService.pressed(Key.DIGIT_7))
 			{
-				var ball = demandEntity("master");
+				var ball = getEntity("master");
 				var view:flaxen.render.view.AnimationView = 
 					cast ball.get(flaxen.component.Display).view;
 				view.spritemap.stop(false);

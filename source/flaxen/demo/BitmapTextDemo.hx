@@ -24,7 +24,7 @@ class BitmapTextDemo extends Flaxen
 	override public function ready()
 	{
 		var t = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ";
-		var e:Entity = newSingleton("demo")
+		var e:Entity = newEntity("demo")
 			.add(new Image(YELLOW_FONT))
 			.add(Size.screen().scale(.8))
 			.add(Position.center())
@@ -40,7 +40,7 @@ class BitmapTextDemo extends Flaxen
 		{
 			if(InputService.clicked)
 			{
-				var e = demandEntity("demo");
+				var e = getEntity("demo");
 				var t = e.get(Text);
 				t.message = "The message has changed. Deal with it. Bitch. Yeah that's right, I called you a bitch.";
 

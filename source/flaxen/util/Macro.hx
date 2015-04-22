@@ -27,12 +27,12 @@ class Macro
     // Populates a class with a constructor and a single instance assigned to a field
     // Example of use:
     //
-    // @:build(flaxen.util.Macro.buildSingleton()) class MySingleton 
+    // @:build(flaxen.util.Macro.buildSingleton()) class MyEntity 
     // {
     //     public var anotherField:Int = 55;
     //     public function anotherFunc() {}
     // }
-    // trace(MySingleton.instance.anotherField); // 55
+    // trace(MyEntity.instance.anotherField); // 55
     //  
     // If you want to define your own constructor in the class, pass false for the second param.
     // Otherwise, you can initialize the class through functions or direct variable manipulation.

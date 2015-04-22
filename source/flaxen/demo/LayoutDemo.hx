@@ -7,6 +7,8 @@
 		o I'd rather use CTRL/CMD-ENTER to toggle fullscreen. Right now, Flash 
 		  requires ESC to leave fullscreen mode. Also, I'm triggering on the F
 		  key instead the desired key combo.
+
+		o Text is not displaying correctly on neko target, perhaps desktop.
 */
 
 package flaxen.demo; 

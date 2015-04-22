@@ -43,8 +43,8 @@ class Tween
 	public var stopAfterLoops:Int = 0; // Only if loop is not None; if 0 assumed infinite
 	public var loopCount(default, null):Int = 0;
 
-	public function new(source:Dynamic, target:Dynamic, duration:Float, 
-		easing:EasingFunction = null, loop:LoopType = null, autoStart:Bool = true)
+	public function new(source:Dynamic, target:Dynamic, duration:Float, ?easing:EasingFunction, 
+		?loop:LoopType, destroyEntity = false, destroyComponent = false, autoStart:Bool = true, ?name:String)
 	{
 		this.source = source;
 		this.target = target;
@@ -52,7 +52,9 @@ class Tween
 		Log.assert(duration > 0);
 		this.easing = (easing == null ? Easing.linearTween : easing);
 		this.loop = (loop == null ? LoopType.None : loop);
-		this.name = "tween"  + Std.string(++created);
+		this.destroyEntity = destroyEntity;
+		this.destroyComponent = destroyComponent;
+		this.name = "__tween"  + Std.string(++created);
 		
 		if(autoStart)
 			start();
