@@ -5,34 +5,19 @@
 Flaxen blends an entity/component system with a Haxe-based game engine, powered by [HaxePunk](https://github.com/HaxePunk/HaxePunk) and [Ash](https://github.com/nadako/Ash-HaXe). 
 
 ### Features
-* ECS-driven design. Create entities, add components to them, and build systems to process and transform those entities.
-* Built-in components and systems to automatically display and integrate with HaxePunk graphics. The RenderingSystem supports HaxePunk's Tilemap, Spritemap, Backdrop, Text, and Emitter.
-* Access to additional HaxePunk attributes with built-in components to adjust alpha, position, layer, active visibility, rotation, scaling, scroll factor, overall size, registration point, sound, and transformation origin.
-* Other features like component-level tweening, audio support, action chaining, transitions, dependent entity management, system-level profiling service, and batch entity transformations via component sets.
-* Full access to the Ash engine and HaxePunk objects.
+* A full entity-component system lets you focus on data-driven game design. Using Ash.
+* Built-in components/systems handle the display of integrated HaxePunk graphics.
+* "Drop-in" support for images, maps, backdrops, text, bitmapped text, particle emitters and sound.
+* Make easy adjustments to position, transparency, rotation, scaling and more with a common set of components.
+* Tweening, action chaining, mode handling, transitions, entity dependencies, component sets, and more!
 
-### Developing with Components
-Flaxen makes it simple to create entities and add components to them. The built-in RenderingSystem automatically creates the appropriate HaxePunk objects behind the scenes. This example displays an image and centers it on the screen.
+## Documentation
 
-```haxe
-class BasicImageDemo extends Flaxen
-{
-	public static function main()
-	{
-		var demo = new BasicImageDemo();
-	}
+A user guide is up [on the wiki](https://github.com/scriptorum/flaxen/wiki). The [API](http://scriptorum.github.io/flaxen/dox/flaxen/index.html) is ... we'll call it a work in progress.
 
-	override public function ready()
-	{
-		var e:Entity = newEntity()
-			.add(new Image("art/flaxen.png"))
-			.add(Position.center())
-			.add(Offset.center());
-	}
-}
-```
-
-To get started, documentation is up [on the wiki](https://github.com/scriptorum/flaxen/wiki).
+| [![User Guide](https://raw.githubusercontent.com/scriptorum/scriptorum.github.io/master/flaxen/images/button-guide.png)](https://github.com/scriptorum/flaxen/wiki) | [![API](https://raw.githubusercontent.com/scriptorum/scriptorum.github.io/master/flaxen/images/button-api.png)](http://scriptorum.github.io/flaxen/dox/flaxen/index.html) |
+|:---:|:---:|
+| [User Guide](https://github.com/scriptorum/flaxen/wiki) | [API](http://scriptorum.github.io/flaxen/dox/flaxen/index.html) |
 
 ##Dependencies/Credits
 Flaxen would not be possible without the work of these awesome projects:
