@@ -7,3 +7,5 @@ haxelib.zip
 *.eot
 *.woff
 assets/font/*.svg
+dox
+pages

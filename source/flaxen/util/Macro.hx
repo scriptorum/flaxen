@@ -3,9 +3,11 @@
 */
 package flaxen.util;
 
-import haxe.macro.*;
+#if macro
+import haxe.macro.Context;
 import haxe.macro.Expr;
 using haxe.macro.ExprTools; // e1.toString
+#end
 
 class Macro
 {
@@ -36,6 +38,7 @@ class Macro
     //  
     // If you want to define your own constructor in the class, pass false for the second param.
     // Otherwise, you can initialize the class through functions or direct variable manipulation.
+    #if macro
     public static function buildSingleton(fieldName:String = "instance", 
         includeConstructor:Bool = true): Array<Field>
     {
@@ -55,4 +58,5 @@ class Macro
 
         return fields;
     }
+    #end
 }

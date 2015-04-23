@@ -1,0 +1,12 @@
+--remap flash:openfl
+-cp source
+-lib openfl
+-lib haxepunk
+-lib ash
+-lib flaxen
+-D doc-gen
+-D doc
+-swf dox.swf
+-swf-version 11.2
+-xml dox.xml
+--macro include("flaxen")
