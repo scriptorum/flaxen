@@ -1,18 +1,29 @@
 package flaxen.service;
 
+import ash.core.Entity;
+import flaxen.component.CameraFocus;
+import flaxen.core.Flaxen;
+import flaxen.node.CameraFocusNode;
 import flaxen.service.InputService;
 import com.haxepunk.utils.Ease;
 import com.haxepunk.Tween;
 import com.haxepunk.tweens.TweenEvent;
 import openfl.events.MouseEvent;
 
+/**
+ * Camera service functions.
+ *
+ *  - TODO: Add a Camera singleton to abstract the camera's position, scale, shakiness, etc.*
+ */
 class CameraService
 {
 	private static var _camTween:Tween;
+	private static var f:Flaxen;
 
-	public static function init()
+	public static function init(f:Flaxen)
 	{
-		InputService.onRightClick(rightClick);
+		CameraService.f = f;
+		//InputService.onRightClick(rightClick);
 	}
 
 	public static function rightClick(evt:MouseEvent)
@@ -46,4 +57,13 @@ class CameraService
 
 		_camTween = null;
 	}
+
+	public function changeCameraFocus(entity:Entity): Void
+	{
+		for(node in f.ash.getNodeList(CameraFocusNode))
+			node.entity.remove(CameraFocus);
+
+		if(entity != null)
+			entity.add(CameraFocus.instance);			
+	}	
 }

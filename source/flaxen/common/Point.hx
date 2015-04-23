@@ -2,7 +2,9 @@ package flaxen.common;
 
 import flaxen.core.Log;
 
-// 2D integer point
+/**
+ * 2D integer point
+ */ 
 class Point
 {
 	public var x:Int;
@@ -27,7 +29,9 @@ class Point
 		return this;
 	}
 
-	// Makes an array of Point2D objects from a flat array of x + y values
+	/**
+	 * Makes an array of Point2D objects from a flat array of x + y values
+	 */
 	public static function makeArray(array:Array<Int>): Array<Point>
 	{
 		var result = new Array<Point>();

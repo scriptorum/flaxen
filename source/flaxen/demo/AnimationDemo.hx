@@ -17,6 +17,11 @@ import flaxen.core.Log;
 import flaxen.util.LogUtil;
 import flaxen.service.InputService;
 
+/**
+ * This demo is really hard to follow. Instead of having keys bound to 
+ * turning on an off different Animation options, come up with a sequence 
+ * of animations that illustrates the intended effects.
+ */
 class AnimationDemo extends Flaxen
 {
 	private static inline var northRoll:String = "11-20";

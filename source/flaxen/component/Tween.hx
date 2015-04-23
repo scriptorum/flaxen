@@ -1,18 +1,3 @@
-/**
-	General interpolation class. This example moves myEntity to the upper left corner
-	over the course of two seconds, after which the Tween component removes itself from 
-	myEntity. Tweens require the TweeningSystem to be active.
-
-		var pos = myEntity.get(Position);
-		var tween = new Tween(pos, { x:0, y:0 }, 2);
-		tween.destroyComponent = true;
-		myEntity.add(t);
-
-	TODO: Add ability to fast-forward Tween to particular time-step. AND/OR
-		  Add ability to specify start values instead of using current values in source.
-		  MultiVarTween. Consider reusing HaxePunk's tweeners.
-
-*/
 package flaxen.component;
 
 import ash.core.Engine;
@@ -20,6 +5,20 @@ import flaxen.common.Easing;
 import flaxen.common.LoopType;
 import flaxen.core.Log;
 
+/**
+ * General interpolation class. This example moves myEntity to the upper left corner
+ * over the course of two seconds, after which the Tween component removes itself from 
+ * myEntity. Tweens require the TweeningSystem to be active.
+ *
+ * 	var pos = myEntity.get(Position);
+ * 	var tween = new Tween(pos, { x:0, y:0 }, 2);
+ * 	tween.destroyComponent = true;
+ * 	myEntity.add(t);
+ *
+ *  - TODO: Add ability to fast-forward Tween to particular time-step. AND/OR
+ * 	  Add ability to specify start values instead of using current values in source.
+ * 	  MultiVarTween. Consider reusing HaxePunk's tweeners.
+ */
 class Tween
 {
 	public static var created:Int = 0;
@@ -60,7 +59,9 @@ class Tween
 			start();
 	}
 
-	// If not autostarted, must call this to run tween
+	/**
+	 * If not autostarted, must call this to run tween
+	 */
 	public function start()
 	{
 		this.running = true;
@@ -107,8 +108,6 @@ class Tween
 			var pos = (loop == LoopType.BothBackward || loop == LoopType.Backward ? 
 				duration - elapsed : elapsed);
 			var value = easing(pos, starts[i], ranges[i], duration, optional);
-			// trace("Easing pos:" + pos + " i:" + i + " start:" + starts[i] + " range:" 
-			// 		+ ranges[i] + " duration:" + duration + " optional:" + optional +" VALUE:" + value);
 			Reflect.setProperty(source, props[i], value);
 		}
 

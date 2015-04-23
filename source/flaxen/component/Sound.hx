@@ -2,7 +2,9 @@ package flaxen.component;
 
 using StringTools;
 
-// Basic sound component
+/**
+ * Basic sound component
+ */
 class Sound
 {
 	public var destroyEntity:Bool = false; // on complete/stop, removes whole entity
@@ -16,8 +18,14 @@ class Sound
 	public var offset:Float; // as supplied to constructor
 	public var failsAllowed:Int = 0; // if cannot play sound, tries again N times if this is positive
 
-	// May be modified real-time, will be picked up by AudioSystem
+	/**
+	 * May be modified real-time, will be picked up by AudioSystem
+	 */
 	public var volume:Float; // 0-1
+
+	/**
+	 * May be modified real-time, will be picked up by AudioSystem
+	 */
 	public var pan:Float; // -1 full left, +1 full right
 
 	public function new(file:String, loop:Bool = false, volume:Float = 1, pan:Float = 0, offset:Float = 0)

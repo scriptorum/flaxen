@@ -1,14 +1,3 @@
-/**
-	Do not add this system directly, it is included automatically when using -Dprofiler.
-	The profile system gives you a look at how much time each system is using. Hit P
-	to dump to the log the current profile results. You can change the dump key by 
-	setting ProfileSystem.triggerKey at your application boostrap.
-
-	TODO:
-		- Remove dependence on other Systems
-		- Add overall frame rate logging.
-		- Add percentage of app time not tracked by ProfileSystems 
- */
 package flaxen.system;
 
 import com.haxepunk.utils.Key;
@@ -17,7 +6,17 @@ import flaxen.core.Log;
 import flaxen.core.FlaxenSystem;
 import flaxen.service.InputService;
 
-class ProfileSystem extends FlaxenSystem
+/**
+ * Do not add this system directly, it is included automatically when using -Dprofiler.
+ * The profile system gives you a look at how much time each system is using. Hit P
+ * to dump to the log the current profile results. You can change the dump key by 
+ * setting ProfileSystem.triggerKey at your application boostrap.
+ * 
+ * - TODO: Remove dependence on other Systems
+ * - TODO: Add overall frame rate logging.
+ * - TODO: Add percentage of app time not tracked by ProfileSystems 
+ */
+ class ProfileSystem extends FlaxenSystem
 {
 	public static var triggerKey:Int = Key.P;
 

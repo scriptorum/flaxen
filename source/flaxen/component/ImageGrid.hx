@@ -1,10 +1,9 @@
-// 
-// Defines an image that is divided into subimages in a 2d array.
-// Required for any views that uses Tile, Grid or Animation.
-//
-
 package flaxen.component;
 
+/**
+ * Defines an image that is divided into subimages in a 2d array.
+ * Required for any views that uses Tile, Grid or Animation.
+ */
 class ImageGrid
 {
 	public var tileWidth:Int; // tile width

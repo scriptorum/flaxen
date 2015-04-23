@@ -1,6 +1,3 @@
-/*
- *	Shows a wobbling image, demonstrating showing an image, scaling, tweening and input.
- */
 package flaxen.demo; 
 
 import ash.core.Entity;
@@ -14,6 +11,9 @@ import flaxen.component.Application;
 import flaxen.service.InputService;
 import flaxen.common.Easing;
 
+/**
+ *	Shows a wobbling image, demonstrating showing an image, scaling, tweening and input.
+ */
 class WobbleDemo extends Flaxen
 {
 	private static var logo:String = "logo";

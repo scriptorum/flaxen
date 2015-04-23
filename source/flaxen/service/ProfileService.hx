@@ -1,11 +1,10 @@
-/**
- TODO Move Profile and ProfileStats to a better location
-*/
-
 package flaxen.service;
 
 import flaxen.core.Log;
 
+/**
+ * - TODO: Move Profile and ProfileStats to a better location
+ */
 class ProfileService
 {
 	private static var stats:Map<String,Profile>;

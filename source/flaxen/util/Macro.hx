@@ -1,6 +1,3 @@
-/**
-    Some useful Haxe 3 macros.
-*/
 package flaxen.util;
 
 #if macro
@@ -9,15 +6,18 @@ import haxe.macro.Expr;
 using haxe.macro.ExprTools; // e1.toString
 #end
 
+/**
+ *   Some useful Haxe 3 macros.
+ */
 class Macro
 {
-    // Throws a compilation error
+    /** Throws a compilation error */
     macro public static function error(msg:String = "Unknown error"):Dynamic
     {
         return Context.error(msg, Context.currentPos());
     }
 
-    // Swaps the value of two variables, in place
+    /** Swaps the value of two variables, in place */
     macro public static function swap(e1:Expr, e2:Expr):Expr
     {
         var s:String = "{ var c = " + e1.toString() + "; " 
@@ -26,18 +26,20 @@ class Macro
         return Context.parse(s, Context.currentPos());
     }
 
-    // Populates a class with a constructor and a single instance assigned to a field
-    // Example of use:
-    //
-    // @:build(flaxen.util.Macro.buildSingleton()) class MyEntity 
-    // {
-    //     public var anotherField:Int = 55;
-    //     public function anotherFunc() {}
-    // }
-    // trace(MyEntity.instance.anotherField); // 55
-    //  
-    // If you want to define your own constructor in the class, pass false for the second param.
-    // Otherwise, you can initialize the class through functions or direct variable manipulation.
+	/**
+	 * Populates a class with a constructor and a single instance assigned to a field
+	 * Example of use:
+     * ```
+	 * @:build(flaxen.util.Macro.buildSingleton()) class MyEntity 
+	 * {
+	 *     public var anotherField:Int = 55;
+	 *     public function anotherFunc() {}
+	 * }
+	 * trace(MyEntity.instance.anotherField); // 55
+     * ```
+	 * If you want to define your own constructor in the class, pass false for the second param.
+     * Otherwise, you can initialize the class through functions or direct variable manipulation.
+	 */
     #if macro
     public static function buildSingleton(fieldName:String = "instance", 
         includeConstructor:Bool = true): Array<Field>

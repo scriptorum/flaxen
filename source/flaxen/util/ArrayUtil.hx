@@ -1,10 +1,11 @@
-/**
-    TODO
-        - Add rev (reverse in place) and getRev (return reversed output)
-        - Add merge (concat in place) and getMerge (return concatenated output)
-*/
 package flaxen.util;
 
+/**
+ * Array utilities.
+ * 
+ * - TODO: Add rev (reverse in place) and getRev (return reversed output)
+ * - TODO: Add merge (concat in place) and getMerge (return concatenated output)
+ */
 class ArrayUtil
 {
 	public static function shuffle<T>(arr:Array<T>): Void
@@ -25,8 +26,10 @@ class ArrayUtil
 		return arr[MathUtil.rndInt(0, arr.length - 1)];
 	}
 
-    // Like Array.filter but returns an array of indeces to the array (keys), rather than the array valuentityService.
-    // Also, the comparison func receives an array index, not an array value.
+	/**
+	 * Like Array.filter but returns an array of indices to the array (keys), rather than the array valuentityService.
+	 * Also, the comparison func receives an array index, not an array value.
+	 */
     public static function indexFilter<T>(arr:Array<T>, func:Int->Bool): Array<Int>
     {
     	var result = new Array<Int>();

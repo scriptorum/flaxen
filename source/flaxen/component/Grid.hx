@@ -3,7 +3,9 @@ package flaxen.component;
 import flaxen.common.Array2D;
 import flaxen.util.StringUtil;
 
-// The default grid is a 2D array containing integers
+/**
+ * A grid is a 2D array containing integers that can be used as a component.
+ */
 class Grid extends Array2D<Int>
 {
 	public var changed:Bool = true;
@@ -14,7 +16,9 @@ class Grid extends Array2D<Int>
 		super(width, height, initValue);
 	}
 
-	// MOVE TO Array2D?
+	/**
+	 * MOVE TO Array2D?
+	 */
 	public function load(str:String, delimiter:String = ",", eol = ";", x:Int = 0, y:Int = 0): Grid
 	{
 		var _x = x;

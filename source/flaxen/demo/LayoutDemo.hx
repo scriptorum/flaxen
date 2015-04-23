@@ -1,16 +1,3 @@
-/*
-	TODO 
-		o The screen backdrop occasionally ends abruptly on resize. It seems to happen
-		  somewhat randomly. If you switch to fullscreen (F) and back it goes away.
-		  I so far can only reproduce it on Flash.
-
-		o I'd rather use CTRL/CMD-ENTER to toggle fullscreen. Right now, Flash 
-		  requires ESC to leave fullscreen mode. Also, I'm triggering on the F
-		  key instead the desired key combo.
-
-		o Text is not displaying correctly on neko target, perhaps desktop.
-*/
-
 package flaxen.demo; 
 
 import ash.core.Entity;
@@ -30,6 +17,18 @@ import flaxen.service.InputService;
 import flaxen.common.Easing;
 import flaxen.common.TextAlign;
 
+
+/**
+ * Layout demo. Numerous issues with this solution, probably going to overhaul it.
+ * 
+ * - TODO: The screen backdrop occasionally ends abruptly on resize. It seems to happen
+ * 	  somewhat randomly. If you switch to fullscreen (F) and back it goes away.
+ * 	  I so far can only reproduce it on Flash.
+ * - TODO: I'd rather use CTRL/CMD-ENTER to toggle fullscreen. Right now, Flash 
+ * 	  requires ESC to leave fullscreen mode. Also, I'm triggering on the F
+ * 	  key instead the desired key combo.
+ * - TODO: Text is not displaying correctly on neko target, perhaps desktop.
+ */
 class LayoutDemo extends Flaxen
 {
 	private static var logo:String = "logo";

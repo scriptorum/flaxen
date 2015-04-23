@@ -1,13 +1,13 @@
-/*
-	TODO
-		- Move to common?
-		- Rename to Sys/System?
-*/
 package flaxen.core;
 
 import haxe.CallStack;
 import openfl.system.System;
 
+/**
+ * Logging and debugging services.
+ *
+ * - TODO: What's the different between a util and a service? Which is this??*
+ */
 class Log
 {
 	inline public static function write(msg:String)

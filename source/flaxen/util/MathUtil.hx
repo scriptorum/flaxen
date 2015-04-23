@@ -2,8 +2,10 @@ package flaxen.util;
 
 class MathUtil
 {
-	// Returns a random integer between a and b, inclusive. B must be higher than a.
-	// If b is null, returns a random integer between 0 and a.
+	/**
+	 * Returns a random integer between a and b, inclusive. B must be higher than a.
+	 * If b is null, returns a random integer between 0 and a.
+	 */
 	inline public static function rndInt(a:Int, ?b:Int): Int
 	{ 
 		if(b == null)
@@ -12,8 +14,10 @@ class MathUtil
 		return (Math.floor(Math.random() * (b - a + 1) + a));
 	}
 
-	// Returns a random float between a and b. B must be higher than a.
-	// If b is null, returns a random float between 0 and a.
+	/**
+	 * Returns a random float between a and b. B must be higher than a.
+	 * If b is null, returns a random float between 0 and a.
+	 */
 	inline public static function rnd(a:Float, ?b:Float): Float
 	{
 		if(b == null)
@@ -62,7 +66,9 @@ class MathUtil
     	return (Math.floor(a/2)*2) == a;
     }
 
-    // Returns true if both floats match within tolerance decimal places.
+	/**
+	 * Returns true if both floats match within tolerance decimal places.
+	 */
     public static function matches(a:Float, b:Float, tolerance:Int = 0): Bool
     {
         return (roundTo(a, tolerance) == roundTo(b, tolerance));

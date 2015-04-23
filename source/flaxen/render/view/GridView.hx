@@ -6,7 +6,11 @@ import flaxen.component.Grid;
 
 import com.haxepunk.graphics.Tilemap;
 
-//  Should view classes such as this know about nodes?
+/**
+ * Displays a 2D matrix of images using a HaxePunk Tilemap.
+ *
+ * - TODO: Should view classes such as this know about nodes?*
+ */ 
 class GridView extends View
 {
 	public var tileMap:Tilemap;

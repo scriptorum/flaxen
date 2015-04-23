@@ -1,8 +1,8 @@
-/**
-	An alternative to the Scale component. Scales the image to the fixed dimensions specified.
-*/
 package flaxen.component;
 
+/**
+ * An alternative to the Scale component. Scales the image to the fixed dimensions specified.
+ */
 class Size
 {
 	public var width:Float;
@@ -19,7 +19,10 @@ class Size
 		return new Size(width, height);
 	}
 
-	// Scales up or down
+	/**
+	 * Scales proportionately up or down.
+	 * @param by is a multipler. 1.0 means no change.
+	 */
 	public function scale(by:Float): Size
 	{
 		width *= by;

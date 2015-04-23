@@ -1,11 +1,10 @@
-/**
-	This class is used by Tween and Animation to describe various behaviors of repetition.
-
-	TODO:
-	 - Add support for Random?
-*/
 package flaxen.common;
 
+/**
+ * This class is used by Tween and Animation to describe various behaviors of repetition.
+ *
+ * - TODO: Add support for Random?
+ */
 enum LoopType
 { 
 	None; 			// No looping, plays once in sequence order and disappears

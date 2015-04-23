@@ -39,7 +39,7 @@ class CameraSystem extends FlaxenSystem
 		// var manualFocus:Bool = false;
 	 	for(node in ash.getNodeList(CameraFocusNode))
 	 	{
-	 		// if(node.entity.name == CameraFocus.MANUAL_FOCUS_ENTITY)
+			// if(node.entity.name == CameraFocus.MANUAL_FOCUS_ENTITY)
 	 		// 	manualFocus = true;
 
 	 		x = node.position.x - com.haxepunk.HXP.halfWidth;
@@ -54,8 +54,8 @@ class CameraSystem extends FlaxenSystem
 			CameraService.animCameraTo(targetX, targetY, 0.8);
 		}	 	
 
-		// if(com.haxepunk.HXP.camera.x != targetX || com.haxepunk.HXP.camera.y != targetY)
-		// {
+	 	// if(com.haxepunk.HXP.camera.x != targetX || com.haxepunk.HXP.camera.y != targetY)
+	 	// {
 		// }
 	}
 }

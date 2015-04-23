@@ -1,10 +1,3 @@
-/**
-	FLAGS (lime test platform -DflagName):
-		    console - Includes the HaxePunk console; press ` to open; be sure to include assets/console
-		   profiler - Includes the ProfileSystem; press P to log profile stats
-		forceBuffer - Forces software buffering when using CPP targets
-*/
-
 package flaxen.core;
 
 import ash.core.Entity;
@@ -15,8 +8,6 @@ import flaxen.component.Alpha;
 import flaxen.component.Animation;
 import flaxen.component.Application;
 import flaxen.component.Audio;
-import flaxen.component.CameraFocus;
-import flaxen.component.Control;
 import flaxen.component.Dependents;
 import flaxen.component.Image;
 import flaxen.component.Layout;
@@ -32,7 +23,6 @@ import flaxen.core.FlaxenHandler;
 import flaxen.core.FlaxenOptions;
 import flaxen.core.FlaxenScene;
 import flaxen.core.FlaxenSystem;
-import flaxen.node.CameraFocusNode;
 import flaxen.node.LayoutNode;
 import flaxen.node.SoundNode;
 import flaxen.node.TransitionalNode;
@@ -46,12 +36,67 @@ import flaxen.system.*;
 
 enum FlaxenSystemGroup { Early; Standard; Late; }
 
-class Flaxen extends com.haxepunk.Engine // HaxePunk game library
+/**
+ * The core engine.
+ *
+ * Flaxen blends an entity/component system with a Haxe-based game engine, 
+ * powered by HaxePunk and Ash. The core of Flaxen is built over the HaxePunk
+ * engine, and maintains a reference to Ash.
+ *
+ * Typically you will extend this class:
+ *
+ * ```
+ * class MyFlaxenApp extends Flaxen
+ * {
+ *     public static function main()
+ *     {
+ *         new MyFlaxenApp();
+ *     }
+ *
+ *     override public function ready()
+ *     {
+ *         // Setup here...
+ *         var e:Entity = newEntity("player"); 
+ *         ...
+ *     }
+ * }
+ * ```
+ *
+ * But you may also instantiate it directly, with the caveat that HaxePunk 
+ * is not fully initialized until Flaxen.getApp().ready returns true.
+ * *(Needs to be tested)* 
+ *
+ * ```
+ * class MyFlaxenApp
+ * {
+ *     public static function main()
+ *     {
+ * 		var f = new Flaxen();
+ * 		f.newActionQueue()
+ * 			.waitForProperty(f.getApp(), "ready", true)
+ * 			.call(ready);
+ *     }
+ *
+ *     public function ready()
+ *     {
+ *         // Setup here...
+ *         var e:Entity = newEntity("player"); 
+ *         ...
+ *     }
+ * }
+ * ```
+ *
+ * Flaxen responds to the following Haxe flags. These can be set with `-DflagName` or `<haxeflag name="flagName"/>`.
+ * <pre>
+ *     console - Includes the HaxePunk console; press ` to open; be sure to include assets/console
+ *    profiler - Includes the ProfileSystem; press P to log profile stats
+ * forceBuffer - Forces software buffering when using CPP targets
+ * </pre>
+ */
+class Flaxen extends com.haxepunk.Engine
 {
-	public static inline var DEFAULT_ENTITY:String = "fEntity"; // entity default name or prefix
-	public static inline var CONTROL:String = "fControl"; // control entity name prefix
 	public static inline var APPLICATION:String = "fApplication"; // Application mode entity
-	public static inline var PROFILER:String = "fProfiler";
+	public static inline var PROFILER:String = "fProfiler"; // Profiler entity name
 	public static inline var GLOBAL_AUDIO:String = "fGlobalAudio"; // Global audio entity
 
 	private var coreSystemId:Int = 0;
@@ -70,8 +115,10 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	public var layoutOffset:Position;
 	public var options:FlaxenOptions;
 
-	// width/height -> leave 0 to match window dimensions
-	// can pass a FlaxenOptions object instead for the first parameter
+	/**
+	 * width/height -> leave 0 to match window dimensions
+	 * can pass a FlaxenOptions object instead for the first parameter
+	 */
 	public function new(?optionsOrWidth:Dynamic, ?height:Int, ?fps:Int, ?fixed:Bool, ?smoothing:Bool,
 		?earlySystems:Array<Class<FlaxenSystem>>, ?lateSystems:Array<Class<FlaxenSystem>>)
 	{
@@ -121,7 +168,9 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 
 	public function ready() { } // Override this to start your game
 
-	// Adds a bunch of FlaxenSystems at once to the system group specified
+	/**
+	 * Adds a bunch of FlaxenSystems at once to the system group specified.
+	 */
 	public function addSystems(systems:Array<Class<FlaxenSystem>>, ?group:FlaxenSystemGroup)
 	{
 		if(systems == null)
@@ -131,9 +180,11 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 			addSystem(Type.createInstance(sys, [this]), group);
 	}
 
-	// Systems operate in the order that they are added.
-	// Early systems process first, then user systems, then standard systems.
-	// Unless you have a good reason, you probably want to leave it in the user group.
+	/**
+     * Systems operate in the order that they are added.
+     * Early systems process first, then user systems, then standard systems.
+     * Unless you have a good reason, you probably want to leave it in the user group.
+     */
     public function addSystem(system:FlaxenSystem, ?group:FlaxenSystemGroup):Void
     {
     	// Default group
@@ -178,13 +229,17 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
     	if(baseHeight == 0)
 			baseHeight = com.haxepunk.HXP.stage.stageHeight;
 
-    	// fullScaleResize();
+	/**
+	 * fullScaleResize();
+	 */
     	// nonScalingResize();
     	fluidResize();
     }
 
-    // Same as the default HaxePunk resize handler
-    // The screen is stretched out to fill the stage
+	/**
+	 * Same as the default HaxePunk resize handler
+	 * The screen is stretched out to fill the stage
+	 */
     public function fullScaleResize()
     {
         super.resize();
@@ -237,12 +292,10 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
     }
 
     /*
-     * LAYOUT METHODS
+     * Creates or replaces a new layout, indexed by name.
      * If you add a Layout to an entity which also has a Position, that Position 
      * will be interpreted as relative to the Layout.
      */
-
-	// Creates or replaces a new layout, indexed by name
 	public function newLayout(name:String, portaitX:Float, portraitY:Float, 
 		landscapeX:Float, landscapeY:Float): Layout
 	{
@@ -251,8 +304,10 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return addLayout(l);
 	}
 
-	// Registers a layout. Make sure you set Layout.current to portrait or landscape 
-	// to start.
+	/**
+	 * Registers a layout. Make sure you set Layout.current to portrait or landscape 
+	 * to start.
+	 */
     public function addLayout(layout:Layout): Layout
     {
 	 	layouts.set (layout.name, layout);
@@ -267,27 +322,29 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
     	return layout;
     }
 
-    // Swaps the current layout with the alternate layout
-    // Usually this is because the screen orientation has changed
+    /**
+     * Swaps the current layout with the alternate layout
+     * Usually this is because the screen orientation has changed
+     */
     public function updateLayouts(): Void
     {
     	for(node in ash.getNodeList(LayoutNode))
     		node.layout.setOrientation(layoutOrientation, layoutOffset);    		
     }
 
-    /*
-     * GENERAL ENTITY CONVENIENCE METHODS
-     */
-
-	// Generates an automatic entity name, or parses an existing name to replace "#" with a unique ID.
+	/**
+	 * Generates an automatic entity name, or parses an existing name to replace "#" with a unique ID.
+	 */
 	public function generateEntityName(name:String = "entity#"): String
 	{
 		return StringTools.replace(name, "#", Std.string(uniqueId++));
 	}
 
-	// Creates a new entity and (by default) adds it to the Ash engine. If you do 
-	// not provide a name for the entity, one will be generated. You may a include
-	// "#" symbol in your name it will be replaced with a unique id. 
+	/**
+	 * Creates a new entity and (by default) adds it to the Ash engine. If you do 
+	 * not provide a name for the entity, one will be generated. You may a include
+	 * "#" symbol in your name it will be replaced with a unique id. 
+	 */
 	public function newEntity(?name:String, addToAsh:Bool = true): Entity 
 	{
 		var e:Entity = new Entity(generateEntityName(name));
@@ -296,16 +353,20 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return e;
 	}     
 
-	// Destroys the named entity (if it exists) and recreates it, empty, without any components
+	/**
+	* Destroys the named entity (if it exists) and recreates it, empty, without any components
+	*/
 	public function resetEntity(name:String): Entity
 	{
 		removeNamedEntity(name);
 		return newEntity(name);
 	}
 
-	// Creates and adds the second entity, making it dependent of the first entity
-	// The parent may be specified by name or by passing the Entity itself
-	// Returns the child entity
+	/**
+	 * Creates and adds the second entity, making it dependent of the first entity
+	 * The parent may be specified by name or by passing the Entity itself
+	 * Returns the child entity
+	 */
 	public function newChildEntity(parent:Dynamic, child:String): Entity
 	{
 		var childEnt = newEntity(child);
@@ -314,10 +375,12 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return childEnt;
 	}
 
-	// If an entity with this name exists in Ash, returns that entity.
-	// Otherwise this creates a new entity with this name. Use this method when 
-	// you don't know if the entity has been already created, but if hasn't, 
-	// you want to ensure it does.
+	/**
+	 * If an entity with this name exists in Ash, returns that entity.
+	 * Otherwise this creates a new entity with this name. Use this method when 
+	 * you don't know if the entity has been already created, but if hasn't, 
+	 * you want to ensure it does.
+	 */
 	public function resolveEntity(name:String): Entity
 	{
 		var e = getEntity(name, false);
@@ -326,20 +389,36 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return addEntity(new Entity(name));
 	}
 
-	// Adds an existing entity object to Ash.
-	// Sett newEntity(..., false)
+	/**
+	* Ensures that the named entity exists and contains the specified component.
+	* If the named entity does not exist, it is created.
+	* If the component is lacking, it is created with the parameters specified.
+	* Regardless, the component is returned.
+	*/
+	public function resolveComponent<T>(name:String, component:Class<T>, ?args:Array<Dynamic>): T
+	{
+		var e = resolveEntity(name);
+		if(e.has(component))
+			return e.get(component);
+		var c = Type.createInstance(component, (args == null ? [] : args));
+		e.add(c);
+		return c;
+	}	
+
+
+	/**
+	 * Adds an existing entity object to Ash.
+	 */
 	public function addEntity(entity:Entity): Entity
 	{
 		ash.addEntity(entity);
 		return entity;
 	}
 
-	/*
-	 * GETTERS, CHECKERS, REMOVERS
-	 */  
-
-	// Looks up an entity by name, and returns it.
-	// On failure, either throws an exception (the default) or returns null (set compulsory to false).
+	/**
+	 * Looks up an entity by name, and returns it.
+	 * On failure, either throws an exception (the default) or returns null (set compulsory to false).
+	 */
 	public function getEntity(name:String, compulsory:Bool = true): Entity
 	{
 		var e = ash.getEntityByName(name);
@@ -348,15 +427,19 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return e;
 	}
 
-	// Returns true if the named entity exists in Ash, otherwise false
+	/** 
+	 * Returns true if the named entity exists in Ash, otherwise false
+	 */
 	public function hasEntity(name:String): Bool
 	{	
 		return (getEntity(name, false) != null);
 	}
 
-	// Returns a component from a named entity.
-	// On failure, either throws an exception (the default) or returns null (set compulsory to false).
-	// Failure occurs when either the entity lacks the component, or there is no so-named entity.
+	/**
+	 * Returns a component from a named entity.
+	 * On failure, either throws an exception (the default) or returns null (set compulsory to false).
+	 * Failure occurs when either the entity lacks the component, or there is no so-named entity.
+	 */
 	public function getComponent<T>(name:String, component:Class<T>, compulsory:Bool = true): T
 	{
 		var e:Entity = getEntity(name, compulsory);
@@ -367,14 +450,18 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return e.get(component);
 	}
 
-	// Returns true if the entity exists and it has the indicated component
+	/**
+	 * Returns true if the entity exists and it has the indicated component
+	 */
 	public function hasComponent<T>(name:String, component:Class<T>, compulsory:Bool = true): Bool
 	{
 		return (getComponent(name, component, compulsory) != null);
 	}
 
-	// Looks up an entity by name, removes it, and returns true on success.
-	// On failure, either throws an exception (the default) or returns false (set compulsory to false).
+	/**
+	 * Looks up an entity by name, removes it, and returns true on success.
+	 * On failure, either throws an exception (the default) or returns false (set compulsory to false).
+	 */
 	public function removeNamedEntity(name:String, compulsory:Bool = true): Bool
 	{
 		var e = getEntity(name, compulsory); // verify entity exists in ash first
@@ -390,15 +477,19 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return true;
 	}
 
-	// Looks up an entity, removes it, and returns true on success.
-	// On failure, either throws an exception (the default) or returns false (set compulsory to false).
+	/**
+	 * Looks up an entity, removes it, and returns true on success.
+	 * On failure, either throws an exception (the default) or returns false (set compulsory to false).
+	 */
 	public function removeEntity(e:Entity, compulsory:Bool = true): Bool
 	{
 		return removeNamedEntity(e.name, compulsory);
 	}
 
-	// Adds a set of components to an entity, looked up by name
-	// Throws an error if entity is not found
+	/**
+	 * Adds a set of components to an entity, looked up by name
+	 * Throws an error if entity is not found
+	 */
 	public function addComponents(entityName:String, components:Array<Dynamic>): Entity
 	{
 		var e = getEntity(entityName);
@@ -407,13 +498,16 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return e;
 	}
 
-	/*
-	 * COMPONENT SETS COVENIENCE METHODS
+	/**
+	 * Creates or replaces a new ComponentSet object, indexed by name
+	 * Component sets are collections of steps that transform entities.
+	 * Commonly, it is a way to add sets of components to entities.
+	 * Steps can create new component instances, reuse shared components,
+	 * inject components from other sets or entities, execute functions,
+	 * or remove components.
+	 *
+	 * See ComponentSet for details.
 	 */
-
-	// Creates or replaces a new ComponentSet object, indexed by name
-	// A ComponentSet provides a way to simply add a set of components
-	// to entities. See ComponentSet for details.
 	public function newComponentSet(name:String): ComponentSet
 	{
 		var set = new ComponentSet();
@@ -421,8 +515,10 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return set;
 	}
 
-	// Adds a set of components to the entity. The ComponentSet is specified by name
-	// and must have been previously defined by newComponentSet().
+	/**
+	 * Adds a set of components to the entity. The ComponentSet is specified by name
+	 * and must have been previously defined by newComponentSet().
+	 */
 	public function addSet(entity:Entity, setName:String): Entity
 	{
 		var set = getComponentSet(setName);
@@ -432,13 +528,9 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return entity;
 	}
 
-	// Convenience method, creating new entity and installing component set in one
-	public function newSetEntity(setName:String, ?entityName:String, addToAsh:Bool = true): Entity
-	{
-		var e = newEntity(entityName, addToAsh);
-		return addSet(e, setName);
-	}
-
+	/**
+	 * Returns a component set.
+	 */
 	public function getComponentSet(name:String): ComponentSet
 	{
 		var set = sets.get(name);
@@ -447,16 +539,26 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return set;
 	}
 
+	/**
+	 * Convenience method, creating new entity and installing component set in one
+	 * If a name is not provided, a unique one will be generated using the setName as a prefix.
+	 */
+	public function newSetEntity(setName:String, ?entityName:String, addToAsh:Bool = true): Entity
+	{
+		if(entityName == null)
+			entityName = '$setName#';
+		var e = newEntity(entityName, addToAsh);
+		return addSet(e, setName);
+	}
+
 	public function getComponentSetKeys(): Iterator<String>
 	{
 		return sets.keys();
 	}
 	
-	/*
-	 * NODE STATS/MANIPULATION
-	 */ 
-
-	// Returns the number of nodes matching the supplied Node class
+	/**
+	 * Returns the number of nodes matching the supplied Node class
+	 */
 	public function countNodes<T:Node<T>>(?nodeClass:Class<T>): Int
 	{
 		var count:Int = 0;
@@ -465,26 +567,39 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	 	return count;
 	}
 
-	// Returns the number of entities in the Ash system
+	/**
+	 * Returns an array of all entities that match the node.
+	 *  If no node is provided, returns the full ash entity list.
+	 */
+	public function getEntities<T:Node<T>>(?nodeClass:Class<T>): Array<Entity>
+	{
+		var result = new Array<Entity>();
+
+		if(nodeClass == null)
+			for(e in ash.entities)
+				result.push(e);
+
+		else for(node in ash.getNodeList(nodeClass))
+			result.push(node.entity);
+
+	 	return result;
+	}
+
+	/**
+	 * Returns the number of entities in the Ash system.
+	 */
 	public function countEntities(): Int
 	{
 		var count:Int = 0;
 		for(entity in ash.entities)
 			count++;
 	 	return count;
-	}
+	}	
 
-	// Returns an array of all entities that match the node
-	public function getEntities<T:Node<T>>(?nodeClass:Class<T>): Array<Entity>
-	{
-		var result = new Array<Entity>();
-	 	for(node in ash.getNodeList(nodeClass))
-			result.push(node.entity);
-	 	return result;
-	}
-
-	// Removes all entities that match the node
-	// Returns the number removed
+	/**
+	 * Removes all entities that match the node
+	 * Returns the number removed
+	 */
 	public function removeEntities<T:Node<T>>(?nodeClass:Class<T>): Int
 	{
 		var count:Int = 0;
@@ -497,28 +612,15 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	 	return count;
 	}
 
-	/* 
-	 * MARKER FUNCTIONS
+	/**
+	 * Generates a new named marker if it doesn't exist.
+	 * If a name is not given, a unique marker name is generated and returned.
+	 *
 	 * Markers are entities with no content, identified by a unique name.
-	 * They can be used ad-hoc controls; systems can check for the existence
-	 * of a marker as permission to do some behavior.
+	 * They can be used ad-hoc controls: systems can check for the existence
+	 * of a marker as permission to do some behavior. Since markers are
+	 * essentially just strings, you are advised to define them in constants.
 	 */
-
-	// Internal function for generating a full entity name for a marker
-	public function generateMarkerName(name:String): String
-	{
-		return '__marker__$name';
-	}
-
-	// Returns true if a marker exists (see newMarker)
-	public function hasMarker(name:String): Bool
-	{
-		var markerName = generateMarkerName(name);
-		return hasEntity(markerName);
-	}
-
-	// Generates a new named marker if it doesn't exist
-	// If a name is not given, a unique marker name is generated and returned.
 	public function newMarker(?name:String): String
 	{
 		if(name == null)
@@ -527,57 +629,36 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return name;
 	}
 
-	// Removes the named marker, if it exists.
+	/**
+	 * Returns true if a marker exists (see newMarker)
+	 */
+	public function hasMarker(name:String): Bool
+	{
+		var markerName = generateMarkerName(name);
+		return hasEntity(markerName);
+	}
+
+	/**
+	 * Removes the named marker, if it exists.
+	 */
 	public function removeMarker(name:String): Void
 	{
 		var markerName:String = generateMarkerName(name);
 		removeNamedEntity(markerName, false);
 	}
 
-	/*
-	 * CONTROL FUNCTIONS
-	 * This creates a single entity which you can add control components to.
-	 * Controls are formalized markers, each control type needs a separate 
-	 * subclass of Control; systems can check for the existence
-	 * of a marker as permission to do some behavior. This MAY be a smidge faster
-	 * than markers, but I'm not sure. I'm leaning toward removing controls, 
-	 * or having them just be markers with a special suffix.
+	/**
+	 * Internal function for generating a full entity name for a marker
 	 */
-
-	public function newControl(control:Control): Entity
+	private function generateMarkerName(name:String): String
 	{
-		var e = resolveEntity(CONTROL);
-		e.add(control);
-		return e;
+		return '__marker__$name';
 	}
 
-	public function removeControl(control:Class<Control>): Entity
-	{
-		var e = resolveEntity(CONTROL);
-		e.remove(control);
-		return e;
-	}
-
-	public function hasControl(control:Class<Control>): Bool
-	{
-		var e = resolveEntity(CONTROL);
-		return e.has(control);
-	}
-
-	/*
-	 * DEPENDENCIES
-	 * Add a dependency to ensure than an entity will be removed whenever
-	 * its parent is removed.
+	/**
+	 * Creates a lifecycle dependency between entities. When the parent entity is 
+	 * destroyed, all of its dependent children will be destroyed immediately after.
 	 */
-
-	// Callback; forces the cascade removal of dependent entities
-	private function dependentsNodeRemoved(node:DependentsNode): Void
-	{
-		removeDependents(node.entity);
-	}
-
-	// Creates a lifecycle dependency between entities. When the parent entity
-	// is destroyed, all of its dependent children will also be immediately destroyed.
 	public function addDependent(parent:Entity, child:Entity): Void
 	{		
 		if(child == null)
@@ -585,17 +666,13 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		if(parent == null)
 			Log.error("Cannot create dependency; parent entity does not exist");
 
-		var dependents = parent.get(Dependents);
-		if(dependents == null)
-		{
-			dependents = new Dependents();
-			parent.add(dependents);
-		}
-
+		var dependents:Dependents = resolveComponent(parent.name, Dependents);
 		dependents.add(child.name);
 	}
 
-	// Same as addDependent, but works with entity names
+	/**
+	 * Same as addDependent, but works with entity names
+	 */
 	public function addDependentByName(parentName:String, childName:String): Void
 	{
 		var parent = getEntity(parentName);
@@ -603,7 +680,9 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		addDependent(parent, child);
 	}
 
-	// Destroys all dependents of the entity
+	/**
+	 * Destroys all dependents of the entity. Does not affect the entity.
+	 */
 	public function removeDependents(e:Entity): Void
 	{
 		var dependents:Dependents = e.get(Dependents);
@@ -616,36 +695,40 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		dependents.clear();
 	}
 
-	/*
-	 * APPLICATION AND TRANSITION FUNCTIONS
-	 * You can split the application into different modes. The app starts in Default mode.
-	 * Register handlers to be called when transitioning from (stop) or transitioning to
-	 * (start) a mode. Register an input handler for a mode here as well. There can be
-	 * only one start/stop/input handler per mode, but you can also specify the virtual 
-	 * mode Always (or null). The Always handler will be called (always) in every mode, 
-	 * after the mode-specific handler is called.
+	/**
+	 * Callback; forces the cascade removal of dependent entities
+	 */
+	private function dependentsNodeRemoved(node:DependentsNode): Void
+	{
+		removeDependents(node.entity);
+	}
+
+	/**
+	 * Returns the Application component. If it does not exist, it is created.
+	 * 
+	 * The application is a universal entity storing the current game mode, and 
+	 * whether or not this mode has been initialized. The application entity
+	 * is protected from removal when transitioning.
+	 *
+	 * See ModeSystem.
 	 */
 
-	 // The application is a universal entity storing the current game mode, and 
-	 // whether or not this mode has been initialized. The application entity
-	 // is protected from removal when transitioning.
 	public function getApp(): Application
 	{
 		var e = resolveEntity(APPLICATION);
-		var app = e.get(Application);
-		if(app == null)
+		if(!e.has(Application))
 		{
-			app = new Application();
-			e.add(app);
+			e.add(new Application());
 			e.add(Transitional.ALWAYS);
 		}
-		return app;
+		return e.get(Application);
 	}
 
-	// TODO I like this idea, but I don't like how it's implmented.
-	// You can add a Transitional to an entity and specify a kind in it.
-	// This is a classification. You can then use this method to remove all
-	// entities having or lacking specific kind values.
+	/**
+	 * You can add a Transitional to an entity and specify a kind in it.
+	 * This is a classification. You can then use this method to remove all
+	 * entities having or lacking specific kind values.
+	 */
 	public function removeTransitionedEntities(matching:String = null, excluding:String = null)
 	{
 		for(node in ash.getNodeList(TransitionalNode))
@@ -662,24 +745,29 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		}
 	}
 
-	// Queues up a transition to the new mode; causes the stop handler to execute, 
-	// eliminates unprotected entities, then executes the start handler.
-	// TODO Be able to specify matching and excluding kinds here
+	/**
+	 * Queues up a transition to the new mode; causes the stop handler to execute, 
+	 * eliminates unprotected entities, then executes the start handler.
+	 */
 	public function setMode(mode:ApplicationMode): Void
 	{
 		var app = getApp();
 		app.changeMode(mode);
 	}
 
-	// Queues up a self-transition to the current mode; causes the stop handler to execute, 
-	// eliminates unprotected entities, then executes the start handler.
+	/**
+	 * Queues up a self-transition to the current mode; causes the stop handler to execute, 
+	 * eliminates unprotected entities, then executes the start handler.
+	 */
 	public function restartMode(): Void
 	{
 		var app:Application = getApp();
 		setMode(app.curMode);
 	}	
 
-	// Adds a function that is called when an application mode is started See setHandler.
+	/**
+	 * Adds a function that is called when an application mode is started. See setHandler.
+	 */
 	public function setStartCallback(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
 		Log.assertNonNull(modeSystem, "ModeSystem is not available");
@@ -687,7 +775,9 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return this;
 	}
 
-	// Adds a function that is called when an application mode is stopped. See setHandler
+	/**
+	 * Adds a function that is called when an application mode is stopped. See setHandler
+	 */
 	public function setStopCallback(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
 		Log.assertNonNull(modeSystem, "ModeSystem is not available");
@@ -695,9 +785,11 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return this;
 	}
 
-	// Adds a function that is called regularly only during a specific application mode.
-	// Generally this is intended for handling input, but you could also use it just as
-	// an update function. See UpdateSystem for more information. Also see setHandler.
+	/**
+	 * Adds a function that is called regularly only during a specific application mode.
+	 * Generally this is intended for handling input, but you could also use it just as
+	 * an update function. See UpdateSystem for more information. Also see setHandler.
+	 */
 	public function setUpdateCallback(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
 		Log.assertNonNull(updateSystem, "UpdateSystem is not available");
@@ -705,12 +797,14 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		return this;
 	}
 
-	// Sets up all mode callbacks in one shot. Create a subclass of FlaxenHandler and
-	// override the functions you want. You cannot "unset" a handler once set.
-	// If a mode is not supplied, registers it as Default, which is the bootstrap mode.
-	// If Always is supplied, the handlers are run in ALL MODES, after the primary handlers
-	// run. For example: setHandler(handler1, Play); setHandler(handler2, Always); 
-	// If you setMode(Play), handler1.start will be called, followed by handler2.start.
+	/** 
+	 * Sets up all mode callbacks in one shot. Create a subclass of FlaxenHandler and
+	 * override the functions you want. You cannot "unset" a handler once set.
+	 * If a mode is not supplied, registers it as Default, which is the bootstrap mode.
+	 * If Always is supplied, the handlers are run in ALL MODES, after the primary handlers
+	 * run. For example: setHandler(handler1, Play); setHandler(handler2, Always); 
+	 * If you setMode(Play), handler1.start will be called, followed by handler2.start.
+	 */
 	public function setHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Flaxen
 	{
 		setStartCallback(handler.start, mode);
@@ -720,30 +814,32 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	}
 
 	/*
-	 * GLOBAL AUDIO FUNCTIONS
+	 * Returns the global audio object. Creates the object if it does not yet exist.
+	 * Use it to set global volume, mute, or stop audio after a cutoff.
 	 */
-
-	// Stops all currently playing sounds
-	public function stopSounds(): Void
-	{
-		getGlobalAudio().stop(Timestamp.create());
-	}
-
-	// Return/create global audio object; use to set global volume, mute, 
-	// or stop audio after a cutoff
 	public function getGlobalAudio(): GlobalAudio
 	{
-		var entity:Entity = getEntity(GLOBAL_AUDIO, false);
-		
-		if(entity == null)
-			entity = newEntity(GLOBAL_AUDIO)
+		var entity:Entity = resolveEntity(GLOBAL_AUDIO);
+	
+		if(!entity.has(GlobalAudio))
+			entity
 				.add(new GlobalAudio())
 				.add(Transitional.ALWAYS);
 
 		return entity.get(GlobalAudio);	
 	}
 
-	// Stops a specific sound from playing
+	/** 
+	 * Stops all currently playing sounds
+	 */
+	public function stopSounds(): Void
+	{
+		getGlobalAudio().stop(Timestamp.create());
+	}
+
+	/**
+	 * Stops a specific sound from playing
+	 */
 	public function stopSound(file:String): Void
 	{
 		for(node in ash.getNodeList(SoundNode))
@@ -753,15 +849,12 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		}
 	}
 
-	/*
-	 * GUI FUNCTIONS
-	 * Move to InputService?
+	/**
+	 * Entity hit test, does not currently respect the Scale component
+	 * nor the ScaleFactor component. Returns an object with the x/y offset
+	 * of the clickpoint and image dimensios, respective to the position. Returns 
+	 * null if the position does not fall within the entity.
 	 */
-
-	// Entity hit test, does not currently respect the Scale component
-	// nor the ScaleFactor component. Returns an object with the x/y offset
-	// of the clickpoint and image dimensios, respective to the position. Returns 
-	// null if the position does not fall within the entity.
 	public function hitTest(e:Entity, x:Float, y:Float): 
 		{ xOffset:Float, yOffset:Float, width:Float, height:Float }
 	{
@@ -797,9 +890,11 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 		
 	}
 
-	// Given an entity with an image that represents a grid, returns the cell 
-	// coordinates being pointed at by the mouse, or null if the mouse position
-	// lies outside of the image.
+	/**
+	 * Given an entity with an image that represents a grid, returns the cell 
+	 * coordinates being pointed at by the mouse, or null if the mouse position
+	 * lies outside of the image.
+	 */
 	public function getMouseCell(entityName:String, rows:Int, cols:Int): { x:Int, y:Int }
 	{
 		var e:Entity = getEntity(entityName);
@@ -817,9 +912,11 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 			y:Std.int(Math.floor(result.yOffset / cellHeight)) };
 	}
 
-	// Rough button (or any item) click checker; does not handle layering or entity ordering
-	// An entity is pressed if the mouse is being clicked, the cursor is within
-	// the dimensions of the entity, and the entity has full alpha (or as specified).
+	/**
+	 * Rough button (or any item) click checker; does not handle layering or entity ordering
+	 * An entity is pressed if the mouse is being clicked, the cursor is within
+	 * the dimensions of the entity, and the entity has full alpha (or as specified).
+	 */
 	public function isPressed(entityName:String, minAlpha:Float = 1.0): Bool
 	{
 		if(!InputService.clicked)
@@ -836,52 +933,46 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	 	return hitTest(e, InputService.mouseX, InputService.mouseY) != null;
 	}
 
-	// MOVE TO CameraService?
-	public function changeCameraFocus(entity:Entity): Void
-	{
-		for(node in ash.getNodeList(CameraFocusNode))
-			node.entity.remove(CameraFocus);
-
-		if(entity != null)
-			entity.add(CameraFocus.instance);			
-	}	
-
-	/*
-	 * COMMON COMPONENT SHORTCUTS
+	/**
+	 * Creates an entity and adds the specified component to it. If name is not supplied,
+	 * it will be given a wrapper prefix.
 	 */
-
-
-	// Creates an entity and adds the specified component to it. If name is not supplied,
-	// it will be given a wrapper prefix.
-	public function addWrapper(component:Dynamic, ?name:String, addToAsh:Bool = true): Entity
+	public function newWrapper(component:Dynamic, ?name:String, addToAsh:Bool = true): Entity
 	{
 		var e = newEntity((name == null ? "_wrapper#" : name), addToAsh);
 		e.add(component);
 		return e;
 	}
 
-	// Creates a new ActionQueue and a new Entity to hold it
-	// This Entity will be destroyed when the queue completes
+	/**
+	 * Creates a new ActionQueue puts it into a new Entity. See ActionQueue.
+	 * This entity will be destroyed when the queue completes.
+	 */
 	public function newActionQueue(destroyEntity:Bool = true, autoStart:Bool = true, ?name:String): ActionQueue
 	{
 		var aq = new ActionQueue(this, destroyEntity, false, autoStart);
-		var e = addWrapper(aq, (name == null ? "_actionQueue#" : name));
+		var e = newWrapper(aq, (name == null ? "_actionQueue#" : name));
 		aq.name = e.name;
 		return aq;
 	}
 
-	// Creates a new Tween and adds a new Entity to hold it
-	// This Entity will be destroyed when the tween completes
+	/**
+	 * Creates a new Tween and puts it into a new Entity. See Tween.
+	 * This entity will be destroyed when the tween completes.
+	 */
 	public function newTween(source:Dynamic, target:Dynamic, duration:Float, ?easing:EasingFunction, 
 		?loop:LoopType, destroyEntity:Bool = true, ?autoStart:Bool = true, ?name:String): Tween
 	{
 		var tween = new Tween(source, target, duration, easing, loop, autoStart);
-		var e = addWrapper(tween, (name == null ? "_tween#" : name));
+		var e = newWrapper(tween, (name == null ? "_tween#" : name));
 		tween.name = e.name;
 		return tween;
 	}
 
-	// Convenience method for plays a new sound
+	/**
+	 * Creates a new Sound and puts it into a new Entity. See Sound.
+	 * This entity will be destroyed when the tween completes.
+	 */
 	public function newSound(file:String, loop:Bool = false, volume:Float = 1, pan:Float = 0, 
 		offset:Float = 0): Entity
 	{
@@ -893,7 +984,7 @@ class Flaxen extends com.haxepunk.Engine // HaxePunk game library
 	}
 }
 
-class DependentsNode extends Node<DependentsNode>
+private class DependentsNode extends Node<DependentsNode>
 {
 	public var dependents:Dependents;
 }

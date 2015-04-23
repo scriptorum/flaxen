@@ -4,12 +4,11 @@ package flaxen.component;
  * Represents the 2D position of the entity.
  * Most entities that have renderable components (Image, for example) require a Position before they will display.
  * 
- * TODO The convenience methods all rely on the stage height/width, but what if the stage resizes? Consider
+ * - TODO: The convenience methods all rely on the stage height/width, but what if the stage resizes? Consider
  * 		adding an asPercentage parameter, as it exists in Offset. Then either require the RenderingSystem
  * 		to calculate the actual position at render time, or add a method that does the math in here.
  *		That has some disadvantages.
  */
-
 class Position
 {
 	public var x:Float;
@@ -66,7 +65,9 @@ class Position
 		return (o1.matches(o2));
 	}	
 
-	// Returns an angle between this point and another point, degrees, 0 north
+	/**
+	 * Returns an angle between this point and another point, degrees, 0 north
+	 */
 	public function getAngleTo(pos:Position): Float
 	{
 	  	var theta = Math.atan2(pos.y - y, pos.x - x);
@@ -93,10 +94,10 @@ class Position
 		return x + "," + y;
 	}
 
-	//
-	// Some convenience methods
-	//
-
+	/**
+	 * 	// Some convenience methods
+	 * 
+	 */
 	public static inline function zero(): Position
 	{
 		return topLeft();

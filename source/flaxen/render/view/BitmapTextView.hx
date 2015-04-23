@@ -21,7 +21,9 @@ class BitmapTextView extends View
 		nodeUpdate();
 	}
 
-	// Create or update text object
+	/**
+	 * Create or update text object
+	 */
 	private function setText(forceNew:Bool)
 	{
 		// Create new text
@@ -114,9 +116,11 @@ class BitmapTextView extends View
 
 	}
 
-	// BitmapTextView uses BitmapText which is a subclass of Image. We don't want the 
-	// our superclass View to apply automatic scaling based on Size, because we're using 
-	// Size to mean the shape of the bitmap text box.
+	/**
+	 * BitmapTextView uses BitmapText which is a subclass of Image. We don't want the 
+	 * our superclass View to apply automatic scaling based on Size, because we're using 
+	 * Size to mean the shape of the bitmap text box.
+	 */
 	override private function useSizeForImageScaling()
 	{ 
 		return false; 

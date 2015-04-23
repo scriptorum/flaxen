@@ -1,10 +1,3 @@
-/*
-  TODO
-    - Class only handles one animation at a time
-    - Class recreates Spritemap after every change, this is suboptimal
-    - Maybe add sequences for each loop type, so you can switch loop type and get the new animation?
-    - Add support for "freeze at end" loop type.
-*/
 package flaxen.render.view;
 
 import com.haxepunk.graphics.Spritemap;
@@ -16,6 +9,12 @@ import flaxen.component.ImageGrid;
 import flaxen.common.LoopType;
 import flaxen.core.Log;
 
+/**
+ * - TODO: Class only handles one animation at a time
+ * - TODO: Class recreates Spritemap after every change, this is suboptimal
+ * - TODO: Maybe add sequences for each loop type, so you can switch loop type and get the new animation?
+ * - TODO: Add support for "freeze at end" loop type.
+ */ 
 class AnimationView extends View
 {
 	private var animation:Animation;

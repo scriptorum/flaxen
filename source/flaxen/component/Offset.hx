@@ -5,7 +5,6 @@ package flaxen.component;
  * To do that, use Origin. Supply true for asPercentage to interpret x/y as percentages of
  * width/height. For example new Offset(-0.5, -0.5, true) centers any image.
  */
-
 class Offset
 {
 	public var x:Float;

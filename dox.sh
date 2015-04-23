@@ -11,7 +11,7 @@ echo === Fixing XML ===
 sed -i "" -e 's/\\\"/\&quot;/g' -e 's/\\\&/\&amp;/g' dox.xml
 
 echo === Creating documentation ===
-haxelib run dox -o dox -i dox.xml --title "Flaxen API" -D source-path "https://github.com/scriptorum/flaxen/blob/master/source/" -in flaxen
+haxelib run dox -o dox -i dox.xml --title "Flaxen API `date +"%d-%b-%y"`" -D source-path "https://github.com/scriptorum/flaxen/blob/master/source/" -in flaxen
 
 echo === Removing leftovers ===
 rm dox.xml

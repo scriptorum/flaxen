@@ -4,10 +4,12 @@ import flaxen.core.Log;
 
 class DynUtil
 {
-    // Primary, this method parses a range string into an array of integers. 
-    // For example: 2,4-7,9 returns [2,4,5,6,7,9].
-    // However, if an array is passed, this will return that array as is.
-    // And if an Int is passed, this will return [theInt].
+	/**
+	 * This method parses a range string into an array of integers. 
+	 * For example: 2,4-7,9 returns [2,4,5,6,7,9].
+	 * However, if an array is passed, this will return that array as-is.
+	 * And if an Int is passed, this will return [theInt].
+	 */
     public static function parseRange(range:Dynamic): Array<Int>
     {
         if(Std.is(range, Array))

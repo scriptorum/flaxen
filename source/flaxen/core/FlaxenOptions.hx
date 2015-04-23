@@ -16,7 +16,9 @@ class FlaxenOptions
 	public var earlySystems:Array<Class<FlaxenSystem>>;
 	public var lateSystems:Array<Class<FlaxenSystem>>;
 
-	// Creates a basic FlaxenOptions object
+	/**
+	 * Creates a basic FlaxenOptions object
+	 */
 	public function new(width:Int = 0, height:Int = 0, ?fps:Int, fixed:Bool = false, 
 		smoothing:Bool = false, ?earlySystems:Array<Class<FlaxenSystem>>, 
 		?lateSystems:Array<Class<FlaxenSystem>>)

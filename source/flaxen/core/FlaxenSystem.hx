@@ -22,6 +22,8 @@ class FlaxenSystem extends System
 	}
 
 	// Override with custom system updating 
+	// If you don't care about the time, you can override as `function update(_)`.
+	// @param time Seconds since last update
 	override public function update(time:Float)
 	{
 	}

@@ -68,16 +68,16 @@ class RenderingSystem extends FlaxenSystem
 	 		// View exists, alias it
 	 		else display = entity.get(Display);
 
-	 		// View was already updated via a superset node, just skip it. 
-	 		// This prevents duplicate updates, but it also prevents 
+			// View was already updated via a superset node, just skip it. 
+			// This prevents duplicate updates, but it also prevents 
 	 		// ImageView from taking control from a subset ImageNode.
 	 		if(display.updateId == updateId)
 	 			continue;
 
-	 		// Recreate Display if the View classes do not match. This can happen if you switch
-	 		// an Animation component with a Tile component. Any entity with an Image will be
-	 		// in an ImageNode, it's a superset - this means some entities (like Animations) will
-	 		// belong to two view nodes. When Animation is removed, the Display node remains, containing
+			// Recreate Display if the View classes do not match. This can happen if you switch
+			// an Animation component with a Tile component. Any entity with an Image will be
+			// in an ImageNode, it's a superset - this means some entities (like Animations) will
+			// belong to two view nodes. When Animation is removed, the Display node remains, containing
 	 		// the wrong view. This and the updateId checking remedies the conundrum.
 	 		if(!Std.is(display.view, viewClass))
 	 		{
@@ -97,7 +97,9 @@ class RenderingSystem extends FlaxenSystem
 		}
 	}	
 
-	// Create a new View and wrap it in a Display component
+	/**
+	 * Create a new View and wrap it in a Display component
+	 */
 	private function createView(entity:Entity, viewClass:Class<View>, ?display:Display): Display
 	{
 		var view:View = Type.createInstance(viewClass, [entity]);

@@ -1,15 +1,15 @@
-/*
-    This and Log should really be merged, and some things from Log should move to SystemUtil or something.
-*/
 package flaxen.util;
+
+import flaxen.util.ArrayUtil;
 
 #if native
 import sys.io.File;
 import sys.io.FileOutput;
 #end
 
-import flaxen.util.ArrayUtil;
-
+/**
+ * This and Log should really be merged, and some things from Log should move to SystemUtil or something.
+ */ 
 class LogUtil
 {
     public static function dumpLog(flaxen:flaxen.core.Flaxen, filename:String, depth:Int = 1, preventRecursion = true): Void
@@ -80,9 +80,11 @@ class LogUtil
 		return internalDump(o, recursed, depth, indent);
 	}
 
-    // The <RECURSION> check isn't quite that - it will say RECURSION if it's not recursed,
-    // but there are multiple copies within the same object. TODO: Change to <DUPE>?
-    // This doesn't seem to be working in Flash targets.
+	/**
+	 * The <RECURSION> check isn't quite that - it will say RECURSION if it's not recursed,
+	 * but there are multiple copies within the same object. TODO: Change to <DUPE>?
+	 * This doesn't seem to be working in Flash targets.
+	 */
 	private static function internalDump(o:Dynamic, recursed:Array<Dynamic>, depth:Int, indent:String = ""): String
 	{
 		if (o == null)

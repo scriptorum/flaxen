@@ -1,25 +1,3 @@
-/**
-	BitmapText
-
-	TODO:
-	 - Add HorizontalTextAlign.Full support
-	 - Move glyph creation and style characteristics to BitmapFont class. Allow 
-	   user to pass that in for the font in addition to path/BitmapData.
-
-	HaxePunk Example:
-		var t = "I'm typing a really long line! ";
-		var e = new com.haxepunk.Entity(320, 240);
-		e.graphic = new flaxen.render.BitmapText("art/impact20yellow.png", 0, 0,
-			"AAABBBCCC Hi there!" + t + t + t + t + t + t + t + t + t + t, 	
-			640, 480, true, Center, Center, -4, -2);
-		com.haxepunk.HXP.scene.add(e);
-
-	ALSO SEE:
-	 - Solar has also put together his own bitmap text class you might like:
-	 	http://dl.dropboxusercontent.com/u/28629176/gamedev/crappyretrogame/hw_bmptext/BitmapText.hx
-	 	http://forum.haxepunk.com/index.php?topic=334.0
-*/
-
 package flaxen.render;
 
 import flaxen.util.StringUtil;
@@ -32,9 +10,34 @@ import com.haxepunk.RenderMode;
 import com.haxepunk.graphics.Image;
 import com.haxepunk.graphics.atlas.Atlas;
 
+/**
+ * Displays bitmapped text with HaxePunk. 
+ *
+ * Can be used outside of Flaxen. The image supplied should contain all the
+ * glyphs in the character set, with at least one completely transparent
+ * black line in between. The class will scan for glyph extents the first time
+ * the image is used.
+ * 
+ * Example:
+ * ```
+ * 	var e = new com.haxepunk.Entity(320, 240);
+ * 	e.graphic = new flaxen.render.BitmapText("art/impact20yellow.png", 0, 0, "Hi there!",
+ * 		640, 480, true, Center, Center, -4, -2);
+ * 	com.haxepunk.HXP.scene.add(e);
+ * ```
+
+ * - TODO: Add HorizontalTextAlign.Full support. 
+ * - TODO: Move glyph creation and style characteristics to BitmapFont class.
+ * - TODO: Allow user to pass that in for the font in addition to path/BitmapData. *
+ * - ALSO SEE: Solar has also put together his own bitmap text class you might like:
+ *  	http://dl.dropboxusercontent.com/u/28629176/gamedev/crappyretrogame/hw_bmptext/BitmapText.hx
+ *  	http://forum.haxepunk.com/index.php?topic=334.0 **
+ */
 class BitmapText extends Image
 {
-	// Supply your own charset to indicate the characters in your fontBitmap text image and their order
+	/**
+	 * Supply your own charset to indicate the characters in your fontBitmap text image and their order
+	 */
 	public static inline var ASCII_CHAR_SET:String = 
 		"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 	private static inline var SPACE_EM_DIVISOR:Int = 3; // Space is 1/3rd width of the "em" character
@@ -67,37 +70,38 @@ class BitmapText extends Image
 	private var glyphs:Map<String,Rectangle>;
 
 /**
-	Creates a new BitmapText object.
-	@param image The bitmap font image. This should be a graphic with a one-line string, 
-		containing all the characters of the charSet, with at least one vertical line of 
-		blank space between each character.
-	@param x,y The registration point for the text (i.e., the upper left corner for Left 
-		justification and baseline = 0).
-	@param width,height If nonzero, specifies the maximum dimensions of the text box. 
-		Clips text that exceeds max. If zero, the dimensions are adjusted to fit the text.
-	@param halign Specifies horizontal alignment and registration point. Defaults to Left.
-	@param valign Specifies vertical alignment and registration point. Defaults to Top. 
-		Baseline requires positive baseline.
-	@param wordWrap Specifies whether to wrap long lines to fit into the text box. 
-		Requires non-zero width.
-	@param text The text message to show. This message can be changed with setText(). 
-		Newline (\n) characters in the text causes a line break.
-	@param baseline Defines the baseline offset. Only used if valign is set to Baseline. 
-		A positive value B sets the vertical registration point to B pixels up from the 
-		bottom of the text box. This is really the "descender height."
-	@param leading Horizontal padding in between lines. Can be zero, positive, or negative.
-	@param kerning Vertical padding in BETWEEN characters. Can be zero, positive, or negative.
-		In a monospaced font, kerning is added to ALL characters.
-	@param space Defines the widest (em) character or space width. Either supply an integer
-		width, or supply a character. If a character is supplied, the space width will be one 
-		third of the width of that character (the em character). Defaults to M which is 
-		generally the widest character. If M is not in the charSet, you should change this.
-		If monospace is true, all characters are forced into this width.
-	@param monospace If true, uses the space width as the same width for all characters.
-		If using horitonzal centering, chars will only line up vertically if the line lengths
-		are all even or all odd.
-	@param charSet The list of characters found in the bitmap font image from left to right. 
-		Omit the "space" character.
+ * Creates a new BitmapText object.
+ *
+ * @param image The bitmap font image. This should be a graphic with a one-line string, 
+ * 	containing all the characters of the charSet, with at least one vertical line of 
+ * 	blank space between each character.
+ * @param x,y The registration point for the text (i.e., the upper left corner for Left 
+ * 	justification and baseline = 0).
+ * @param width,height If nonzero, specifies the maximum dimensions of the text box. 
+ * 	Clips text that exceeds max. If zero, the dimensions are adjusted to fit the text.
+ * @param halign Specifies horizontal alignment and registration point. Defaults to Left.
+ * @param valign Specifies vertical alignment and registration point. Defaults to Top. 
+ * 	Baseline requires positive baseline.
+ * @param wordWrap Specifies whether to wrap long lines to fit into the text box. 
+ * 	Requires non-zero width.
+ * @param text The text message to show. This message can be changed with setText(). 
+ * 	Newline (\n) characters in the text causes a line break.
+ * @param baseline Defines the baseline offset. Only used if valign is set to Baseline. 
+ * 	A positive value B sets the vertical registration point to B pixels up from the 
+ * 	bottom of the text box. This is really the "descender height."
+ * @param leading Horizontal padding in between lines. Can be zero, positive, or negative.
+ * @param kerning Vertical padding in BETWEEN characters. Can be zero, positive, or negative.
+ * 	In a monospaced font, kerning is added to ALL characters.
+ * @param space Defines the widest (em) character or space width. Either supply an integer
+ * 	width, or supply a character. If a character is supplied, the space width will be one 
+ * 	third of the width of that character (the em character). Defaults to M which is 
+ * 	generally the widest character. If M is not in the charSet, you should change this.
+ * 	If monospace is true, all characters are forced into this width.
+ * @param monospace If true, uses the space width as the same width for all characters.
+ * 	If using horitonzal centering, chars will only line up vertically if the line lengths
+ * 	are all even or all odd.
+ * @param charSet The list of characters found in the bitmap font image from left to right. 
+ * 	Omit the "space" character.
 */
 	public function new(image:Dynamic, x:Int = 0, y:Int = 0, ?text:String, 
 		width:Int = 0, height:Int = 0, wordWrap:Bool = false, 
@@ -239,8 +243,10 @@ class BitmapText extends Image
 		return lines;
 	}
 
-	// Gets the kerned width of a single line of text
-	// Does not properly handle newlines
+	/**
+	 * Gets the kerned width of a single line of text
+	 * Does not properly handle newlines
+	 */
 	public function getTextWidth(text:String): Int
 	{
 		var width = 0;
@@ -256,7 +262,9 @@ class BitmapText extends Image
 		return width;
 	}
 
-	// Gets the width of the specific character, does not include kerning
+	/**
+	 * Gets the width of the specific character, does not include kerning
+	 */
 	public function getCharWidth(ch:String): Int
 	{
 		if(ch == SPACE_CHAR || monospace)
@@ -277,7 +285,9 @@ class BitmapText extends Image
 		return glyphs.get(ch);
 	}
 
-	// Scan bitmap font image to determine size and position of each glyph/character
+	/**
+	 * Scan bitmap font image to determine size and position of each glyph/character
+	 */
 	private function updateGlyphs()
 	{
 		// Initialize font cache
@@ -363,7 +373,9 @@ class BitmapText extends Image
 		}
 	}	
 
-	// Draw text onto content buffer which gets passed to Image
+	/**
+	 * Draw text onto content buffer which gets passed to Image
+	 */
     private function updateContent()
     {
     	if(contentWidth < 1) contentWidth = 1;
@@ -375,8 +387,10 @@ class BitmapText extends Image
 	        	if(contentWidth > FLASH8_DIM_LIMIT) contentWidth = FLASH8_DIM_LIMIT;
 	        	if(contentHeight > FLASH8_DIM_LIMIT) contentHeight = FLASH8_DIM_LIMIT;
 	        #else
-	        	// TODO Check size limit first; if failed, calc longest dimension, 
-	        	// reduce that to FLASH_DIM_LIMIT and scale other dim so that size
+	/**
+	 * TODO Check size limit first; if failed, calc longest dimension, 
+	 * reduce that to FLASH_DIM_LIMIT and scale other dim so that size
+	 */
 	        	// stays under FLASH_SIZE_LIMIT
 	        	if(contentWidth > FLASH_DIM_LIMIT) contentWidth = FLASH_DIM_LIMIT;
 	        	if(contentHeight > FLASH_DIM_LIMIT) contentHeight = FLASH_DIM_LIMIT;
@@ -435,7 +449,9 @@ class BitmapText extends Image
     	super.render(target, adjustPoint(point), camera);
     }
 
-    // Adjust the render point based on the alignment and scaling of the text box
+	/**
+	 * Adjust the render point based on the alignment and scaling of the text box
+	 */
     private function adjustPoint(point:Point): Point
     {
     	// Adjust horizontal registration point

@@ -1,7 +1,9 @@
 package flaxen.component;
 
-// Add to an entity as-is to affix the entity's image to the camera's position
-// TODO Rename this class to something more understandable
+/**
+ * Add to an entity as-is to affix the entity's image to the camera's position
+ *  - TODO: Rename this class to something more understandable
+ */
 class ScrollFactor
 {
 	public var amount:Float;

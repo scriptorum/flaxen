@@ -15,13 +15,12 @@ package flaxen.component;
  * Add Immutable to an entity that won't change - at least not often. Whenever
  * you do modify any of its components, ensure your changes are recognized by
  * calling this:
- * 
+ * ```
  * 		entity.get(Immutable).change();
- *
+ *```
  * Immutable does not prevent other systems from processing the entity. That is,
  * if you have a movement system, it will still move.
  */
-
 class Immutable
 {
 	public var changed:Bool;

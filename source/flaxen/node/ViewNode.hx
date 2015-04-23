@@ -55,5 +55,5 @@ class BitmapTextNode extends Node<BitmapTextNode>
 class EmitterNode extends Node<EmitterNode>
 {
 	public var position:Position;
-	public var text:Emitter; // why for is this called text
+	public var emitter:Emitter;
 }

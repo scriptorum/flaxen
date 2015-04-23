@@ -12,7 +12,7 @@ class ImageView extends View
 	private var tileValue:Int;
 	private var imageGrid:ImageGrid;
 	private var image:Image;
-	private var display:com.haxepunk.graphics.Image.Image;
+	private var display:com.haxepunk.graphics.Image;
 	private var clip:Rectangle;
 
 	override public function begin()

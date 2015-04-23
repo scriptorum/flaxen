@@ -14,13 +14,13 @@ class Tile
 		this.value = value;
 	}
 
-	// Plot X
+	 // Plot X
 	public function x(subdivision:ImageGrid): Int
 	{
 		return value % subdivision.tilesAcross;
 	}
 
-	// Plot Y
+	 // Plot Y
 	public function y(subdivision:ImageGrid): Int
 	{
 		#if debug

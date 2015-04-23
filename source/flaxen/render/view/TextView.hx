@@ -1,10 +1,3 @@
-/*
-  TODO:
-    - Change the registration point to work just like in BitmapText, so when 
-      so for center alignment you specify the center point. 
-    - Add valign support
-    - Add HorizontalTextAlign.Full support
-*/
 package flaxen.render.view;
 
 import flaxen.component.Text;
@@ -13,6 +6,12 @@ import flaxen.component.Size;
 import flaxen.render.ShadowText;
 import openfl.text.TextFormatAlign;
 
+/*
+ * - TODO: Change the registration point to work just like in BitmapText, so when 
+ *     so for center alignment you specify the center point. 
+ * - TODO: Add valign support
+ * - TODO: Add HorizontalTextAlign.Full support
+ */ 
 class TextView extends View
 {
 	private var curWidth:Int = 0;
@@ -29,7 +28,9 @@ class TextView extends View
 		nodeUpdate();
 	}
 
-	// Create or update text object
+	/**
+	 * Create or update text object
+	 */
 	private function setText(forceNew:Bool)
 	{
 		// Create new text

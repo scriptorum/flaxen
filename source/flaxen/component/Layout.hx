@@ -1,10 +1,11 @@
 package flaxen.component;
 
-// A layout can be used in addition to position to establish the 0,0 point
-// Changing a layout would then move (as a group) all entities using that layout.
-
 enum Orientation { Landscape; Portrait; }
 
+/**
+ * A layout can be used in addition to position to establish the 0,0 point
+ * Changing a layout would then move (as a group) all entities using that layout.
+ */
 class Layout
 {
 	public var name:String;
@@ -21,7 +22,10 @@ class Layout
 		this.orientation = Landscape;
 	}
 
-	// You must call setOrientation
+	/**
+	 * You must call setOrientation.
+	 * NOTE TO SELF: Great comment, Eric. Just top notch here. Golf clap.
+	 */
 	public function setOrientation(orientation:Orientation, ?offset:Position)
 	{
 		current = (orientation == Portrait ? portrait : landscape);

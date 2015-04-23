@@ -5,6 +5,9 @@ import flaxen.util.MathUtil;
 import flaxen.util.ArrayUtil;
 import flaxen.core.Log;
 
+/**
+ * Two-dimensional array class with extra grid functions.
+ */
 class Array2D<T>
 {
 	private static var ORTHONGONAL_NEIGHBORS = Point.makeArray([-1,0,    0,-1,  1,0,   0,1]);
@@ -108,14 +111,18 @@ class Array2D<T>
 		return this;
 	}
 
-	// TODO change to static
+	/**
+	 * TODO change to static
+	 */
 	public function pointsMatch(x1:Int, y1:Int, x2:Int, y2:Int): Bool
 	{
 		return (x1 == x2 && y1 == y2);
 	}
 
-	// TODO change to static
-	// If orthogonalOnly is passed, diagonal points are not considered adjacent
+	/**
+	 * TODO change to static
+	 * If orthogonalOnly is passed, diagonal points are not considered adjacent
+	 */
 	public function pointsAreAdjacent(x1:Int, y1:Int, x2:Int, y2:Int, orthogonalOnly:Bool = false): Bool
 	{
 		var dx = MathUtil.diff(x1, x2);
@@ -127,7 +134,7 @@ class Array2D<T>
 		return (pointsMatch(x1, y1, x2, y2) ? false : (dx <= 1 && dy <= 1));
 	}
 
-	public function indecesAreAdjacent(index1:Int, index2:Int, orthogonalOnly:Bool = false): Bool
+	public function indicesAreAdjacent(index1:Int, index2:Int, orthogonalOnly:Bool = false): Bool
 	{
 		var pt1 = fromIndex(index1);
 		var pt2 = fromIndex(index2);

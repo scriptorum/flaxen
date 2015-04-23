@@ -54,7 +54,9 @@ class View extends com.haxepunk.Entity
 		// Override
 	}
 
-	// If you override this, call super
+	/**
+	 * If you override this, call super
+	 */
 	public function nodeUpdate(): Void
 	{
 		if(graphic == null)
@@ -218,15 +220,19 @@ class View extends com.haxepunk.Entity
 		}
 	}
 
-	// Override to supply a custom use for the Size component instead of image scaling
-	// Only needed for Image subclasses that don't want automatic scaling from Size
+	/**
+	 * Override to supply a custom use for the Size component instead of image scaling
+	 * Only needed for Image subclasses that don't want automatic scaling from Size
+	 */
 	private function useSizeForImageScaling()
 	{ 
 		return true; 
 	} 
 
-	// Updates the dimensions stored in the Image component
-	// Optionally calculates and updates the tilesAcross/Down in an ImageGrid component
+	/**
+	 * Updates the dimensions stored in the Image component
+	 * Optionally calculates and updates the tilesAcross/Down in an ImageGrid component
+	 */
 	public function setImageDimensions(image:Image, ?imageGrid:ImageGrid)
 	{
 		var bitmap = com.haxepunk.HXP.getBitmap(image.path);
@@ -258,7 +264,9 @@ class View extends com.haxepunk.Entity
 		}
 	}
 
-	// Override for special behavior when a view is destroyed
+	/**
+	 * Override for special behavior when a view is destroyed
+	 */
 	public function destroy()
 	{
 		if(graphic != null)

@@ -1,18 +1,13 @@
-/*
-	TODO
-	  - Consider looping ala Tween, esp for RANDOM
-	  - Support multiple animation sequences in a single Spritemap
-	  - Maybe the Loop adjustments in setFrames should be moved to AnimationView?
-	  - Add support for stopAfterLoops
-*/
 package flaxen.component;
 
 import flaxen.util.DynUtil;
 import flaxen.common.LoopType;
 
-// When an animation stops, defines final frame behavior. When loop is LoopType.None, the animation 
-// stops after one sequence. Otherwise you have set stop manually. Pausing the animation will not 
-// cause this behavior to activate. Sets complete flag.
+/**
+ * When an animation stops, defines final frame behavior. When loop is LoopType.None, the animation 
+ * stops after one sequence. Otherwise you have set stop manually. Pausing the animation will not 
+ * cause this behavior to activate. Sets complete flag.
+ */
 enum AnimationStopType
 { 
 	Clear;	// The animation disappears (default)
@@ -21,36 +16,60 @@ enum AnimationStopType
 	Pause;  // the animation remains on its current frame as if paused (but it's stopped/complete)
 }
 
+/**
+ * Animation component.
+ * 
+ * - TODO: Consider looping ala Tween, esp for RANDOM
+ * - TODO: Support multiple animation sequences in a single Spritemap
+ * - TODO: Maybe the Loop adjustments in setFrames should be moved to AnimationView?
+ * - TODO: Add support for stopAfterLoops
+ */ 
 class Animation
 {
-	// Call update() after changing these values
+	/** Array of frame indices; see `update()` and `setFrames` */
 	public var frames:Dynamic;
+
 	public var speed:Float;
+
+	/** Looping behavior; see `update()` and `setFrames` */
 	public var loop(default,null):LoopType; // Don't change this directly, but through setFrames
+
 	// public var stopAfterLoops:Int = 0; // Only if loop is not None; if 0 assumed infinite
 	// public var loopCount(default, null):Int = 0;
 
-	// These can be set at any time
+	/** These can be set at any time */
 	public var stop:Bool = false; // stop animation ASAP (sets complete)
 	public var restart:Bool = false; // restart animation from beginning ASAP, unsets complete flag
 	public var paused:Bool = false; // pause or resume animation
 
-	// Set once at initialization only
-	public var destroyEntity:Bool = false; // on complete, removes whole entity
-	public var destroyComponent:Bool = false; // on complete, removes Animation component from entity
-	public var stopType:AnimationStopType; // when stopped, shows this frame; value may be changed before restart
+	/** On complete, removes whole entity; set at initializaiton */
+	public var destroyEntity:Bool = false;
 
-	// Do not change these directly
-	public var frameArr:Array<Int>; // List of frame integers with loop reverse/both baked in; set by update()
-	public var changed:Bool = true; // Set by update()
-	public var complete:Bool = false; // true when animation has completed playing (not if looping)
-	public var frame:Int = 0; // the current frame of the animation
+	/** On complete, removes component; set at initializaiton */
+	public var destroyComponent:Bool = false;
 
-	// This is not currently implemented
-	public var random:Bool = false; // true if you want the frames always selected at random
+	/** When stopped, shows this frame; set at initializaiton or before restart */
+	public var stopType:AnimationStopType;
 
-	// Frames can be an array of integers, a single integer, or a string
-	// containing comma-separated values: integers and/or hyphenated ranges
+	/** List of frame integers with loop reverse/both baked in; set by update(); READ-ONLY */
+	public var frameArr:Array<Int>;
+
+	/** Set by update(); READ-ONLY */
+	public var changed:Bool = true;
+
+	/** True when animation has completed playing (not if looping); READ-ONLY */
+	public var complete:Bool = false; 
+
+	/** The current frame of the animation; READ-ONLY */
+	public var frame:Int = 0;
+
+	/** This is not currently implemented */
+	public var random:Bool = false;
+
+	/**
+	 * Frames can be an array of integers, a single integer, or a string
+	 * containing comma-separated values: integers and/or hyphenated ranges
+	 */
 	public function new(frames:Dynamic, ?speed:Float, ?loop:LoopType, ?stopType:AnimationStopType)
 	{
 		this.frames = frames;
@@ -60,7 +79,9 @@ class Animation
 		update();
 	}
 
-	// Must be called after changing loop or frames.
+	/**
+	 * Must be called after changing loop or frames.
+	 */
 	public function update(): Animation
 	{
 		frameArr = DynUtil.parseRange(frames);
@@ -88,7 +109,9 @@ class Animation
 		return this;
 	}
 
-	// Convenience method for changing frames or looping
+	/**
+	 * Convenience method for changing frames or looping
+	 */
 	public function setFrames(frames:Dynamic, ?loop:LoopType)
 	{
 		this.frames = frames;

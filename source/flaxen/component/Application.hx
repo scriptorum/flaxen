@@ -21,11 +21,16 @@ enum ApplicationModeType<T>
 
 typedef ApplicationMode = ApplicationModeType<String>;
 
+/**
+ * This component is wrapped in a single entity, and generally present during the lifetime
+ * of the application. It is created the first time you call Flaxen.getApp().
+ */
 class Application
 {
 	public var nextMode:ApplicationMode; // queued up the next mode, will change curMode
 	public var curMode:ApplicationMode; // the current mode
 	public var prevMode:ApplicationMode; // the previous mode; could reference in start handler
+	public var ready:Bool = false; // Set to true when HaxePunk has initialized
 
 	public function new()
 	{

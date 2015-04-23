@@ -30,7 +30,9 @@ class InputService
 		#end
 	}
 
-	// Convenience methods
+	/**
+	 * Convenience methods
+	 */
 	public static var mouseX(get, null):Int;
 	private static function get_mouseX():Int { return Input.mouseX; }
 	public static var mouseY(get, null):Int;

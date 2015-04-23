@@ -3,10 +3,10 @@ package flaxen.component;
 import flaxen.common.TextAlign;
 
 /**
-	For BitmapText supply an Image component as well; Size component may also be used to 
-	clip text box dimensions and do word wrapping. The presentation of the text can be
-	customized with a TextStyle component.
-*/
+ * For BitmapText supply an Image component as well; Size component may also be used to 
+ * clip text box dimensions and do word wrapping. The presentation of the text can be
+ * customized with a TextStyle component.
+ */
 class Text
 {
 	public var message:String;
@@ -18,19 +18,23 @@ class Text
 }
 
 /**
-	Customizes the appearance of a Text component. For convenience, create a new TextStyle
-	using createTTF() for a regular TTF text (no Image), and createBitmap() for BitmapText (with Image).
-*/
+ * Customizes the appearance of a Text component. For convenience, create a new TextStyle
+ * using createTTF() for a regular TTF text (no Image), and createBitmap() for BitmapText (with Image).
+ */
 class TextStyle 
 {
-	// These options work only for TTF Text
+	/**
+	 * These options work only for TTF Text
+	 */
 	public var font:String;
 	public var color:Int = 0xFFFFFF; 
 	public var size:Int = 14;
 	public var shadowColor:Int = 0x000000;
 	public var shadowOffset:Int = 2;
 
-	// These options work only for Bitmap Text
+	/**
+	 * These options work only for Bitmap Text
+	 */
 	public var valign:VerticalTextAlign;
 	public var baseline:Int;
 	public var kerning:Int;
@@ -38,7 +42,9 @@ class TextStyle
 	public var space:Dynamic;
 	public var monospace:Bool;
 
-	// These options work for both BitmapText and TTF Text
+	/**
+	 * These options work for both BitmapText and TTF Text
+	 */
 	public var halign:HorizontalTextAlign;
 	public var leading:Int = 0;
 	public var wordWrap:Bool; // requires a Size component
@@ -48,7 +54,9 @@ class TextStyle
 	{		
 	}
 
-	// Convenience method for creating a new TextStyle for regular Text
+	/**
+	 * Convenience method for creating a new TextStyle for regular Text
+	 */
 	public static function createTTF(color:Int = 0xFFFFFF, size:Int = 14, ?font:String, 
 		?halign:HorizontalTextAlign, wordWrap:Bool = false, leading:Int = 0)
 	{
@@ -62,8 +70,10 @@ class TextStyle
 		return style;
 	}
 
-	// Convenience method for creating a new TextStyle for BitmapText
-	// TODO Swap params
+	/**
+	 * Convenience method for creating a new TextStyle for BitmapText
+	 * TODO Swap params
+	 */
 	public static function createBitmap(wordWrap:Bool = false, 
 		?halign:HorizontalTextAlign, ?valign:VerticalTextAlign, 
 		leading:Int = 0, kerning:Int = 0, baseline:Int = 0,

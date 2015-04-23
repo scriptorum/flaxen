@@ -1,14 +1,8 @@
 /**
-	NOTE
-	 - ActionQueues cannot be shared between entities.
-
-	TODO
-	 - Add description and give usage examples
-	 - change add to addAction
-	 - change addCallback to call
-	 - change addThread to thread
-	 - do not require flaxen as parameter to add/removeEntity, instead supply that to constructor
-	 - add an addTween() for better tween integration
+ * *NOTE: ActionQueues cannot be shared between entities.*
+ *
+ * - TODO: Add description and give usage examples
+ * - TODO: Move actions to action folder, right now it clutters up the Component API section.
 */
 package flaxen.component;
 
@@ -48,9 +42,11 @@ class ActionQueue
 			add(action);
 	}
 
-	// The priority flag is intended to allow a callback action to modify the queue
-	// while its still being processed. Priority actions are kept in a secondary 
-	// queue, and added to front of the main queue when the callback completes.
+	/**
+	 * The priority flag is intended to allow a callback action to modify the queue
+	 * while its still being processed. Priority actions are kept in a secondary 
+	 * queue, and added to front of the main queue when the callback completes.
+	 */
 	public function add(action:Action, priority:Bool = false): ActionQueue
 	{
 		var q = (priority ? priorityQueue : queue);
@@ -66,7 +62,10 @@ class ActionQueue
 		return this;
 	}
 
+	
 	// Convenience adders
+	// DOCUMENT THESE
+
 	public function wait(seconds:Float, priority:Bool = false): ActionQueue
 	{
 		return add(new ActionDelay(seconds), priority);
@@ -112,11 +111,13 @@ class ActionQueue
 		return add(new ActionThread(func), priority);
 	}
 
-	// Executes the next action(s) and returns true if the action queue is empty
-	// When actions are completed, they are removed from the queue and the next
-	// action is executed. An action can hold up the queue by returning false
-	// for its execute method, in which case it will be called again later.
-	// See ActionSystem.
+	/**
+	 * Executes the next action(s) and returns true if the action queue is empty
+	 * When actions are completed, they are removed from the queue and the next
+	 * action is executed. An action can hold up the queue by returning false
+	 * for its execute method, in which case it will be called again later.
+	 * See ActionSystem.
+	 */
 	public function execute(): Bool 
 	{
 		if(!running)
@@ -382,7 +383,9 @@ class ActionCallback extends Action
 
 	override public function execute(): Bool
 	{
-		// var aq = this;
+	/**
+	 * var aq = this;
+	 */
 		// var f = this.f;
 		func();
 		return true;
@@ -394,8 +397,10 @@ class ActionCallback extends Action
 	}
 }
 
-// This is similar to ActionCallback, except your function must return false if it's still processing, 
-// or true when it's complete. Use this to execute a thread; the action queue will hold up until your
+	/**
+	 * This is similar to ActionCallback, except your function must return false if it's still processing, 
+	 * or true when it's complete. Use this to execute a thread; the action queue will hold up until your
+	 */
 // thread indicates it's finished.
 class ActionThread extends Action
 {

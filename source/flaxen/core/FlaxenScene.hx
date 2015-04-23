@@ -1,13 +1,12 @@
-/*
-	TODO
-	Implement focusGained/lost
-*/
 package flaxen.core;
 
 import flaxen.core.Flaxen;
 import ash.core.Engine;
 import com.haxepunk.Scene;
 
+/**
+ * - TODO: Implement focusGained/lost
+ */
 class FlaxenScene extends Scene
 {
 	public var flaxen:Flaxen;
@@ -22,6 +21,7 @@ class FlaxenScene extends Scene
 
 	override public function begin()
 	{
+		flaxen.getApp().ready = true;
 		flaxen.ready();
 	}
 
@@ -31,6 +31,6 @@ class FlaxenScene extends Scene
 		super.update(); // Update HaxePunk (game library)
 	}
 
-	//override public function focusGained() { } 
+	// override public function focusGained() { } 
 	//override public function focusGained() { } 
 }

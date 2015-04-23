@@ -3,8 +3,12 @@ package flaxen.component;
 
 import flaxen.render.view.View;
 
-// Contains a View, which wraps a HaxePunk entity
-
+/**
+ * Contains a View, which wraps a HaxePunk entity.
+ * You can use this class to directly manipulate the HaxePunk Entity.
+ *
+ * - TODO: Add example.
+ */
 class Display
 {
 	public var updateId:Int = -1;

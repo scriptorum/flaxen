@@ -1,7 +1,3 @@
-/*
-  TODO Support resizable
-*/
-  
 package flaxen.render;
 
 import openfl.text.TextFormatAlign;
@@ -12,6 +8,11 @@ import flaxen.core.Log;
 
 typedef HaxePunkAlignment = #if (flash || js) TextFormatAlign #else String #end;
 
+/**
+ * Displays TTF text with a fake drop shadow. 
+ *
+ *  - TODO: Support resizable
+ */
 class ShadowText extends Graphiclist
 {
 	private var texts:Array<Text>;
