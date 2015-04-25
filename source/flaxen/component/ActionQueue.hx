@@ -1,22 +1,23 @@
-/**
- * *NOTE: ActionQueues cannot be shared between entities.*
- *
- * - TODO: Add description and give usage examples
- * - TODO: Move actions to action folder, right now it clutters up the Component API section.
-*/
 package flaxen.component;
 
 import ash.core.Entity;
 import flaxen.core.Flaxen;
 import flaxen.component.Timestamp;
 
-typedef QueueTips = { first:Action, last:Action }
-
+/**
+ * An action queue is a chain of steps that modify Ash in sequence. For 
+ * example, you can tween an entity to some point, wait for it to complete 
+ * tweening, add a marker to that entity and then kick off a callback.
+ *
+ * - NOTE: ActionQueues cannot be shared between entities.
+ * - TODO: Add description and give usage examples, add examples
+ * - TODO: Move actions to action folder? Right now it clutters up the Component API section.
+*/
 class ActionQueue
 {
 	public static var created:Int = 0;
 
-	public var f:Flaxen;
+	public var flaxen:Flaxen;
 	public var queue:QueueTips = { first:null, last:null };
 	public var priorityQueue:QueueTips = { first:null, last:null };
 	public var destroyEntity:Bool; // When queue is empty, destroy its entity
@@ -25,10 +26,10 @@ class ActionQueue
 	public var name:String; // optional object name for logging
 	public var running:Bool = true;
 	
-	public function new(f:Flaxen, destroyEntity = false, destroyComponent = false, 
+	public function new(?f:Flaxen, destroyEntity = false, destroyComponent = false, 
 		autoStart:Bool = true, ?name:String)
 	{
-		this.f = f;
+		this.flaxen = f;
 		this.destroyEntity = destroyEntity;
 		this.destroyComponent = destroyComponent;
 		this.name = (name == null ? "__actionQueue"  + Std.string(++created) : name);
@@ -62,53 +63,134 @@ class ActionQueue
 		return this;
 	}
 
-	
-	// Convenience adders
-	// DOCUMENT THESE
+	private function verifyFlaxen()
+	{
+		if(flaxen == null)
+			throw "Flaxen must be defined in the constructor to use some added actions";
+	}
 
+	/**
+	 * Delays an amount of time before continuing the action queue.
+	 * @param seconds The number seconds to wait
+	 * @param priority Set true if this is a priority action (see `add()`)
+	 */
 	public function wait(seconds:Float, priority:Bool = false): ActionQueue
 	{
 		return add(new ActionDelay(seconds), priority);
 	}
+
+	/**
+	 * Logs a message to the console.
+	 * @param message The string to log
+	 * @param priority Set true if this is a priority action (see `add()`)
+	 */
 	public function log(message:String, priority:Bool = false): ActionQueue
 	{
 		return add(new ActionLog(message), priority);
 	}
+
+	/**
+	 * Adds a component to an existing entity
+	 * @param entity The existing entity to receive the component
+	 * @param component The component to be added
+	 * @param priority Set true if this is a priority action (see `add()`)
+	 */
 	public function addComponent(entity:Entity, component:Dynamic, priority:Bool = false): ActionQueue
 	{
 		return add(new ActionAddComponent(entity, component), priority);
 	}
+
+	/**
+	 * Removes a component from an entity.
+	 * @param entity The entity with the component
+	 * @param component The component to be removed
+	 * @param priority Set true if this is a priority action; see `add()`
+	 */
 	public function removeComponent(entity:Entity, component:Class<Dynamic>, priority:Bool = false): ActionQueue
 	{
 		return add(new ActionRemoveComponent(entity, component), priority);
 	}
+
+	/**
+	 * Adds an entity to Ash that hasn't been added yet. 
+	 * See `newEntity(..., false)` in Flaxen or `new Entity()` in Ash.
+	 * @param entity An entity to be added
+	 * @param priority Set true if this is a priority action (see `add()`)
+	 */
 	public function addEntity(entity:Entity, priority:Bool = false): ActionQueue
 	{
-		return add(new ActionAddEntity(f, entity), priority);
+		verifyFlaxen();
+		return add(new ActionAddEntity(flaxen, entity), priority);
 	}
-	public function removeEntity(entity:Entity, priority:Bool = false): ActionQueue
+
+	/**
+	 * Removes an entity from Ash.
+	 * @param entity An entity object to be removed, or the string name of such an entity
+	 * @param priority Set true if this is a priority action (see `add()`)
+	 */
+	public function removeEntity(entity:EntityRef, priority:Bool = false): ActionQueue
 	{
-		return add(new ActionRemoveEntity(f, entity), priority);
+		verifyFlaxen();
+		return add(new ActionRemoveEntity(flaxen, entity), priority);
 	}
-	public function removeNamedEntity(entityName:String, priority:Bool = false): ActionQueue
-	{
-		return add(new ActionRemoveNamedEntity(f, entityName), priority);
-	}
+
+	/**
+	 *
+	 */
 	public function setProperty(object:Dynamic, property:String, value:Dynamic, priority:Bool = false): ActionQueue
 	{
 		return add(new ActionSetProperty(object, property, value), priority);
 	}
+
+	/**
+	 *
+	 */
 	public function waitForProperty(object:Dynamic, property:String, value:Dynamic, priority:Bool = false): ActionQueue
 	{
 		return add(new ActionWaitForProperty(object, property, value), priority);
 	}
+
+	/**
+	 *
+	 */
 	public function call(func:Void->Void, priority:Bool = false): ActionQueue
 	{
 		return add(new ActionCallback(func), priority);
 	}
+
+	/**
+	 *
+	 */
 	public function waitForCall(func:Void->Bool, priority:Bool = false): ActionQueue // AKA waitForTrue(func)
 	{
 		return add(new ActionThread(func), priority);
+	}
+
+	/**
+	 *
+	 */
+	public function wrap(component:Dynamic, priority:Bool): ActionQueue
+	{
+		verifyFlaxen();
+		return add(new ActionWrap(flaxen, component), priority);
+	}
+
+	/**
+	 *
+	 */
+	public function waitForWrap(completable:Completable, priority:Bool): ActionQueue
+	{
+		verifyFlaxen();
+		add(new ActionWrap(flaxen, completable), priority);
+		return add(new ActionWaitForComplete(completable), priority);
+
+	/**
+	 *
+	 */
+	}
+	public function waitForComplete(completable:Completable, priority:Bool): ActionQueue
+	{
+		return add(new ActionWaitForComplete(completable), priority);
 	}
 
 	/**
@@ -247,7 +329,7 @@ class ActionRemoveComponent extends Action
 
 	override public function execute(): Bool
 	{
-		entity.remove(component);
+		entity.remove(component); // remove quietly
 		return true;
 	}
 
@@ -281,41 +363,27 @@ class ActionAddEntity extends Action
 	}
 }
 
-class ActionRemoveNamedEntity extends Action
+class ActionRemoveEntity extends Action
 {
-	public var entityName:String;
+	public var ref:EntityRef;
 	public var flaxen:Flaxen;
 
-	public function new(flaxen:Flaxen, entityName:String)
+	public function new(flaxen:Flaxen, ref:EntityRef)
 	{
 		super();
 		this.flaxen = flaxen;
-		this.entityName = entityName;
+		this.ref = ref;
 	}
 
 	override public function execute(): Bool
 	{
-		var entity = flaxen.getEntity(entityName);
-		flaxen.removeEntity(entity);
+		flaxen.removeEntity(ref);
 		return true;
 	}
 
 	override public function toString(): String
 	{
-		return "ActionRemoveNamedEntity (entity:" + entityName + ")";
-	}
-}
-
-class ActionRemoveEntity extends ActionRemoveNamedEntity
-{
-	public function new(flaxen:Flaxen, entity:Entity)
-	{
-		super(flaxen, entity.name);
-	}
-
-	override public function toString(): String
-	{
-		return "ActionRemoveEntity (entity:" + entityName + ")";
+		return 'ActionRemoveEntity (Entity:$ref)';
 	}
 }
 
@@ -444,3 +512,52 @@ class ActionLog extends Action
 		return "ActionLog (message:" + message + ")";
 	}
 }
+
+class ActionWrap extends Action
+{
+	public var component:Dynamic;
+	public var flaxen:Flaxen;
+
+	public function new(flaxen:Flaxen, component:Dynamic)
+	{
+		super();
+		this.flaxen = flaxen;
+		this.component = component;
+	}
+
+	override public function execute(): Bool
+	{
+		flaxen.newWrapper(component);
+		return true;
+	}
+
+	override public function toString(): String
+	{
+		return 'ActionWrap (component:$component)';
+	}
+}
+
+class ActionWaitForComplete extends Action
+{
+	public var completable:Completable;
+
+	public function new(completable:Completable)
+	{
+		super();
+		this.completable = completable;
+	}
+
+	override public function execute(): Bool
+	{
+		return completable.complete;
+	}
+
+	override public function toString(): String
+	{
+		return 'ActionWaitForComplete (completable:$completable)';
+	}
+}
+
+typedef QueueTips = { first:Action, last:Action }
+typedef Completable = { complete:Bool }
+

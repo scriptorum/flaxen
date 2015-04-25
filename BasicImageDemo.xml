@@ -1,6 +1,7 @@
 
 <?xml version="1.0" encoding="utf-8"?>
 <project>
+    <set name="openfl-legacy" />
     <haxelib name="openfl" />
     <haxelib name="ash" />
     <haxelib name="HaxePunk" />

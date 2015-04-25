@@ -2,7 +2,9 @@ package flaxen.core;
 
 import ash.core.Entity;
 import ash.core.Node;
+import com.haxepunk.ds.Either;
 import flaxen.common.Easing;
+import flaxen.common.LoopType;
 import flaxen.component.ActionQueue;
 import flaxen.component.Alpha;
 import flaxen.component.Animation;
@@ -13,11 +15,10 @@ import flaxen.component.Image;
 import flaxen.component.Layout;
 import flaxen.component.Offset;
 import flaxen.component.Position;
+import flaxen.component.Sound;
 import flaxen.component.Timestamp;
 import flaxen.component.Transitional;
 import flaxen.component.Tween;
-import flaxen.component.Sound;
-import flaxen.common.LoopType;
 import flaxen.core.ComponentSet;
 import flaxen.core.FlaxenHandler;
 import flaxen.core.FlaxenOptions;
@@ -33,8 +34,6 @@ import flaxen.system.*;
 #if profiler
 	import flaxen.system.ProfileSystem;
 #end
-
-enum FlaxenSystemGroup { Early; Standard; Late; }
 
 /**
  * The core engine.
@@ -56,7 +55,7 @@ enum FlaxenSystemGroup { Early; Standard; Late; }
  *     override public function ready()
  *     {
  *         // Setup here...
- *         var e:Entity = newEntity("player"); 
+ *         var entity:Entity = newEntity("player"); 
  *         ...
  *     }
  * }
@@ -71,16 +70,16 @@ enum FlaxenSystemGroup { Early; Standard; Late; }
  * {
  *     public static function main()
  *     {
- * 		var f = new Flaxen();
- * 		f.newActionQueue()
- * 			.waitForProperty(f.getApp(), "ready", true)
- * 			.call(ready);
+ * 		    var f = new Flaxen();
+ * 		    f.newActionQueue()
+ * 			    .waitForProperty(f.getApp(), "ready", true)
+ * 			    .call(ready);
  *     }
  *
  *     public function ready()
  *     {
  *         // Setup here...
- *         var e:Entity = newEntity("player"); 
+ *         var entity:Entity = newEntity("player"); 
  *         ...
  *     }
  * }
@@ -122,6 +121,7 @@ class Flaxen extends com.haxepunk.Engine
 	public function new(?optionsOrWidth:Dynamic, ?height:Int, ?fps:Int, ?fixed:Bool, ?smoothing:Bool,
 		?earlySystems:Array<Class<FlaxenSystem>>, ?lateSystems:Array<Class<FlaxenSystem>>)
 	{
+
 		if(Std.is(optionsOrWidth, FlaxenOptions))
 			options = optionsOrWidth;
 		else options = new FlaxenOptions(optionsOrWidth, height, fps, fixed, 
@@ -333,9 +333,14 @@ class Flaxen extends com.haxepunk.Engine
     }
 
 	/**
-	 * Generates an automatic entity name, or parses an existing name to replace "#" with a unique ID.
+	 * Generates an automatic entity name, or parses an existing name to replace "#" with 
+	 * a unique ID. The latter is useful for naming a class of entities with the same prefix.
+	 * For example, "bullet#" will generate bullet0, bullet1, bullet2, etc. The ID is 
+	 * guaranteed to be unique among all generated names.
+	 * @param name An entity name (aka, "a singleton"), prefix pattern (with "#"), or null
+	 * @return The generated/parsed name
 	 */
-	public function generateEntityName(name:String = "entity#"): String
+	public function generateEntityName(name:String = "_entity#"): String
 	{
 		return StringTools.replace(name, "#", Std.string(uniqueId++));
 	}
@@ -344,13 +349,14 @@ class Flaxen extends com.haxepunk.Engine
 	 * Creates a new entity and (by default) adds it to the Ash engine. If you do 
 	 * not provide a name for the entity, one will be generated. You may a include
 	 * "#" symbol in your name it will be replaced with a unique id. 
+	 * @param name The name for the new entity, see `generateEntityName()`
 	 */
 	public function newEntity(?name:String, addToAsh:Bool = true): Entity 
 	{
-		var e:Entity = new Entity(generateEntityName(name));
+		var entity:Entity = new Entity(generateEntityName(name));
 		if(addToAsh)
-			addEntity(e);
-		return e;
+			addEntity(entity);
+		return entity;
 	}     
 
 	/**
@@ -358,7 +364,7 @@ class Flaxen extends com.haxepunk.Engine
 	*/
 	public function resetEntity(name:String): Entity
 	{
-		removeNamedEntity(name);
+		removeEntity(name);
 		return newEntity(name);
 	}
 
@@ -367,10 +373,10 @@ class Flaxen extends com.haxepunk.Engine
 	 * The parent may be specified by name or by passing the Entity itself
 	 * Returns the child entity
 	 */
-	public function newChildEntity(parent:Dynamic, child:String): Entity
+	public function newChildEntity(parentRef:EntityRef, childName:String): Entity
 	{
-		var childEnt = newEntity(child);
-		var parentEnt:Entity = (Std.is(parent, Entity) ? cast parent : getEntity(cast parent));
+		var parentEnt:Entity = parentRef.getEntity(this);
+		var childEnt = newEntity(childName);
 		addDependent(parentEnt, childEnt);
 		return childEnt;
 	}
@@ -397,11 +403,11 @@ class Flaxen extends com.haxepunk.Engine
 	*/
 	public function resolveComponent<T>(name:String, component:Class<T>, ?args:Array<Dynamic>): T
 	{
-		var e = resolveEntity(name);
-		if(e.has(component))
-			return e.get(component);
+		var entity:Entity = resolveEntity(name);
+		if(entity.has(component))
+			return entity.get(component);
 		var c = Type.createInstance(component, (args == null ? [] : args));
-		e.add(c);
+		entity.add(c);
 		return c;
 	}	
 
@@ -409,8 +415,9 @@ class Flaxen extends com.haxepunk.Engine
 	/**
 	 * Adds an existing entity object to Ash.
 	 */
-	public function addEntity(entity:Entity): Entity
+	public function addEntity(ref:EntityRef): Entity
 	{
+		var entity:Entity = ref.getEntity(this);
 		ash.addEntity(entity);
 		return entity;
 	}
@@ -421,10 +428,10 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 	public function getEntity(name:String, compulsory:Bool = true): Entity
 	{
-		var e = ash.getEntityByName(name);
-		if(e == null && compulsory)
+		var entity:Entity = ash.getEntityByName(name);
+		if(entity == null && compulsory)
 			Log.error('Compulsory entity "$name" not found');
-		return e;
+		return entity;
 	}
 
 	/** 
@@ -442,12 +449,12 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 	public function getComponent<T>(name:String, component:Class<T>, compulsory:Bool = true): T
 	{
-		var e:Entity = getEntity(name, compulsory);
-		if(e == null)
+		var entity:Entity = getEntity(name, compulsory);
+		if(entity == null)
 			return null;
-		if(compulsory && !e.has(component))
+		if(compulsory && !entity.has(component))
 			Log.error('Compulsory component "$component" not found in "$name"');
-		return e.get(component);
+		return entity.get(component);
 	}
 
 	/**
@@ -459,43 +466,31 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Looks up an entity by name, removes it, and returns true on success.
-	 * On failure, either throws an exception (the default) or returns false (set compulsory to false).
+	 * Looks up an entity and removes it from Ash.
+	 * @param ref Either an Entity instance or the String name of an Entity
+	 * @param compulsory If true (default), throws exception if ref does not reference a known Entity in Ash
+	 * @return True if the ref was found and removed; otherwise false
 	 */
-	public function removeNamedEntity(name:String, compulsory:Bool = true): Bool
+	public function removeEntity(ref:EntityRef, compulsory:Bool = true): Bool
 	{
-		var e = getEntity(name, compulsory); // verify entity exists in ash first
+		var entity:Entity = ref.getEntity(this, compulsory);
+		if(entity == null)
+			return false;
 
-		if(e == null)
-		{
-			if(compulsory)
-				Log.error('Compulsory entity "$name" not found');
-			else return false;
-		}
-
-		ash.removeEntity(e);
+		ash.removeEntity(entity);
 		return true;
-	}
-
-	/**
-	 * Looks up an entity, removes it, and returns true on success.
-	 * On failure, either throws an exception (the default) or returns false (set compulsory to false).
-	 */
-	public function removeEntity(e:Entity, compulsory:Bool = true): Bool
-	{
-		return removeNamedEntity(e.name, compulsory);
 	}
 
 	/**
 	 * Adds a set of components to an entity, looked up by name
 	 * Throws an error if entity is not found
 	 */
-	public function addComponents(entityName:String, components:Array<Dynamic>): Entity
+	public function addComponents(ref:EntityRef, components:Array<Dynamic>): Entity
 	{
-		var e = getEntity(entityName);
+		var entity:Entity = ref.getEntity(this);
 		for(c in components)
-			e.add(c);
-		return e;
+			entity.add(c);
+		return entity;
 	}
 
 	/**
@@ -519,8 +514,9 @@ class Flaxen extends com.haxepunk.Engine
 	 * Adds a set of components to the entity. The ComponentSet is specified by name
 	 * and must have been previously defined by newComponentSet().
 	 */
-	public function addSet(entity:Entity, setName:String): Entity
+	public function addSet(ref:EntityRef, setName:String): Entity
 	{
+		var entity:Entity = ref.getEntity(this, false);
 		var set = getComponentSet(setName);
 		if(set == null)
 			Log.error("Component set not found:" + setName);
@@ -644,7 +640,7 @@ class Flaxen extends com.haxepunk.Engine
 	public function removeMarker(name:String): Void
 	{
 		var markerName:String = generateMarkerName(name);
-		removeNamedEntity(markerName, false);
+		removeEntity(markerName, false);
 	}
 
 	/**
@@ -671,26 +667,17 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Same as addDependent, but works with entity names
-	 */
-	public function addDependentByName(parentName:String, childName:String): Void
-	{
-		var parent = getEntity(parentName);
-		var child = getEntity(childName);
-		addDependent(parent, child);
-	}
-
-	/**
 	 * Destroys all dependents of the entity. Does not affect the entity.
 	 */
-	public function removeDependents(e:Entity): Void
+	public function removeDependents(ref:EntityRef): Void
 	{
-		var dependents:Dependents = e.get(Dependents);
+		var entity:Entity = ref.getEntity(this);
+		var dependents:Dependents = entity.get(Dependents);
 		if(dependents == null)
 			return;
 
 		for(name in dependents.names)
-			removeNamedEntity(name, false);
+			removeEntity(name, false);
 
 		dependents.clear();
 	}
@@ -855,20 +842,21 @@ class Flaxen extends com.haxepunk.Engine
 	 * of the clickpoint and image dimensios, respective to the position. Returns 
 	 * null if the position does not fall within the entity.
 	 */
-	public function hitTest(e:Entity, x:Float, y:Float): 
+	public function hitTest(ref:EntityRef, x:Float, y:Float): 
 		{ xOffset:Float, yOffset:Float, width:Float, height:Float }
 	{
-		if(e == null)
+		var entity:Entity = ref.getEntity(this, false);
+		if(entity == null)
 			return null;
 
-		var pos:Position = e.get(Position);
-		var image:Image = e.get(Image);
-		if(image == null && e.has(Animation))
-			image = e.get(Animation).image;
+		var pos:Position = entity.get(Position);
+		var image:Image = entity.get(Image);
+		if(image == null && entity.has(Animation))
+			image = entity.get(Animation).image;
 		if(pos == null || image == null)
 			return null;
 
-		var off:Offset = e.get(Offset);
+		var off:Offset = entity.get(Offset);
 		if(off != null)
 		{
 			if(off.asPercentage)
@@ -895,13 +883,13 @@ class Flaxen extends com.haxepunk.Engine
 	 * coordinates being pointed at by the mouse, or null if the mouse position
 	 * lies outside of the image.
 	 */
-	public function getMouseCell(entityName:String, rows:Int, cols:Int): { x:Int, y:Int }
+	public function getMouseCell(ref:EntityRef, rows:Int, cols:Int): { x:Int, y:Int }
 	{
-		var e:Entity = getEntity(entityName);
-		if(e == null)
+		var entity:Entity = ref.getEntity(this, false);
+		if(entity == null)
 			return null;
 
-		var result = hitTest(e, InputService.mouseX, InputService.mouseY);
+		var result = hitTest(entity, InputService.mouseX, InputService.mouseY);
 		if(result == null)
 			return null;
 
@@ -917,20 +905,20 @@ class Flaxen extends com.haxepunk.Engine
 	 * An entity is pressed if the mouse is being clicked, the cursor is within
 	 * the dimensions of the entity, and the entity has full alpha (or as specified).
 	 */
-	public function isPressed(entityName:String, minAlpha:Float = 1.0): Bool
+	public function isPressed(ref:EntityRef, minAlpha:Float = 1.0): Bool
 	{
 		if(!InputService.clicked)
 			return false;
 
-		var e:Entity = getEntity(entityName);
-		if(e == null)
+		var entity:Entity = ref.getEntity(this, false);
+		if(entity == null)
 			return false;
 
-		var alpha:Alpha = e.get(Alpha);
+		var alpha:Alpha = entity.get(Alpha);
 		if(alpha != null && alpha.value < minAlpha)
 			return false;
 	 			
-	 	return hitTest(e, InputService.mouseX, InputService.mouseY) != null;
+	 	return hitTest(entity, InputService.mouseX, InputService.mouseY) != null;
 	}
 
 	/**
@@ -987,4 +975,67 @@ class Flaxen extends com.haxepunk.Engine
 private class DependentsNode extends Node<DependentsNode>
 {
 	public var dependents:Dependents;
+}
+
+enum FlaxenSystemGroup { Early; Standard; Late; }
+
+/**
+ * In many methods where an Entity is expected you can instead pass a String 
+ * that is the name of an Entity in Ash. EntityRef is an abstract type that
+ * could be referring to either an Entity or a String. A class may use
+ * ref.toEntity() to validate the reference and return a full Entity instance.
+ */
+abstract EntityRef(Either<Entity, String>)
+{
+	public var type(get,never):Either<Entity, String>;
+
+	private function new(e:Either<Entity, String>)
+		this = e;
+	
+	@:to public function get_type() return this;
+
+	@:from public static function fromEntity(e:Entity)
+		return new EntityRef(Left(e));
+
+	@:from public static function fromString(str:String)
+		return new EntityRef(Right(str));
+
+	/**
+	 * @returns The entity's name
+	 */
+	@:to public function toString(): String
+	{
+		if(this == null)
+		 	return null;
+		return switch(type)
+		{
+			case Left(entity):
+				return entity.name;
+			case Right(str):
+				return str;
+		}
+	}
+
+	/**
+	 * Converts the EntityRef into an Entity. If the EntityRef already 
+	 * references an Entity, does not do a lookup to verify the entity
+	 * exists in the Ash engine.
+	 * 
+	 * @param f The Flaxen object
+	 * @param compulsory If true, throws exception when string lookup fails
+	 * @returns The Entity object, or null if string lookup fails
+	 */
+	public function getEntity(f:Flaxen, compulsory:Bool = true): Entity
+	{
+		if(this == null)
+		 	return null;
+
+		return switch(type)
+		{
+			case Left(entity):
+				return entity;
+			case Right(str):
+				return f.getEntity(str, compulsory);
+		}
+	}
 }
