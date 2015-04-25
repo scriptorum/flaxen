@@ -2,22 +2,22 @@
 ##Overview
 > You've got Haxepunk in my Ash! You got Ash in my Haxepunk!
 
-Flaxen blends an entity/component system with a Haxe-based game engine, powered by [HaxePunk](https://github.com/HaxePunk/HaxePunk) and [Ash](https://github.com/nadako/Ash-HaXe). 
+Flaxen blends an entity-component-system with a Haxe-based game engine, powered by [HaxePunk](https://github.com/HaxePunk/HaxePunk) and [Ash](https://github.com/nadako/Ash-HaXe). 
 
 ### Features
-* A full entity-component system lets you focus on data-driven game design. Using Ash.
+* A full entity-component-system based on Ash lets you focus on data-driven game design.
 * Built-in components/systems handle the display of integrated HaxePunk graphics.
-* "Drop-in" support for images, maps, backdrops, text, bitmapped text, particle emitters and sound.
-* Make easy adjustments to position, transparency, rotation, scaling and more with a common set of components.
-* Tweening, action chaining, mode handling, transitions, entity dependencies, component sets, and more!
+* Support for images, maps, backdrops, text, bitmapped text, particle emitters and sound.
+* Common components for altering attributes like position, transparency, rotation, and scaling.
+* Tweens, action queues, mode transitions, dependencies, component sets, and more!
 
 ## Documentation
 
-A user guide is up [on the wiki](https://github.com/scriptorum/flaxen/wiki). The [API](http://scriptorum.github.io/flaxen/dox/flaxen/index.html) is ... we'll call it a work in progress.
+A user guide is up [on the wiki](https://github.com/scriptorum/flaxen/wiki). The [API](http://scriptorum.github.io/flaxen/dox/flaxen/core/Flaxen.html) is ... we'll call it a work in progress.
 
-| [![User Guide](https://raw.githubusercontent.com/scriptorum/scriptorum.github.io/master/flaxen/images/button-guide.png)](https://github.com/scriptorum/flaxen/wiki) | [![API](https://raw.githubusercontent.com/scriptorum/scriptorum.github.io/master/flaxen/images/button-api.png)](http://scriptorum.github.io/flaxen/dox/flaxen/index.html) |
+| [![User Guide](https://raw.githubusercontent.com/scriptorum/scriptorum.github.io/master/flaxen/images/button-guide.png)](https://github.com/scriptorum/flaxen/wiki) | [![API](https://raw.githubusercontent.com/scriptorum/scriptorum.github.io/master/flaxen/images/button-api.png)](http://scriptorum.github.io/flaxen/dox/flaxen/core/Flaxen.html) |
 |:---:|:---:|
-| [User Guide](https://github.com/scriptorum/flaxen/wiki) | [API](http://scriptorum.github.io/flaxen/dox/flaxen/index.html) |
+| [User Guide](https://github.com/scriptorum/flaxen/wiki) | [API](http://scriptorum.github.io/flaxen/dox/flaxen/core/Flaxen.html) |
 
 ##Dependencies/Credits
 Flaxen would not be possible without the work of these awesome projects:
