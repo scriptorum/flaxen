@@ -1,6 +1,7 @@
 package flaxen.component;
 
 import ash.core.Engine;
+import flaxen.common.Completable;
 import flaxen.common.Easing;
 import flaxen.common.LoopType;
 import flaxen.core.Log;
@@ -19,7 +20,7 @@ import flaxen.core.Log;
  * 	  Add ability to specify start values instead of using current values in source.
  * 	  MultiVarTween. Consider reusing HaxePunk's tweeners.
  */
-class Tween
+class Tween implements Completable
 {
 	public static var created:Int = 0;
 

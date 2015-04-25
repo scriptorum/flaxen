@@ -3,6 +3,7 @@ package flaxen.component;
 import ash.core.Entity;
 import flaxen.core.Flaxen;
 import flaxen.component.Timestamp;
+import flaxen.common.Completable;
 
 /**
  * An action queue is a chain of steps that modify Ash in sequence. For 
@@ -13,7 +14,7 @@ import flaxen.component.Timestamp;
  * - TODO: Add description and give usage examples, add examples
  * - TODO: Move actions to action folder? Right now it clutters up the Component API section.
 */
-class ActionQueue
+class ActionQueue implements Completable
 {
 	public static var created:Int = 0;
 
@@ -559,5 +560,4 @@ class ActionWaitForComplete extends Action
 }
 
 typedef QueueTips = { first:Action, last:Action }
-typedef Completable = { complete:Bool }
 

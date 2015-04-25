@@ -1,11 +1,13 @@
 package flaxen.component;
 
+import flaxen.common.Completable;
+
 using StringTools;
 
 /**
  * Basic sound component
  */
-class Sound
+class Sound implements Completable
 {
 	public var destroyEntity:Bool = false; // on complete/stop, removes whole entity
 	public var destroyComponent:Bool = false; // on complete/stop, removes Sound component from entity

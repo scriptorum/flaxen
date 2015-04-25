@@ -7,11 +7,12 @@
  */
 package flaxen.component;
 
+import flaxen.common.Completable;
 import flaxen.component.Position;
 import flaxen.component.Scale;
 import flaxen.component.Rotation;
 
-class Emitter
+class Emitter implements Completable
 {   
 	/** Path to particle image, cannot be changed real-time */
     public var particle:String;

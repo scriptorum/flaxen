@@ -1,5 +1,6 @@
 package flaxen.component;
 
+import flaxen.common.Completable;
 import flaxen.util.DynUtil;
 import flaxen.common.LoopType;
 
@@ -24,7 +25,7 @@ enum AnimationStopType
  * - TODO: Maybe the Loop adjustments in setFrames should be moved to AnimationView?
  * - TODO: Add support for stopAfterLoops
  */ 
-class Animation
+class Animation implements Completable
 {
 	/** Array of frame indices; see `update()` and `setFrames` */
 	public var frames:Dynamic;

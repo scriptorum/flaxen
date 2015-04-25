@@ -1,5 +1,6 @@
 package flaxen.component;
 
+import flaxen.common.Completable;
 import flaxen.component.Application;
 import flaxen.core.Log;
 
@@ -26,7 +27,7 @@ import flaxen.core.Log;
  * 		brings an additional window. The original content is not removed in these cases although they may be "paused" or 
  * 		otherwise recognize their activity has been commandeered. Hitting ESC progressively "unstacks" the layered modes.
  */
-class Transitional
+class Transitional implements Completable
 {
 	public static var ALWAYS:Transitional = new Transitional(Always);
 	public static var NEXT:Transitional = new Transitional(Always, true);
