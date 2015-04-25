@@ -375,9 +375,8 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 	public function newChildEntity(parentRef:EntityRef, childName:String): Entity
 	{
-		var parentEnt:Entity = parentRef.getEntity(this);
 		var childEnt = newEntity(childName);
-		addDependent(parentEnt, childEnt);
+		addDependent(parentRef, childEnt);
 		return childEnt;
 	}
 
@@ -417,7 +416,7 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 	public function addEntity(ref:EntityRef): Entity
 	{
-		var entity:Entity = ref.getEntity(this);
+		var entity:Entity = ref.toEntity(this);
 		ash.addEntity(entity);
 		return entity;
 	}
@@ -473,7 +472,7 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 	public function removeEntity(ref:EntityRef, compulsory:Bool = true): Bool
 	{
-		var entity:Entity = ref.getEntity(this, compulsory);
+		var entity:Entity = ref.toEntity(this, compulsory);
 		if(entity == null)
 			return false;
 
@@ -487,7 +486,7 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 	public function addComponents(ref:EntityRef, components:Array<Dynamic>): Entity
 	{
-		var entity:Entity = ref.getEntity(this);
+		var entity:Entity = ref.toEntity(this);
 		for(c in components)
 			entity.add(c);
 		return entity;
@@ -516,7 +515,7 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 	public function addSet(ref:EntityRef, setName:String): Entity
 	{
-		var entity:Entity = ref.getEntity(this, false);
+		var entity:Entity = ref.toEntity(this, false);
 		var set = getComponentSet(setName);
 		if(set == null)
 			Log.error("Component set not found:" + setName);
@@ -655,15 +654,15 @@ class Flaxen extends com.haxepunk.Engine
 	 * Creates a lifecycle dependency between entities. When the parent entity is 
 	 * destroyed, all of its dependent children will be destroyed immediately after.
 	 */
-	public function addDependent(parent:Entity, child:Entity): Void
+	public function addDependent(parentRef:EntityRef, childRef:EntityRef): Void
 	{		
-		if(child == null)
+		var childEnt:Entity = childRef.toEntity(this);
+		if(childEnt == null)
 			Log.error("Cannot create dependency); child entity does not exist");
-		if(parent == null)
-			Log.error("Cannot create dependency; parent entity does not exist");
 
-		var dependents:Dependents = resolveComponent(parent.name, Dependents);
-		dependents.add(child.name);
+		var parentName:String = parentRef.toString();
+		var dependents:Dependents = resolveComponent(parentName, Dependents);
+		dependents.add(childEnt.name);
 	}
 
 	/**
@@ -671,7 +670,7 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 	public function removeDependents(ref:EntityRef): Void
 	{
-		var entity:Entity = ref.getEntity(this);
+		var entity:Entity = ref.toEntity(this);
 		var dependents:Dependents = entity.get(Dependents);
 		if(dependents == null)
 			return;
@@ -845,7 +844,7 @@ class Flaxen extends com.haxepunk.Engine
 	public function hitTest(ref:EntityRef, x:Float, y:Float): 
 		{ xOffset:Float, yOffset:Float, width:Float, height:Float }
 	{
-		var entity:Entity = ref.getEntity(this, false);
+		var entity:Entity = ref.toEntity(this, false);
 		if(entity == null)
 			return null;
 
@@ -885,7 +884,7 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 	public function getMouseCell(ref:EntityRef, rows:Int, cols:Int): { x:Int, y:Int }
 	{
-		var entity:Entity = ref.getEntity(this, false);
+		var entity:Entity = ref.toEntity(this, false);
 		if(entity == null)
 			return null;
 
@@ -910,7 +909,7 @@ class Flaxen extends com.haxepunk.Engine
 		if(!InputService.clicked)
 			return false;
 
-		var entity:Entity = ref.getEntity(this, false);
+		var entity:Entity = ref.toEntity(this, false);
 		if(entity == null)
 			return false;
 
@@ -1022,13 +1021,17 @@ abstract EntityRef(Either<Entity, String>)
 	 * exists in the Ash engine.
 	 * 
 	 * @param f The Flaxen object
-	 * @param compulsory If true, throws exception when string lookup fails
-	 * @returns The Entity object, or null if string lookup fails
+	 * @param compulsory If true, throws exception instead of returning null
+	 * @returns The Entity object, or null if string lookup fails or ref was null
 	 */
-	public function getEntity(f:Flaxen, compulsory:Bool = true): Entity
+	public function toEntity(f:Flaxen, compulsory:Bool = true): Entity
 	{
 		if(this == null)
+		{
+			if(compulsory)
+				throw "Compulsory entity cannot be null";
 		 	return null;
+		}
 
 		return switch(type)
 		{
