@@ -935,9 +935,9 @@ class Flaxen extends com.haxepunk.Engine
 	 * Creates a new ActionQueue puts it into a new Entity. See ActionQueue.
 	 * This entity will be destroyed when the queue completes.
 	 */
-	public function newActionQueue(destroyEntity:Bool = true, autoStart:Bool = true, ?name:String): ActionQueue
+	public function newActionQueue(autoStart:Bool = true, ?name:String): ActionQueue
 	{
-		var aq = new ActionQueue(this, destroyEntity, false, autoStart);
+		var aq = new ActionQueue(this, DestroyEntity, autoStart);
 		var e = newWrapper(aq, (name == null ? "_actionQueue#" : name));
 		aq.name = e.name;
 		return aq;
@@ -948,9 +948,9 @@ class Flaxen extends com.haxepunk.Engine
 	 * This entity will be destroyed when the tween completes.
 	 */
 	public function newTween(source:Dynamic, target:Dynamic, duration:Float, ?easing:EasingFunction, 
-		?loop:LoopType, destroyEntity:Bool = true, ?autoStart:Bool = true, ?name:String): Tween
+		?loop:LoopType, ?autoStart:Bool = true, ?name:String): Tween
 	{
-		var tween = new Tween(source, target, duration, easing, loop, autoStart);
+		var tween = new Tween(source, target, duration, easing, loop, DestroyEntity, autoStart);
 		var e = newWrapper(tween, (name == null ? "_tween#" : name));
 		tween.name = e.name;
 		return tween;
@@ -965,7 +965,7 @@ class Flaxen extends com.haxepunk.Engine
 	{
 		var e = newEntity("sound");
 		var sound = new Sound(file, loop, volume, pan, offset);
-		sound.destroyEntity = true;
+		sound.onComplete = DestroyEntity;
 		e.add(sound);
 		return e;
 	}

@@ -36,15 +36,14 @@ class Tween implements Completable
 	public var loop:LoopType; // Can set after creating tween
 	public var optional:Float = 1.70158;
 	public var duration:Float;
-	public var destroyEntity:Bool = false;
-	public var destroyComponent:Bool = false;
+	public var onComplete:OnComplete;
 	public var fields:Array<String>;
 	public var name:String; // optional object name for logging
 	public var stopAfterLoops:Int = 0; // Only if loop is not None; if 0 assumed infinite
 	public var loopCount(default, null):Int = 0;
 
 	public function new(source:Dynamic, target:Dynamic, duration:Float, ?easing:EasingFunction, 
-		?loop:LoopType, destroyEntity = false, destroyComponent = false, autoStart:Bool = true, ?name:String)
+		?loop:LoopType, ?onComplete:OnComplete, autoStart:Bool = true, ?name:String)
 	{
 		this.source = source;
 		this.target = target;
@@ -52,8 +51,7 @@ class Tween implements Completable
 		Log.assert(duration > 0);
 		this.easing = (easing == null ? Easing.linearTween : easing);
 		this.loop = (loop == null ? LoopType.None : loop);
-		this.destroyEntity = destroyEntity;
-		this.destroyComponent = destroyComponent;
+		this.onComplete = (onComplete == null ? None : onComplete);
 		this.name = "__tween"  + Std.string(++created);
 		
 		if(autoStart)

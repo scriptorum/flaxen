@@ -21,18 +21,15 @@ class ActionQueue implements Completable
 	public var flaxen:Flaxen;
 	public var queue:QueueTips = { first:null, last:null };
 	public var priorityQueue:QueueTips = { first:null, last:null };
-	public var destroyEntity:Bool; // When queue is empty, destroy its entity
-	public var destroyComponent:Bool; // When queue is empty, destroy this component
+	public var onComplete:OnComplete;
 	public var complete:Bool = false; // True when queue goes empty
 	public var name:String; // optional object name for logging
 	public var running:Bool = true;
 	
-	public function new(?f:Flaxen, destroyEntity = false, destroyComponent = false, 
-		autoStart:Bool = true, ?name:String)
+	public function new(?f:Flaxen, ?onComplete:OnComplete, autoStart:Bool = true, ?name:String)
 	{
 		this.flaxen = f;
-		this.destroyEntity = destroyEntity;
-		this.destroyComponent = destroyComponent;
+		this.onComplete = (onComplete == null ? None : onComplete);
 		this.name = (name == null ? "__actionQueue"  + Std.string(++created) : name);
 
 		this.running = autoStart;

@@ -9,16 +9,33 @@ using StringTools;
  */
 class Sound implements Completable
 {
-	public var destroyEntity:Bool = false; // on complete/stop, removes whole entity
-	public var destroyComponent:Bool = false; // on complete/stop, removes Sound component from entity
-	public var loop:Bool = false; // loop sound continuously
-	public var restart:Bool = false; // restart sound from beginning ASAP
-	public var stop:Bool = false; // stop sound ASAP
-	public var complete:Bool = false; // true when sound has completed playing
-	public var file:String; // as supplied to constructor
-	public var isMusic:Bool; // set automatically by constructor
-	public var offset:Float; // as supplied to constructor
-	public var failsAllowed:Int = 0; // if cannot play sound, tries again N times if this is positive
+	/* When the sound is complete, what action should we take? */
+	public var onComplete:OnComplete;
+
+	/** Loop sound continuously; if true, you must stop sound manually */
+	public var loop:Bool = false; 
+
+	/** Restart sound from beginning ASAP; sets complete to false */
+	public var restart:Bool = false; 
+
+	/** Stop sound ASAP; sets complete to true */
+	public var stop:Bool = false; 
+
+	/** True when sound has completed playing */
+	public var complete:Bool = false; 
+
+	/** Path to sound file; READ-ONLY */
+	public var file:String; 
+
+	/** True if this is an MP3; READ-ONLY */
+	public var isMusic:Bool; 
+
+	/** The time from the start of the sound to skip over when playing; READ-ONLY? */
+	public var offset:Float; 
+
+	/** If cannot play sound, tries again the number of times indicated */
+	public var failsAllowed:Int = 0; 
+
 
 	/**
 	 * May be modified real-time, will be picked up by AudioSystem
@@ -38,5 +55,6 @@ class Sound implements Completable
 		this.volume = volume;
 		this.pan = pan;
 		this.offset = offset;
+		this.onComplete = None;
 	}
 }

@@ -30,20 +30,28 @@ import flaxen.core.Log;
 class Transitional implements Completable
 {
 	public static var ALWAYS:Transitional = new Transitional(Always);
-	public static var NEXT:Transitional = new Transitional(Always, true);
+	public static var NEXT:Transitional = new Transitional(Always, DestroyComponent);
 
-	public var mode:ApplicationMode;  // application mode where this entity is protected
-	public var destroyComponent:Bool; // true to remove this component when complete
-	public var complete:Bool = false; // marked true when protected during transition
-	public var kind:String; 		  // generic classification of transitions
+	/** Application mode where this entity is protected */
+	public var mode:ApplicationMode;  
 
-	public function new(mode:ApplicationMode, destroyComponent:Bool = false)
+	/** When this transition completes, what action do we take? */
+	public var onComplete:OnCompleteTransition; 
+
+	/** Marked true when protected during transition */
+	public var complete:Bool = false; 
+
+	/** Optional classification of transitions */
+	public var kind:String; 		  
+
+
+	public function new(mode:ApplicationMode, ?onComplete:OnCompleteTransition)
 	{	
 		if(mode == null)
 			Log.error("ApplicationMode cannot be null");
 
 		this.mode = mode;
-		this.destroyComponent = destroyComponent;
+		this.onComplete = (onComplete == null ? None : onComplete);
 	}
 
 	/**
@@ -68,4 +76,18 @@ class Transitional implements Completable
 		this.kind = kind;
 		return this;
 	}
+}
+
+/**
+ * When a transition "completes," what action should we take?
+ * This enum is a custom variation of `flaxen.common.OnComplete`.
+ * Currently, DestroyEntity is not supported.
+ */
+enum OnCompleteTransition
+{ 	
+	/** Destroy the component, removing it from the entity */
+	DestroyComponent;
+
+	/** Stop, do nothing, have a sandwich or something */
+	None;
 }

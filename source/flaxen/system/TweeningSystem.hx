@@ -29,10 +29,10 @@ class TweeningSystem extends FlaxenSystem
 
 	 		if(node.tween.complete)
 	 		{
-	 			if (node.tween.destroyEntity)
+	 			if (node.tween.onComplete == DestroyEntity)
 	 				ash.removeEntity(node.entity);
 
-	 			else if(node.tween.destroyComponent)
+	 			else if(node.tween.onComplete == DestroyComponent)
 	 				node.entity.remove(Tween);
 	 		}
 	 	}

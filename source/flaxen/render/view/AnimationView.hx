@@ -52,29 +52,31 @@ class AnimationView extends View
 		if(animation.loop != None && animation.stop == false)
 			return;
 
-		if(animation.destroyComponent)
+		if(animation.onComplete == DestroyComponent)
 			entity.remove(Animation);
-		else if(animation.destroyEntity && entity.has(Display))
+		else if(animation.onComplete == DestroyEntity && entity.has(Display))
 			entity.get(Display).destroyEntity = true;
 		else stop();
 	}
 
 	private function stop()
 	{
-		switch(animation.stopType)
+		switch(animation.onComplete)
 		{
-			case Clear:
-			spritemap.stop(true);			
-			spritemap.visible = false;
-
 			case First:
 			spritemap.stop(true);
 
 			case Last:
 			spritemap.index = animation.frameArr.length - 1;
 
-			case Pause:
+			case Current:
 			spritemap.stop();
+
+			default:
+			case Clear:
+			spritemap.stop(true);			
+			spritemap.visible = false;
+
 		}	
 		animation.stop = false;
 		animation.complete = true;

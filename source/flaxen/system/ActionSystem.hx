@@ -24,10 +24,10 @@ class ActionSystem extends FlaxenSystem
 	 		var aq = node.actionQueue;
 	 		if(aq.execute())
 	 		{
-	 			if (aq.destroyEntity)
+	 			if (aq.onComplete == DestroyEntity)
 	 				ash.removeEntity(node.entity);
 
-	 			else if(aq.destroyComponent)
+	 			else if(aq.onComplete == DestroyComponent)
 	 				node.entity.remove(ActionQueue);
 	 		}
 	 	}

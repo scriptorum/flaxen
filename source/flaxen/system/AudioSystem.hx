@@ -80,11 +80,10 @@ class AudioSystem extends FlaxenSystem
 			return;
 		}
 
-		if(sound.destroyEntity || sound.destroyComponent)
-		channel.addEventListener (Event.SOUND_COMPLETE, function(_) 
-		{
-			sound.complete = true;
-		});			
+		if(sound.onComplete != None)
+			channel.addEventListener (Event.SOUND_COMPLETE, function(_) {
+				sound.complete = true;
+			});			
 
 		var audio = new Audio(channel);
 		entity.add(audio);
@@ -116,9 +115,9 @@ class AudioSystem extends FlaxenSystem
 
 		if(sound.complete)
 		{
-			if(sound.destroyEntity)	
+			if(sound.onComplete == DestroyEntity)	
 				ash.removeEntity(entity);
-			else if(sound.destroyComponent)
+			else if(sound.onComplete == DestroyComponent)
 				entity.remove(Audio);	
 
 			return;

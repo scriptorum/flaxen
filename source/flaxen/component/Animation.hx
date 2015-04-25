@@ -5,19 +5,6 @@ import flaxen.util.DynUtil;
 import flaxen.common.LoopType;
 
 /**
- * When an animation stops, defines final frame behavior. When loop is LoopType.None, the animation 
- * stops after one sequence. Otherwise you have set stop manually. Pausing the animation will not 
- * cause this behavior to activate. Sets complete flag.
- */
-enum AnimationStopType
-{ 
-	Clear;	// The animation disappears (default)
-	Last;	// The animation freezes on the last frame
-	First;	// The animation freezes on the first frame
-	Pause;  // the animation remains on its current frame as if paused (but it's stopped/complete)
-}
-
-/**
  * Animation component.
  * 
  * - TODO: Consider looping ala Tween, esp for RANDOM
@@ -38,19 +25,17 @@ class Animation implements Completable
 	// public var stopAfterLoops:Int = 0; // Only if loop is not None; if 0 assumed infinite
 	// public var loopCount(default, null):Int = 0;
 
-	/** These can be set at any time */
-	public var stop:Bool = false; // stop animation ASAP (sets complete)
-	public var restart:Bool = false; // restart animation from beginning ASAP, unsets complete flag
-	public var paused:Bool = false; // pause or resume animation
+	/** Stop animation ASAP; sets complete; can be set at any time */
+	public var stop:Bool = false;
 
-	/** On complete, removes whole entity; set at initializaiton */
-	public var destroyEntity:Bool = false;
+	/** Restart animation ASAP; unsets complete; can be set at any time */
+	public var restart:Bool = false;
 
-	/** On complete, removes component; set at initializaiton */
-	public var destroyComponent:Bool = false;
+	/** Pause or unpause animation; can be set at any time */
+	public var paused:Bool = false;
 
-	/** When stopped, shows this frame; set at initializaiton or before restart */
-	public var stopType:AnimationStopType;
+	/** On complete, what should we do? */
+	public var onComplete:OnCompleteAnimation;
 
 	/** List of frame integers with loop reverse/both baked in; set by update(); READ-ONLY */
 	public var frameArr:Array<Int>;
@@ -71,12 +56,12 @@ class Animation implements Completable
 	 * Frames can be an array of integers, a single integer, or a string
 	 * containing comma-separated values: integers and/or hyphenated ranges
 	 */
-	public function new(frames:Dynamic, ?speed:Float, ?loop:LoopType, ?stopType:AnimationStopType)
+	public function new(frames:Dynamic, ?speed:Float, ?loop:LoopType, ?onComplete:OnCompleteAnimation)
 	{
 		this.frames = frames;
 		this.speed = (speed == null ? com.haxepunk.HXP.assignedFrameRate : speed);
 		this.loop = (loop == null ? LoopType.Forward : loop);
-		this.stopType = (stopType == null ? Clear : stopType);
+		this.onComplete = (onComplete == null ? Clear : onComplete);
 		update();
 	}
 
@@ -111,7 +96,7 @@ class Animation implements Completable
 	}
 
 	/**
-	 * Convenience method for changing frames or looping
+	 * Convenience method for changing frames and optionally also sets looping.
 	 */
 	public function setFrames(frames:Dynamic, ?loop:LoopType)
 	{
@@ -121,10 +106,45 @@ class Animation implements Completable
 		update();
 	}
 
-	public function setLoopType(loop:LoopType, ?stopType:AnimationStopType)
+	/**
+	 * Updates the loop type, and optionally the complete action.
+	 */
+	public function setLoopType(loop:LoopType, ?onComplete:OnCompleteAnimation)
 	{
 		this.loop = loop;
-		this.stopType = (stopType == null ? Clear : stopType);
+		if(onComplete != null)
+			this.onComplete = onComplete;
 		update();
 	}
+}
+
+/**
+ * When an animation "completes," what action should we take?
+ * This enum is a custom extension of `flaxen.common.OnComplete`.
+ * An animation completes when it finishes its sequence (if LoopType
+ * is None) or when the looping is interrupted by setting stop
+ * to true.
+ *
+ * - Note: Pausing the animation with `paused=true` will not set 
+ *   the complete flag. Setting OnComplete to Paused
+ */
+enum OnCompleteAnimation
+{ 	
+	/** Destroy the entity holding this component */
+	DestroyEntity;
+
+	/** Destroy the component, removing it from the entity */
+	DestroyComponent;
+
+	/** The animation disappears (default). */
+	Clear;	
+
+	/** The animation freezes on the last frame */
+	Last;	
+
+	/** The animation freezes on the first frame */
+	First;	
+
+	/** The animation remains on its last frame where it was manually stopped */
+	Current;  
 }

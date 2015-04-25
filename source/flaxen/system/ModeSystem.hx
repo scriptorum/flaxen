@@ -136,7 +136,7 @@ class ModeSystem extends FlaxenSystem
 	 * "Always" or if the Transitional mode is the same as the mode we're 
 	 * transitioning to.
 	 * 
-	 * TODO Jive this with Flaxen.removeTransitionedEntities();
+	 * - TODO Jive this with Flaxen.removeTransitionedEntities();
 	 */
 	public function removeUnprotected(mode:ApplicationMode): Void
 	{
@@ -147,12 +147,13 @@ class ModeSystem extends FlaxenSystem
 				var transitional:Transitional = e.get(Transitional);
 				if(transitional.isProtected(mode))
 				{
-					if(transitional.destroyComponent)
+
+					if(transitional.onComplete == DestroyComponent)
 						e.remove(Transitional);
 					else 
 						transitional.complete = true;					
-					continue;
 				}
+				continue;
 			}
 
 			ash.removeEntity(e);

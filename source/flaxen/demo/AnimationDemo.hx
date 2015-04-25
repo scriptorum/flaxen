@@ -105,12 +105,13 @@ class AnimationDemo extends Flaxen
 			{
 				var ball = getEntity("master");
 				var anim = ball.get(Animation);
-				anim.stopType = switch(anim.stopType)
+				switch(anim.onComplete)
 				{
-					case Clear: First;
-					case First: Last;
-					case Last: Clear; // Skipping Pause
-					case Pause: Clear; // Not really useful for demo, same effect as Last
+					case Clear: 	anim.onComplete = First;
+					case First: 	anim.onComplete = Last;
+					case Current: 	anim.onComplete = Clear; // Not really useful for demo, same effect as Last
+					case Last: 		anim.onComplete = Clear; // Skipping Pause
+					default: 		// do nothing
 				}
 				anim.loop = None;
 				anim.restart = true;

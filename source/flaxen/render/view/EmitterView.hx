@@ -180,10 +180,10 @@ class EmitterView extends View
 			// Emitter completed on previous update, check for auto-kill of component/entity
 			else
 			{
-				if(emitter.destroyComponent)
+				if(emitter.onComplete == DestroyComponent)
 					entity.remove(Emitter);
 
-				else if(emitter.destroyEntity && entity.has(Display))
+				else if(emitter.onComplete == DestroyEntity && entity.has(Display))
 					entity.get(Display).destroyEntity = true;
 			}
 		}
