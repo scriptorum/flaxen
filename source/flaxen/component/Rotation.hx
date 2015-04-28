@@ -1,5 +1,12 @@
 package flaxen.component;
 
+/**
+ * Applies rotation to the entity.
+ * Rotation is specified in degrees, and runs clockwise.
+ * The initial orientation is 0 degrees.
+ *
+ *  - TODO Support counter/anti-clockwise for Mathy folk
+ */
 class Rotation
 {
 	public var angle:Float;

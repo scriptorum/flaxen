@@ -172,8 +172,9 @@ class View extends com.haxepunk.Entity
 			if(hasComponent(Rotation))
 			{
 				var rotation = getComponent(Rotation);
-				if(rotation.angle != img.angle)
-					img.angle = -rotation.angle; // clockwise, thank you
+				var targetAngle = -rotation.angle; // convert CW to CCW (HaxePunk's preference)
+				if(img.angle != targetAngle)
+					img.angle = targetAngle;
 			}
 
 			// Update alpha

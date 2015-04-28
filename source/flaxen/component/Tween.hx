@@ -19,6 +19,7 @@ import flaxen.core.Log;
  *  - TODO: Add ability to fast-forward Tween to particular time-step. AND/OR
  * 	  Add ability to specify start values instead of using current values in source.
  * 	  MultiVarTween. Consider reusing HaxePunk's tweeners.
+ *  - TODO: Add chaining methods for adjusting easing, loop, autostart, name and onComplete.
  */
 class Tween implements Completable
 {
