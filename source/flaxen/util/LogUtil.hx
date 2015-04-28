@@ -12,7 +12,7 @@ import sys.io.FileOutput;
  */ 
 class LogUtil
 {
-    public static function dumpLog(flaxen:flaxen.core.Flaxen, filename:String, depth:Int = 1, preventRecursion = true): Void
+    public static function dumpLog(flaxen:flaxen.Flaxen, filename:String, depth:Int = 1, preventRecursion = true): Void
     {
         #if native
             var fo:FileOutput = File.write(filename);
@@ -23,7 +23,7 @@ class LogUtil
         #end
     }
 
-    public static function dumpEntities(flaxen:flaxen.core.Flaxen, depth:Int = 1, preventRecursion = true): String
+    public static function dumpEntities(flaxen:flaxen.Flaxen, depth:Int = 1, preventRecursion = true): String
     {
         var result:String = flaxen.countEntities() + " ASH ENTITIES:\n";
         for(entity in flaxen.ash.entities)

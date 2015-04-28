@@ -1,4 +1,4 @@
-package flaxen.core;
+package flaxen;
 
 import ash.core.Entity;
 import ash.core.Node;
@@ -19,11 +19,11 @@ import flaxen.component.Sound;
 import flaxen.component.Timestamp;
 import flaxen.component.Transitional;
 import flaxen.component.Tween;
-import flaxen.core.ComponentSet;
-import flaxen.core.FlaxenHandler;
-import flaxen.core.FlaxenOptions;
-import flaxen.core.FlaxenScene;
-import flaxen.core.FlaxenSystem;
+import flaxen.ComponentSet;
+import flaxen.FlaxenHandler;
+import flaxen.FlaxenOptions;
+import flaxen.FlaxenScene;
+import flaxen.FlaxenSystem;
 import flaxen.node.LayoutNode;
 import flaxen.node.SoundNode;
 import flaxen.node.TransitionalNode;

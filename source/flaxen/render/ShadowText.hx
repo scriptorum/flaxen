@@ -4,7 +4,7 @@ import openfl.text.TextFormatAlign;
 import com.haxepunk.graphics.Text;
 import com.haxepunk.graphics.Graphiclist;
 import flaxen.common.TextAlign;
-import flaxen.core.Log;
+import flaxen.Log;
 
 typedef HaxePunkAlignment = #if (flash || js) TextFormatAlign #else String #end;
 

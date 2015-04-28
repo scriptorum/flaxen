@@ -1,7 +1,7 @@
 package flaxen.render.view;
 
 import flaxen.common.TextAlign;
-import flaxen.core.Log;
+import flaxen.Log;
 import flaxen.component.Alpha;
 import flaxen.component.Image;
 import flaxen.component.Size;

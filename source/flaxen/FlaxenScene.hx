@@ -1,6 +1,6 @@
-package flaxen.core;
+package flaxen;
 
-import flaxen.core.Flaxen;
+import flaxen.Flaxen;
 import ash.core.Engine;
 import com.haxepunk.Scene;
 

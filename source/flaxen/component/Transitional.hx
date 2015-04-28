@@ -2,7 +2,7 @@ package flaxen.component;
 
 import flaxen.common.Completable;
 import flaxen.component.Application;
-import flaxen.core.Log;
+import flaxen.Log;
 
 /**
  * When transitioning from one application mode to another, all entities are destroyed, unless they are 

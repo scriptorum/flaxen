@@ -1,7 +1,7 @@
 package flaxen.demo; 
 
 import ash.core.Entity;
-import flaxen.core.Flaxen;
+import flaxen.Flaxen;
 import flaxen.component.Image;
 import flaxen.component.Position;
 import flaxen.component.Scale;

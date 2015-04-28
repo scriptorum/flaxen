@@ -2,7 +2,7 @@ package flaxen.service;
 
 import ash.core.Entity;
 import flaxen.component.CameraFocus;
-import flaxen.core.Flaxen;
+import flaxen.Flaxen;
 import flaxen.node.CameraFocusNode;
 import flaxen.service.InputService;
 import com.haxepunk.utils.Ease;

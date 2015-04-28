@@ -1,9 +1,9 @@
 package flaxen.system;
 
 import com.haxepunk.utils.Key;
-import flaxen.core.Flaxen;
-import flaxen.core.Log;
-import flaxen.core.FlaxenSystem;
+import flaxen.Flaxen;
+import flaxen.Log;
+import flaxen.FlaxenSystem;
 import flaxen.service.InputService;
 
 /**

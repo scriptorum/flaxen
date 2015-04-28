@@ -3,7 +3,7 @@ package flaxen.common;
 import flaxen.common.Point;
 import flaxen.util.MathUtil;
 import flaxen.util.ArrayUtil;
-import flaxen.core.Log;
+import flaxen.Log;
 
 /**
  * Two-dimensional array class with extra grid functions.

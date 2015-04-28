@@ -11,11 +11,12 @@ echo === Fixing XML ===
 sed -i "" -e 's/\\\"/\&quot;/g' -e 's/\\\&/\&amp;/g' dox.xml
 
 echo === Creating documentation ===
-haxelib run dox -o dox -i dox.xml --title "Flaxen API `date +"%d-%b-%y"`" -D source-path "https://github.com/scriptorum/flaxen/blob/master/source/" -in flaxen
+mkdir -p export
+haxelib run dox -o export/dox -i dox.xml --title "Flaxen API `date +"%d-%b-%y"`" -D source-path "https://github.com/scriptorum/flaxen/blob/master/source/" -in flaxen
 
 echo === Removing leftovers ===
 rm dox.xml
 rm dox.swf
 
 echo === Opening HTML ===
-open dox/index.html
+open export/dox/flaxen/Flaxen.html

@@ -1,7 +1,7 @@
 package flaxen.component;
 
 import ash.core.Entity;
-import flaxen.core.Flaxen;
+import flaxen.Flaxen;
 import flaxen.component.Timestamp;
 import flaxen.common.Completable;
 
@@ -622,7 +622,7 @@ class ActionLog extends Action
 
 	override public function execute(): Bool
 	{
-		flaxen.core.Log.log(message);
+		flaxen.Log.log(message);
 		return true;
 	}
 

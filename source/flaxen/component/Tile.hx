@@ -3,7 +3,7 @@ package flaxen.component;
 import openfl.geom.Rectangle;
 import flaxen.component.Tile;
 import flaxen.component.ImageGrid;
-import flaxen.core.Log;
+import flaxen.Log;
 
 class Tile
 {

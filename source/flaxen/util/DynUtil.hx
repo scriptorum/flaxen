@@ -1,6 +1,6 @@
 package flaxen.util;
 
-import flaxen.core.Log;
+import flaxen.Log;
 
 class DynUtil
 {

@@ -12,8 +12,8 @@ import flaxen.component.Offset;
 import flaxen.component.Position;
 import flaxen.component.Layer;
 import flaxen.component.Repeating;
-import flaxen.core.Flaxen;
-import flaxen.core.Log;
+import flaxen.Flaxen;
+import flaxen.Log;
 import flaxen.util.LogUtil;
 import flaxen.service.InputService;
 

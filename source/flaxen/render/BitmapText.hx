@@ -1,7 +1,7 @@
 package flaxen.render;
 
 import flaxen.util.StringUtil;
-import flaxen.core.Log;
+import flaxen.Log;
 import flaxen.common.TextAlign;
 import openfl.display.BitmapData;
 import openfl.geom.Point;

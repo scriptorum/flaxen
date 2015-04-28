@@ -7,7 +7,7 @@ import flaxen.component.Display;
 import flaxen.component.Image;
 import flaxen.component.ImageGrid;
 import flaxen.common.LoopType;
-import flaxen.core.Log;
+import flaxen.Log;
 
 /**
  * - TODO: Class only handles one animation at a time

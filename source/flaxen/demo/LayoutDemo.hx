@@ -2,7 +2,7 @@ package flaxen.demo;
 
 import ash.core.Entity;
 import com.haxepunk.utils.Key;
-import flaxen.core.Flaxen;
+import flaxen.Flaxen;
 import flaxen.component.Image;
 import flaxen.component.Position;
 import flaxen.component.Offset;

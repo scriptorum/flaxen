@@ -1,4 +1,4 @@
-package flaxen.core;
+package flaxen;
 
 import haxe.CallStack;
 import openfl.system.System;

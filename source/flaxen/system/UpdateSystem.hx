@@ -29,10 +29,10 @@
 package flaxen.system;
 
 import flaxen.component.Application;
-import flaxen.core.Flaxen;
-import flaxen.core.FlaxenHandler;
-import flaxen.core.FlaxenSystem;
-import flaxen.core.Log;
+import flaxen.Flaxen;
+import flaxen.FlaxenHandler;
+import flaxen.FlaxenSystem;
+import flaxen.Log;
 import flaxen.system.ProfileSystem; // Needed for stats
 
 class UpdateSystem extends FlaxenSystem

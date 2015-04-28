@@ -1,7 +1,7 @@
-package flaxen.core;
+package flaxen;
 
-import flaxen.core.FlaxenSystem;
-import flaxen.core.Log;
+import flaxen.FlaxenSystem;
+import flaxen.Log;
 import flaxen.system.*;
 
 class FlaxenOptions

@@ -1,6 +1,6 @@
 package flaxen.service;
 
-import flaxen.core.Log;
+import flaxen.Log;
 
 /**
  * - TODO: Move Profile and ProfileStats to a better location

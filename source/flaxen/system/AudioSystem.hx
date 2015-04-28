@@ -1,9 +1,9 @@
 package flaxen.system;
 
-import flaxen.core.Flaxen;
-import flaxen.core.Log;
-import flaxen.core.FlaxenSystem;
-import flaxen.core.FlaxenSystem;
+import flaxen.Flaxen;
+import flaxen.Log;
+import flaxen.FlaxenSystem;
+import flaxen.FlaxenSystem;
 import flaxen.component.Audio;
 import flaxen.component.Sound;
 import flaxen.component.Timestamp;

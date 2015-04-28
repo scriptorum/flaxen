@@ -16,7 +16,7 @@ import flaxen.component.Rotation;
 import flaxen.component.Scale;
 import flaxen.component.ScrollFactor;
 import flaxen.component.Size;
-import flaxen.core.Log;
+import flaxen.Log;
 import flaxen.render.view.View;
 import openfl.display.Bitmap;
 

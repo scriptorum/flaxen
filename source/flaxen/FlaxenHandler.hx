@@ -1,4 +1,4 @@
-package flaxen.core;
+package flaxen;
 
 typedef FlaxenCallback = Flaxen -> Void;
 

@@ -1,4 +1,4 @@
-package flaxen.core;
+package flaxen;
 
 import ash.core.Entity;
 

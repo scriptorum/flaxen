@@ -1,6 +1,6 @@
 package flaxen.common;
 
-import flaxen.core.Log;
+import flaxen.Log;
 
 /**
  * 2D integer point

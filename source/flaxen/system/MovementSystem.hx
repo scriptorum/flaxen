@@ -3,8 +3,8 @@ package flaxen.system;
 import ash.core.Engine;
 import ash.core.System;
 
-import flaxen.core.Flaxen;
-import flaxen.core.FlaxenSystem;
+import flaxen.Flaxen;
+import flaxen.FlaxenSystem;
 import flaxen.node.MovementNode;
 import flaxen.component.Velocity;
 

@@ -2,10 +2,10 @@ package flaxen.system;
 
 import flaxen.component.Application;
 import flaxen.component.Transitional;
-import flaxen.core.Flaxen;
-import flaxen.core.FlaxenHandler;
-import flaxen.core.FlaxenSystem;
-import flaxen.core.Log;
+import flaxen.Flaxen;
+import flaxen.FlaxenHandler;
+import flaxen.FlaxenSystem;
+import flaxen.Log;
 
 /**
  * In charge of maintenance of transitions between game modes. 

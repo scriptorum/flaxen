@@ -1,9 +1,9 @@
 
 package flaxen.system;
 
-import flaxen.core.Flaxen;
-import flaxen.core.FlaxenSystem;
-import flaxen.core.FlaxenSystem;
+import flaxen.Flaxen;
+import flaxen.FlaxenSystem;
+import flaxen.FlaxenSystem;
 import flaxen.component.CameraFocus;
 import flaxen.component.Position;
 import flaxen.component.Application;

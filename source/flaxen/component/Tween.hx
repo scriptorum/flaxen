@@ -4,7 +4,7 @@ import ash.core.Engine;
 import flaxen.common.Completable;
 import flaxen.common.Easing;
 import flaxen.common.LoopType;
-import flaxen.core.Log;
+import flaxen.Log;
 
 /**
  * General interpolation class. This example moves myEntity to the upper left corner
