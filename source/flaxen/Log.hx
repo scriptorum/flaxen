@@ -61,7 +61,7 @@ class Log
 		#end
 	}
 
-	public static function quit(code:Int)
+	public static function quit(code:Int = 0)
 	{
 		System.exit(code);
 	}

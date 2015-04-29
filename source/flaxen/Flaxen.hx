@@ -212,7 +212,7 @@ class Flaxen extends com.haxepunk.Engine
     		updateSystem = cast system;
     }
 
-    private function nextPriority(?group:FlaxenSystemGroup): Int
+    @:dox(hide) private function nextPriority(?group:FlaxenSystemGroup): Int
     {
 		return switch(group)
 		{
@@ -348,8 +348,12 @@ class Flaxen extends com.haxepunk.Engine
 	/**
 	 * Creates a new entity and (by default) adds it to the Ash engine. If you do 
 	 * not provide a name for the entity, one will be generated. You may a include
-	 * "#" symbol in your name it will be replaced with a unique id. 
+	 * "#" symbol in your name it will be replaced with a unique id. You may pass
+	 * false for addToAsh to make a "free" entity, which you can add later using
+	 * `addEntity`.
+	 *
 	 * @param name The name for the new entity, see `generateEntityName()`
+	 * @param addToAsh If true, adds the new entity to the Ash engine; otherwise, returns a free entity
 	 */
 	public function newEntity(?name:String, addToAsh:Bool = true): Entity 
 	{
@@ -357,37 +361,121 @@ class Flaxen extends com.haxepunk.Engine
 		if(addToAsh)
 			addEntity(entity);
 		return entity;
-	}     
+	}    
 
 	/**
-	* Destroys the named entity (if it exists) and recreates it, empty, without any components
-	*/
-	public function resetEntity(name:String): Entity
+ 	 * Removes all components from an entity. The entity can be a free entity.
+ 	 *
+ 	 * @param ref An entity object, or the string name of such an object
+	 * @returns The entity emptied
+	 * @throws If the string ref could not be looked up
+	 */
+	public function resetEntity(ref:EntityRef): Entity
 	{
-		removeEntity(name);
-		return newEntity(name);
+		var entity:Entity = ref.toEntity(this);
+		for(component in entity.getAll())
+			removeComponent(entity, Type.getClass(component));
+		return entity;
 	}
 
 	/**
-	 * Creates and adds the second entity, making it dependent of the first entity
-	 * The parent may be specified by name or by passing the Entity itself
-	 * Returns the child entity
+	 * Removes the component from the entity. This is essentially the same as Ash's `Entity.remove` method, 
+	 * but it returns true/false, throws exceptions instead of returning false if compulsory is set,
+	 * and can accept string names for the entity reference.
+	 *
+ 	 * @param ref An entity object, or the string name of such an object
+ 	 * @param component The component class to remove; note this is a class reference and not an instance reference
+	 * @param compulsory If true, throws exception instead of returning false
+	 * @returns True if the component was removed, otherwise false
+	 * @throws If compulsory and the component was not found in the entity, or the entity lookup failed
 	 */
-	public function newChildEntity(parentRef:EntityRef, childName:String): Entity
+	public function removeComponent<T>(ref:EntityRef, component:Class<T>, compulsory:Bool = true): Bool
 	{
-		var childEnt = newEntity(childName);
-		addDependent(parentRef, childEnt);
-		return childEnt;
+		var entity:Entity = ref.toEntity(this, compulsory);
+		if(entity == null)
+			return false;
+		if(entity.remove(component) == null)
+		{
+			if(compulsory)
+				throw 'Compulsory component $component could not be removed from $entity';
+			else return false;
+		}
+		return true;
+	}
+
+	/** 
+	 * Adds the component to the entity. This is essentially the same as Ash's `Entity.add` method, 
+	 * but it can accept string names for the entity reference, tests for null components, and
+	 * throws an exception instead of returning null if compulsory is set.
+	 *
+ 	 * @param ref An entity object, or the string name of such an object
+ 	 * @param component The component instance to add
+ 	 * @param clazz To force Ash to treat this component as having a different class, supply that class here (see `Entity.add`); defaults to null
+	 * @param compulsory If true, throws exception instead of returning false
+	 * @returns The entity the component was added to, or null if entity could not be determined
+	 * @throws An exception, if compulsory is set, and return is null, string lookup failed, or component was null
+	 */
+	public function addComponent(ref:EntityRef, component:Dynamic, clazz:Class<Dynamic> = null, compulsory:Bool = true): Entity
+	{
+		var entity:Entity = ref.toEntity(this, compulsory);
+		if(entity == null)
+			return null;
+		if(component == null)
+		{
+			if(compulsory)
+				throw 'Component is null for entity $ref';
+		}
+		return entity.add(component, clazz);
+	}
+
+	/**
+	 * Adds multiple components to an entity.
+	 *
+ 	 * @param ref An entity object, or the string name of such an object
+ 	 * @param components An array of component instances
+	 * @returns The entity to which the components were added
+	 * @throws If compulsory and the component was not found in the entity, something was null, or the entity lookup failed
+	 */
+	public function addComponents(ref:EntityRef, components:Array<Dynamic>): Entity
+	{
+		var entity:Entity = ref.toEntity(this);
+		for(c in components)
+			addComponent(entity, c);
+		return entity;
+	}	
+
+	/**
+	 * Returns true if the supplied entity reference is in Ash's engine. If 
+	 * the ref is a string, does a lookup in Ash by name. If it's an entity,
+	 * verifies the entity is not a free entity.
+	 * 
+ 	 * @param ref An entity object, or the string name of such an object
+ 	 * @returns True if the entity exists in the Ash engine, false if it's an name that can't be looked up or a free entity
+	 */
+	public function hasEntity(ref:EntityRef): Bool
+	{
+		if(ref == null)
+			return false;
+		return switch(ref.type)
+		{
+			case Left(entity): return (ash.getEntityByName(entity.name) == entity);
+			case Right(str): return (ash.getEntityByName(str) != null);
+		}
 	}
 
 	/**
 	 * If an entity with this name exists in Ash, returns that entity.
-	 * Otherwise this creates a new entity with this name. Use this method when 
-	 * you don't know if the entity has been already created, but if hasn't, 
-	 * you want to ensure it does.
+	 * Otherwise this adds a new, empty entity to Ash with this supplied name. 
+	 * Use this method when you don't know if the entity has been already 
+	 * created, but if hasn't, you want to ensure it does now.
+	 * @param name The name of the entity to resolve
+	 * @returns The entity found
+	 * @throws If name is invalid or null
 	 */
 	public function resolveEntity(name:String): Entity
 	{
+		if(name == null)
+			throw "Cannot resolve null name";
 		var e = getEntity(name, false);
 		if(e != null)
 			return e;
@@ -395,28 +483,47 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	* Ensures that the named entity exists and contains the specified component.
-	* If the named entity does not exist, it is created.
-	* If the component is lacking, it is created with the parameters specified.
-	* Regardless, the component is returned.
-	*/
-	public function resolveComponent<T>(name:String, component:Class<T>, ?args:Array<Dynamic>): T
+	 * Ensures that the named entity exists and contains the specified component.
+	 * If the named entity does not exist, it is created.
+	 * If the component is lacking, it is created with the parameters specified.
+	 * Regardless, the component is returned.
+	 *
+ 	 * @param ref An entity object, or the string name of an entity you want to resolve
+ 	 * @param component The name of a component class to resolve
+ 	 * @param args An array of arguments to be passed to the component if it needs to be constructed
+	 * @returns The resolved component 
+	 * @throws If ref or component is null
+	 */
+	public function resolveComponent<T>(ref:EntityRef, component:Class<T>, ?args:Array<Dynamic>): T
 	{
-		var entity:Entity = resolveEntity(name);
+		if(component == null)
+			throw 'Expected non-null component';
+			
+		var entity:Entity = ref.toEntity(this, false);
+		if(entity == null)
+			entity = resolveEntity(ref.toString());
+
 		if(entity.has(component))
 			return entity.get(component);
+		
 		var c = Type.createInstance(component, (args == null ? [] : args));
 		entity.add(c);
+
 		return c;
 	}	
 
 
 	/**
-	 * Adds an existing entity object to Ash.
+	 * Adds an free entity object to Ash. 
+	 * 
+	 * @param entity The entity object to add to Ash
+	 * @returns the same entity
+	 * @throws If entity is null or entity already exists in ash
 	 */
-	public function addEntity(ref:EntityRef): Entity
+	public function addEntity(entity:Entity): Entity
 	{
-		var entity:Entity = ref.toEntity(this);
+		if(entity == null)
+			throw "Cannot add null entity";
 		ash.addEntity(entity);
 		return entity;
 	}
@@ -424,6 +531,9 @@ class Flaxen extends com.haxepunk.Engine
 	/**
 	 * Looks up an entity by name, and returns it.
 	 * On failure, either throws an exception (the default) or returns null (set compulsory to false).
+	 * @param ref The string name of an entity object to look up
+	 * @returns The entity asked for, f the named entity exists in Ash, otherwise null
+	 * @throws An Exception if the return would be null
 	 */
 	public function getEntity(name:String, compulsory:Bool = true): Entity
 	{
@@ -433,22 +543,18 @@ class Flaxen extends com.haxepunk.Engine
 		return entity;
 	}
 
-	/** 
-	 * Returns true if the named entity exists in Ash, otherwise false
-	 */
-	public function hasEntity(name:String): Bool
-	{	
-		return (getEntity(name, false) != null);
-	}
-
 	/**
-	 * Returns a component from a named entity.
-	 * On failure, either throws an exception (the default) or returns null (set compulsory to false).
-	 * Failure occurs when either the entity lacks the component, or there is no so-named entity.
+	 * Returns the component from an entity. The entity can be free, but if you pass the string name
+	 * of an entity, it must exist in Ash.
+	 * 
+	 * @param ref An entity object, or the string name of such an object
+	 * @param compulsory Determines if an exception is thrown (true) or null is returned (false) upon any failure
+	 * @return The component requested, or null if the component could not be found
+	 * @throws Exception if compulsory and entity name lookup fails or component not be found
 	 */
-	public function getComponent<T>(name:String, component:Class<T>, compulsory:Bool = true): T
+	public function getComponent<T>(ref:EntityRef, component:Class<T>, compulsory:Bool = true): T
 	{
-		var entity:Entity = getEntity(name, compulsory);
+		var entity:Entity = ref.toEntity(this, compulsory);
 		if(entity == null)
 			return null;
 		if(compulsory && !entity.has(component))
@@ -457,16 +563,23 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Returns true if the entity exists and it has the indicated component
+	 * Returns true if the entity exists and has the indicated component. If you supply
+	 * a string, the named entity must exist or it will throw an exception. However, if 
+	 * you supply an entity, it can be a free entity.
+	 * 
+	 * @param ref An entity object, or the string name of such an object
+	 * @param component The class of a component, e.g. `Position`
+	 * @returns True if the entity contains the component indicated; otherwise returns false
+	 * @throws If the string ref could not be looked up
 	 */
-	public function hasComponent<T>(name:String, component:Class<T>, compulsory:Bool = true): Bool
+	public function hasComponent<T>(ref:EntityRef, component:Class<T>): Bool
 	{
-		return (getComponent(name, component, compulsory) != null);
+		return (getComponent(ref, component, false) != null);
 	}
 
 	/**
 	 * Looks up an entity and removes it from Ash.
-	 * @param ref Either an Entity instance or the String name of an Entity
+	 * @param ref An entity object, or the string name of such an object
 	 * @param compulsory If true (default), throws exception if ref does not reference a known Entity in Ash
 	 * @return True if the ref was found and removed; otherwise false
 	 */
@@ -478,18 +591,6 @@ class Flaxen extends com.haxepunk.Engine
 
 		ash.removeEntity(entity);
 		return true;
-	}
-
-	/**
-	 * Adds a set of components to an entity, looked up by name
-	 * Throws an error if entity is not found
-	 */
-	public function addComponents(ref:EntityRef, components:Array<Dynamic>): Entity
-	{
-		var entity:Entity = ref.toEntity(this);
-		for(c in components)
-			entity.add(c);
-		return entity;
 	}
 
 	/**
@@ -648,6 +749,18 @@ class Flaxen extends com.haxepunk.Engine
 	private function generateMarkerName(name:String): String
 	{
 		return '__marker__$name';
+	}
+
+	/**
+	 * Creates and adds the second entity, making it dependent of the first entity
+	 * The parent may be specified by name or by passing the Entity itself
+	 * Returns the child entity
+	 */
+	public function newChildEntity(parentRef:EntityRef, childName:String): Entity
+	{
+		var childEnt = newEntity(childName);
+		addDependent(parentRef, childEnt);
+		return childEnt;
 	}
 
 	/**
