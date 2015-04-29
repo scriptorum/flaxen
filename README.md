@@ -13,11 +13,11 @@ Flaxen blends an entity-component-system with a Haxe-based game engine, powered 
 
 ## Documentation
 
-A user guide is up [on the wiki](https://github.com/scriptorum/flaxen/wiki). The [API](http://scriptorum.github.io/flaxen/dox/flaxen/core/Flaxen.html) is ... we'll call it a work in progress.
+A user guide is up [on the wiki](https://github.com/scriptorum/flaxen/wiki). The [API](http://scriptorum.github.io/flaxen/dox/flaxen/Flaxen.html) is ... we'll call it a work in progress.
 
-| [![User Guide](https://raw.githubusercontent.com/scriptorum/scriptorum.github.io/master/flaxen/images/button-guide.png)](https://github.com/scriptorum/flaxen/wiki) | [![API](https://raw.githubusercontent.com/scriptorum/scriptorum.github.io/master/flaxen/images/button-api.png)](http://scriptorum.github.io/flaxen/dox/flaxen/core/Flaxen.html) |
+| [![User Guide](https://raw.githubusercontent.com/scriptorum/scriptorum.github.io/master/flaxen/images/button-guide.png)](https://github.com/scriptorum/flaxen/wiki) | [![API](https://raw.githubusercontent.com/scriptorum/scriptorum.github.io/master/flaxen/images/button-api.png)](http://scriptorum.github.io/flaxen/dox/flaxen/Flaxen.html) |
 |:---:|:---:|
-| [User Guide](https://github.com/scriptorum/flaxen/wiki) | [API](http://scriptorum.github.io/flaxen/dox/flaxen/core/Flaxen.html) |
+| [User Guide](https://github.com/scriptorum/flaxen/wiki) | [API](http://scriptorum.github.io/flaxen/dox/flaxen/Flaxen.html) |
 
 ##Dependencies/Credits
 Flaxen would not be possible without the work of these awesome projects:
