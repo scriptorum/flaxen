@@ -181,7 +181,7 @@ class Flaxen extends com.haxepunk.Engine
 	 * Initialization function called by HaxePunk. This is called after
 	 * HaxePunk has completed initializing itself.
 	 */
-	override public function init()
+	@:dox(hide) override public function init()
 	{
 		#if console
 			com.haxepunk.HXP.console.enable();
@@ -1086,11 +1086,11 @@ class Flaxen extends com.haxepunk.Engine
 		return this;
 	}
 
-	/*
+	/**
 	 * Returns the global audio object. Creates the object if it does not yet exist.
 	 * Use it to set global volume, mute, or stop audio after a cutoff.
 	 *
-	 * @returns	The `GlobalAudio` object
+	 * @returns		The `GlobalAudio` object
 	 */
 	public function getGlobalAudio(): GlobalAudio
 	{
