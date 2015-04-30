@@ -337,8 +337,8 @@ class Flaxen extends com.haxepunk.Engine
 	 * a unique ID. The latter is useful for naming a class of entities with the same prefix.
 	 * For example, "bullet#" will generate bullet0, bullet1, bullet2, etc. The ID is 
 	 * guaranteed to be unique among all generated names.
-	 * @param name An entity name (aka, "a singleton"), prefix pattern (with "#"), or null
-	 * @return The generated/parsed name
+	 * @param	name	An entity name (aka, "a singleton"), prefix pattern (with "#"), or null
+	 * @return	The generated/parsed name
 	 */
 	public function generateEntityName(name:String = "_entity#"): String
 	{
@@ -352,8 +352,8 @@ class Flaxen extends com.haxepunk.Engine
 	 * false for addToAsh to make a "free" entity, which you can add later using
 	 * `addEntity`.
 	 *
-	 * @param name The name for the new entity, see `generateEntityName()`
-	 * @param addToAsh If true, adds the new entity to the Ash engine; otherwise, returns a free entity
+	 * @param	name		The name for the new entity, see `generateEntityName()`
+	 * @param	addToAsh	If true, adds the new entity to the Ash engine; otherwise, returns a free entity
 	 */
 	public function newEntity(?name:String, addToAsh:Bool = true): Entity 
 	{
@@ -364,11 +364,11 @@ class Flaxen extends com.haxepunk.Engine
 	}    
 
 	/**
- 	 * Removes all components from an entity. The entity can be a free entity.
- 	 *
- 	 * @param ref An entity object, or the string name of such an object
-	 * @returns The entity emptied
-	 * @throws If the string ref could not be looked up
+	 * Removes all components from an entity. The entity can be a free entity.
+	 * Throws exception if the string ref could not be looked up.
+	 *
+	 * @param	ref		An entity object, or the string name of such an object
+	 * @returns	The entity emptied
 	 */
 	public function resetEntity(ref:EntityRef): Entity
 	{
@@ -382,12 +382,12 @@ class Flaxen extends com.haxepunk.Engine
 	 * Removes the component from the entity. This is essentially the same as Ash's `Entity.remove` method, 
 	 * but it returns true/false, throws exceptions instead of returning false if compulsory is set,
 	 * and can accept string names for the entity reference.
+	 * Throws exception if compulsory and the component was not found in the entity, or the entity lookup failed.
 	 *
- 	 * @param ref An entity object, or the string name of such an object
- 	 * @param component The component class to remove; note this is a class reference and not an instance reference
-	 * @param compulsory If true, throws exception instead of returning false
-	 * @returns True if the component was removed, otherwise false
-	 * @throws If compulsory and the component was not found in the entity, or the entity lookup failed
+	 * @param	ref			An entity object, or the string name of such an object
+	 * @param	component	The component class to remove; note this is a class reference and not an instance reference
+	 * @param	compulsory	If true, throws exception instead of returning false
+	 * @returns	True if the component was removed, otherwise false
 	 */
 	public function removeComponent<T>(ref:EntityRef, component:Class<T>, compulsory:Bool = true): Bool
 	{
@@ -405,15 +405,16 @@ class Flaxen extends com.haxepunk.Engine
 
 	/** 
 	 * Adds the component to the entity. This is essentially the same as Ash's `Entity.add` method, 
-	 * but it can accept string names for the entity reference, tests for null components, and
-	 * throws an exception instead of returning null if compulsory is set.
+	 * but it can accept string names for the entity reference, and tests for null components.
+	 * On failure, returns null, or if compulsory throws an exception. This could be because you
+	 * passed a string entity reference that failed lookup, or you supplied a null component or
+	 * entity.
 	 *
- 	 * @param ref An entity object, or the string name of such an object
- 	 * @param component The component instance to add
- 	 * @param clazz To force Ash to treat this component as having a different class, supply that class here (see `Entity.add`); defaults to null
-	 * @param compulsory If true, throws exception instead of returning false
-	 * @returns The entity the component was added to, or null if entity could not be determined
-	 * @throws An exception, if compulsory is set, and return is null, string lookup failed, or component was null
+	 * @param	ref				An entity object, or the string name of such an object
+	 * @param	component		The component instance to add
+	 * @param	clazz			To force Ash to treat this component as having a different class, supply that class here (see `ash.core.Entity.add()`); defaults to null
+	 * @param	compulsory		If true, throws exception instead of returning false
+	 * @returns	The entity the component was added to, or null if entity could not be determined
 	 */
 	public function addComponent(ref:EntityRef, component:Dynamic, clazz:Class<Dynamic> = null, compulsory:Bool = true): Entity
 	{
@@ -429,12 +430,12 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Adds multiple components to an entity.
+	 * Adds multiple components to an entity. 
+	 * Throws exception if string entity ref lookup fails.
 	 *
- 	 * @param ref An entity object, or the string name of such an object
- 	 * @param components An array of component instances
-	 * @returns The entity to which the components were added
-	 * @throws If compulsory and the component was not found in the entity, something was null, or the entity lookup failed
+	 * @param	ref			An entity object, or the string name of such an object
+	 * @param	components	An array of component instances
+	 * @returns	The entity to which the components were added
 	 */
 	public function addComponents(ref:EntityRef, components:Array<Dynamic>): Entity
 	{
@@ -449,8 +450,8 @@ class Flaxen extends com.haxepunk.Engine
 	 * the ref is a string, does a lookup in Ash by name. If it's an entity,
 	 * verifies the entity is not a free entity.
 	 * 
- 	 * @param ref An entity object, or the string name of such an object
- 	 * @returns True if the entity exists in the Ash engine, false if it's an name that can't be looked up or a free entity
+	 * @param	ref		An entity object, or the string name of such an object
+	 * @returns	True if the entity exists in the Ash engine, false if it's an name that can't be looked up or a free entity
 	 */
 	public function hasEntity(ref:EntityRef): Bool
 	{
@@ -468,9 +469,10 @@ class Flaxen extends com.haxepunk.Engine
 	 * Otherwise this adds a new, empty entity to Ash with this supplied name. 
 	 * Use this method when you don't know if the entity has been already 
 	 * created, but if hasn't, you want to ensure it does now.
-	 * @param name The name of the entity to resolve
-	 * @returns The entity found
-	 * @throws If name is invalid or null
+	 * Throws exception if name is invalid or null.
+	 *
+	 * @param	name	The name of the entity to resolve
+	 * @returns	The entity found
 	 */
 	public function resolveEntity(name:String): Entity
 	{
@@ -486,19 +488,18 @@ class Flaxen extends com.haxepunk.Engine
 	 * Ensures that the named entity exists and contains the specified component.
 	 * If the named entity does not exist, it is created.
 	 * If the component is lacking, it is created with the parameters specified.
-	 * Regardless, the component is returned.
+	 * Regardless, the component is returned. Throws an exception if the ref or component is null.
 	 *
- 	 * @param ref An entity object, or the string name of an entity you want to resolve
- 	 * @param component The name of a component class to resolve
- 	 * @param args An array of arguments to be passed to the component if it needs to be constructed
-	 * @returns The resolved component 
-	 * @throws If ref or component is null
+	 * @param	ref			An entity object, or the string name of an entity you want to resolve
+	 * @param	component	The name of a component class to resolve
+	 * @param	args		An array of arguments to be passed to the component if it needs to be constructed
+	 * @returns	The resolved component 
 	 */
 	public function resolveComponent<T>(ref:EntityRef, component:Class<T>, ?args:Array<Dynamic>): T
 	{
 		if(component == null)
 			throw 'Expected non-null component';
-			
+
 		var entity:Entity = ref.toEntity(this, false);
 		if(entity == null)
 			entity = resolveEntity(ref.toString());
@@ -514,11 +515,11 @@ class Flaxen extends com.haxepunk.Engine
 
 
 	/**
-	 * Adds an free entity object to Ash. 
+	 * Adds an free entity object to Ash. Throws an exception if the entity 
+	 * is null or an entity with the same name already exists in Ash.
 	 * 
-	 * @param entity The entity object to add to Ash
-	 * @returns the same entity
-	 * @throws If entity is null or entity already exists in ash
+	 * @param	entity		The entity object to add to Ash
+	 * @returns	The same entity
 	 */
 	public function addEntity(entity:Entity): Entity
 	{
@@ -529,11 +530,11 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Looks up an entity by name, and returns it.
-	 * On failure, either throws an exception (the default) or returns null (set compulsory to false).
-	 * @param ref The string name of an entity object to look up
-	 * @returns The entity asked for, f the named entity exists in Ash, otherwise null
-	 * @throws An Exception if the return would be null
+	 * Looks up an entity by name, and returns it. If the name could looked up, 
+	 * throws an exception if compulsory, otherwise returns null.
+	 *
+	 * @param	ref		The string name of an entity object to look up
+	 * @returns	The entity asked for, f the named entity exists in Ash, otherwise null
 	 */
 	public function getEntity(name:String, compulsory:Bool = true): Entity
 	{
@@ -545,12 +546,12 @@ class Flaxen extends com.haxepunk.Engine
 
 	/**
 	 * Returns the component from an entity. The entity can be free, but if you pass the string name
-	 * of an entity, it must exist in Ash.
+	 * of an entity, it must exist in Ash. Throws exception if compulsory is true and entity name 
+	 * lookup fails or component not be found
 	 * 
-	 * @param ref An entity object, or the string name of such an object
-	 * @param compulsory Determines if an exception is thrown (true) or null is returned (false) upon any failure
-	 * @return The component requested, or null if the component could not be found
-	 * @throws Exception if compulsory and entity name lookup fails or component not be found
+	 * @param	ref				An entity object, or the string name of such an object
+	 * @param	compulsory		Determines if an exception is thrown (true) or null is returned (false) upon any failure
+	 * @return	The component requested, or null if the component could not be found
 	 */
 	public function getComponent<T>(ref:EntityRef, component:Class<T>, compulsory:Bool = true): T
 	{
@@ -565,12 +566,12 @@ class Flaxen extends com.haxepunk.Engine
 	/**
 	 * Returns true if the entity exists and has the indicated component. If you supply
 	 * a string, the named entity must exist or it will throw an exception. However, if 
-	 * you supply an entity, it can be a free entity.
+	 * you supply an entity, it can be a free entity. Throws an exception if the string
+	 * ref could not be looked up
 	 * 
-	 * @param ref An entity object, or the string name of such an object
-	 * @param component The class of a component, e.g. `Position`
-	 * @returns True if the entity contains the component indicated; otherwise returns false
-	 * @throws If the string ref could not be looked up
+	 * @param	ref				An entity object, or the string name of such an object
+	 * @param	component		The class of a component, e.g. `Position`
+	 * @returns	True if the entity contains the component indicated; otherwise returns false
 	 */
 	public function hasComponent<T>(ref:EntityRef, component:Class<T>): Bool
 	{
@@ -579,9 +580,9 @@ class Flaxen extends com.haxepunk.Engine
 
 	/**
 	 * Looks up an entity and removes it from Ash.
-	 * @param ref An entity object, or the string name of such an object
-	 * @param compulsory If true (default), throws exception if ref does not reference a known Entity in Ash
-	 * @return True if the ref was found and removed; otherwise false
+	 * @param	ref				An entity object, or the string name of such an object
+	 * @param	compulsory		If true (default), throws exception if ref does not reference a known Entity in Ash
+	 * @return	True if the ref was found and removed; otherwise false
 	 */
 	public function removeEntity(ref:EntityRef, compulsory:Bool = true): Bool
 	{
@@ -602,6 +603,8 @@ class Flaxen extends com.haxepunk.Engine
 	 * or remove components.
 	 *
 	 * See ComponentSet for details.
+	 * @param	name	A unique name for the set.
+	 * @returns	The component set
 	 */
 	public function newComponentSet(name:String): ComponentSet
 	{
@@ -951,8 +954,15 @@ class Flaxen extends com.haxepunk.Engine
 	/**
 	 * Entity hit test, does not currently respect the Scale component
 	 * nor the ScaleFactor component. Returns an object with the x/y offset
-	 * of the clickpoint and image dimensios, respective to the position. Returns 
+	 * of the clickpoint and image dimensions, respective to the position. Returns 
 	 * null if the position does not fall within the entity.
+	 *
+	 * @param	ref		An entity object, or the string name of such an object
+	 * @param	x		An absolute x position; in screen-space
+	 * @param	y		An absolute y position; in screen-space
+	 * @returns	An anonymous object {xOffset,yOffset,width,height} indicating the 
+	 * 			relative position and the entity dimensions; 
+	 * 			or null if x,y does not intersect with the object
 	 */
 	public function hitTest(ref:EntityRef, x:Float, y:Float): 
 		{ xOffset:Float, yOffset:Float, width:Float, height:Float }
@@ -994,6 +1004,11 @@ class Flaxen extends com.haxepunk.Engine
 	 * Given an entity with an image that represents a grid, returns the cell 
 	 * coordinates being pointed at by the mouse, or null if the mouse position
 	 * lies outside of the image.
+	 * 
+	 * @param	ref		An entity object, or the string name of such an object
+	 * @param	rows	The number of rows in the grid
+	 * @param	cols	The number of columns in the grid
+	 * @returns	An anonymous object {x,y} indicating the cell pointed at, or null if the entity is not pointed at
 	 */
 	public function getMouseCell(ref:EntityRef, rows:Int, cols:Int): { x:Int, y:Int }
 	{
@@ -1015,7 +1030,11 @@ class Flaxen extends com.haxepunk.Engine
 	/**
 	 * Rough button (or any item) click checker; does not handle layering or entity ordering
 	 * An entity is pressed if the mouse is being clicked, the cursor is within
-	 * the dimensions of the entity, and the entity has full alpha (or as specified).
+	 * the rectangular dimensions of the entity, and the entity has full alpha (or as specified).
+	 *
+	 * @param	ref			An entity object, or the string name of such an object
+	 * @param	minAlpha	Ignores clicks if the Alpha of the entity is below this minimum; defaults to full alpha (off)
+	 * @returns	True if the entity is being clicked on
 	 */
 	public function isPressed(ref:EntityRef, minAlpha:Float = 1.0): Bool
 	{
@@ -1035,7 +1054,12 @@ class Flaxen extends com.haxepunk.Engine
 
 	/**
 	 * Creates an entity and adds the specified component to it. If name is not supplied,
-	 * it will be given a wrapper prefix.
+	 * it will be given a wrapper prefix. By default, the entity is added to Ash.
+	 * 
+	 * @param	component	The component instance to wrap into an entity.
+	 * @param	name		An optional name or pattern; see `newEntity` for naming
+	 * @param	addToAsh	If true, adds the new entity to the Ash engine; otherwise, returns a free entity
+	 * @returns	The new entity 
 	 */
 	public function newWrapper(component:Dynamic, ?name:String, addToAsh:Bool = true): Entity
 	{
@@ -1045,8 +1069,12 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Creates a new ActionQueue puts it into a new Entity. See ActionQueue.
+	 * Creates a new ActionQueue puts it into a new Entity. See `ActionQueue`.
 	 * This entity will be destroyed when the queue completes.
+	 *
+	 * @param	autoStart	If true (default), the queue will run immediately
+	 * @param	name		An optional name or pattern; see `newEntity` for naming
+	 * @returns	An ActionQueue instance; you can find the enclosing entity with `getEntity(aq.name)`
 	 */
 	public function newActionQueue(autoStart:Bool = true, ?name:String): ActionQueue
 	{
@@ -1057,8 +1085,17 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Creates a new Tween and puts it into a new Entity. See Tween.
+	 * Creates a new Tween and puts it into a new Entity. See `Tween`.
 	 * This entity will be destroyed when the tween completes.
+	 *
+	 * @param	source		The object/component containing the properties to tween; ex: `ent.get(Position)`
+	 * @param	target		An anonymous object identifying the properties and their final values; ex. `{x:100, y:200}`
+	 * @param	duration	The duration of the tween in seconds
+	 * @param	easing		An optional easing function; see `Easing`; defaults to `Linear`
+	 * @param	loop		An optional loop type; see `LoopType`; defaults to None
+	 * @param	autoStart	If true (default), the tween will begin immediately
+	 * @param	name		An optional name or pattern; see `new Entity` for naming
+	 * @return	The Tween instance; you can find the enclosing entity with `getEntity(tween.name)`
 	 */
 	public function newTween(source:Dynamic, target:Dynamic, duration:Float, ?easing:EasingFunction, 
 		?loop:LoopType, ?autoStart:Bool = true, ?name:String): Tween
@@ -1072,6 +1109,15 @@ class Flaxen extends com.haxepunk.Engine
 	/**
 	 * Creates a new Sound and puts it into a new Entity. See Sound.
 	 * This entity will be destroyed when the tween completes.
+	 * 
+	 * - TODO This has an inconsistent return. Modify Sound to include a name attribute, and return the Sound instance here.
+	 *
+	 * @param	file	The path to the sound asset; ex. "sound/beep.wav"
+	 * @param	loop	If true, the sound loops continuously; defaults to false
+	 * @param	volume	From 0 (mute) to 1 (default, full volume)
+	 * @param	pan		From -1 (left pan) to 1 (right pan); defaults to 0 (center)
+	 * @param	offset	The number of seconds from the start of the sound to skip; defaults to 0
+	 * @returns	The enclosing Entity
 	 */
 	public function newSound(file:String, loop:Bool = false, volume:Float = 1, pan:Float = 0, 
 		offset:Float = 0): Entity
@@ -1084,11 +1130,18 @@ class Flaxen extends com.haxepunk.Engine
 	}
 }
 
+/**
+ * Node helper to filter on dependents.
+ */
 private class DependentsNode extends Node<DependentsNode>
 {
 	public var dependents:Dependents;
 }
 
+/**
+ * Flaxen divides systems into three groups, which run in sequence.
+ * Within any one group, systems are processed in the order they are added.
+ */
 enum FlaxenSystemGroup { Early; Standard; Late; }
 
 /**
@@ -1113,7 +1166,7 @@ abstract EntityRef(Either<Entity, String>)
 		return new EntityRef(Right(str));
 
 	/**
-	 * @returns The entity's name
+	 * @returns	The entity's name
 	 */
 	@:to public function toString(): String
 	{
@@ -1133,9 +1186,9 @@ abstract EntityRef(Either<Entity, String>)
 	 * references an Entity, does not do a lookup to verify the entity
 	 * exists in the Ash engine.
 	 * 
-	 * @param f The Flaxen object
-	 * @param compulsory If true, throws exception instead of returning null
-	 * @returns The Entity object, or null if string lookup fails or ref was null
+	 * @param	f			The Flaxen object
+	 * @param	compulsory	If true, throws exception instead of returning null
+	 * @returns	The Entity object, or null if string lookup fails or ref was null
 	 */
 	public function toEntity(f:Flaxen, compulsory:Bool = true): Entity
 	{
