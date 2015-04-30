@@ -205,7 +205,7 @@ class Flaxen extends com.haxepunk.Engine
 	 * Adds a bunch of FlaxenSystems at once to the system group specified.
 	 *
 	 * @param	systems		An array of `FlaxenSystem` instances
-     * @param	group		The `FlaxenSystemGroup` to add these systems to, defaults to `Standard`
+	 * @param	group		The `FlaxenSystemGroup` to add these systems to, defaults to `Standard`
 	 */
 	public function addSystems(systems:Array<Class<FlaxenSystem>>, ?group:FlaxenSystemGroup)
 	{
@@ -381,8 +381,8 @@ class Flaxen extends com.haxepunk.Engine
 	 * Registers a new layout. Make sure you set Layout.current to portrait or landscape 
 	 * to start.
 	 *
-     * @param	name	The name of the `Layout`
-     * @returns	The `Layout` object supplied, right back atcha
+	 * @param	name	The name of the `Layout`
+	 * @returns	The `Layout` object supplied, right back atcha
 	 */
     public function addLayout(layout:Layout): Layout
     {
