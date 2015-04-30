@@ -94,29 +94,50 @@ import flaxen.system.*;
  */
 class Flaxen extends com.haxepunk.Engine
 {
-	public static inline var APPLICATION:String = "fApplication"; // Application mode entity
-	public static inline var PROFILER:String = "fProfiler"; // Profiler entity name
-	public static inline var GLOBAL_AUDIO:String = "fGlobalAudio"; // Global audio entity
+	/** If the system profiler is used, this is the profiler entity name */
+	public static inline var PROFILER:String = "_profiler";
 
-	private var coreSystemId:Int = 0;
-	private var userSystemId:Int = 10000;
-	private var standardSystemId:Int = 20000;
-	private var uniqueId:Int = 0;
-	private var modeSystem:ModeSystem;
-	private var updateSystem:UpdateSystem;
-	private var layouts:Map<String, Layout>;
-	private var sets:Map<String, ComponentSet>;
+	@:dox(hide) private var coreSystemId:Int = 0;
+	@:dox(hide) private var userSystemId:Int = 10000;
+	@:dox(hide) private var standardSystemId:Int = 20000;
+	@:dox(hide) private var uniqueId:Int = 0;
+	@:dox(hide) private var modeSystem:ModeSystem;
+	@:dox(hide) private var updateSystem:UpdateSystem;
+	@:dox(hide) private var layouts:Map<String, Layout>;
+	@:dox(hide) private var sets:Map<String, ComponentSet>;
 
+	/** The Ash engine; access this for direct manipulation of entities in Ash; READ-ONLY */
 	public var ash:ash.core.Engine;
+
+	/** The base screen width; READ-ONLY */
 	public var baseWidth:Int;
+
+	/** The base screen height; READ-ONLY */
 	public var baseHeight:Int;
+
+	/** The current layout orientation; READ-ONLY */
 	public var layoutOrientation:Orientation;
+
+	/** The current layout offset; READ-ONLY */
 	public var layoutOffset:Position;
+
+	/** The options Flaxen was initialized with; READ-ONLY */
 	public var options:FlaxenOptions;
 
 	/**
-	 * width/height -> leave 0 to match window dimensions
-	 * can pass a FlaxenOptions object instead for the first parameter
+	 * Creates a new Flaxen instance. If subclassed, this should be called 
+	 * by super() in your subclass constructor. Flaxen can be configured
+	 * with several arguments, or by use of a `FlaxenOptions` object.
+	 * You can leave width/height as 0 to have the HaxePunk buffer match
+	 * the window dimensions.
+	 * 
+	 * @param	optionsOrWidth	Either a `FlaxenOptions` object (which invalidates the rest of the parameters) or the desired screen width
+	 * @param	height			The desired screen width
+	 * @param	fps				The desired frame rate, in frames-per-second; defaults to 60
+	 * @param	fixed			Supply false for a variable framestep (the default), or true for a fixed framestep
+	 * @param	smoothing		Supply true for pixel smoothing which is slower but smoother
+	 * @param	earlySystems	Override the default early systems (`ModeSystem`, `UpdateSystem`)
+	 * @param	lateSystems		Override the default late systems (`ActionSystem`, `TweeningSystem`, `RenderingSystem`, `AudioSystem`)
 	 */
 	public function new(?optionsOrWidth:Dynamic, ?height:Int, ?fps:Int, ?fixed:Bool, ?smoothing:Bool,
 		?earlySystems:Array<Class<FlaxenSystem>>, ?lateSystems:Array<Class<FlaxenSystem>>)
@@ -156,6 +177,10 @@ class Flaxen extends com.haxepunk.Engine
 		com.haxepunk.HXP.screen.smoothing = options.smoothing;
 	}
 
+	/**
+	 * Initialization function called by HaxePunk. This is called after
+	 * HaxePunk has completed initializing itself.
+	 */
 	override public function init()
 	{
 		#if console
@@ -166,10 +191,21 @@ class Flaxen extends com.haxepunk.Engine
 		InputService.init();
 	}	
 
-	public function ready() { } // Override this to start your game
+	/**
+	 * Override this to start your game. This method is called by `FlaxenScene`
+	 * when the Scene has initialized and is ready for user configuration.
+	 * (That's you. You're the user.)
+	 */
+	public function ready()
+	{
+		// OVERRIDE ME!
+	} 
 
 	/**
 	 * Adds a bunch of FlaxenSystems at once to the system group specified.
+	 *
+	 * @param	systems		An array of `FlaxenSystem` instances
+     * @param	group		The `FlaxenSystemGroup` to add these systems to, defaults to `Standard`
 	 */
 	public function addSystems(systems:Array<Class<FlaxenSystem>>, ?group:FlaxenSystemGroup)
 	{
@@ -181,9 +217,13 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-     * Systems operate in the order that they are added.
+     * Systems operate in the order that they are added to their `FlaxenSystemGroup`.
      * Early systems process first, then user systems, then standard systems.
-     * Unless you have a good reason, you probably want to leave it in the user group.
+     * Unless you have a good reason, you probably want to leave it in the Standard group.
+     * You can add your own or predefined systems this way.
+     *
+     * @param	system	The `FlaxenSystem` to add
+     * @param	group	The `FlaxenSystemGroup` to add the system to, defaults to `Standard`
      */
     public function addSystem(system:FlaxenSystem, ?group:FlaxenSystemGroup):Void
     {
@@ -212,6 +252,14 @@ class Flaxen extends com.haxepunk.Engine
     		updateSystem = cast system;
     }
 
+    /**
+     * Internal priority setter. This ensures every system has a unique priority
+     * in Ash. I know this isn't how priority is intended, but I like to be sure
+     * that the systems are executed in an exact order.
+     *
+     * @param	group	The `FlaxenSystemGroup` whose priority id has changed
+     * @returns The next priority
+     */
     @:dox(hide) private function nextPriority(?group:FlaxenSystemGroup): Int
     {
 		return switch(group)
@@ -222,6 +270,9 @@ class Flaxen extends com.haxepunk.Engine
 		}
     }
 
+    /**
+     * You can override this to supply a different resizing algorithm.
+     */
     override private function resize()
     {
     	if(baseWidth == 0)
@@ -229,9 +280,7 @@ class Flaxen extends com.haxepunk.Engine
     	if(baseHeight == 0)
 			baseHeight = com.haxepunk.HXP.stage.stageHeight;
 
-	/**
-	 * fullScaleResize();
-	 */
+	 	// fullScaleResize();
     	// nonScalingResize();
     	fluidResize();
     }
@@ -245,6 +294,9 @@ class Flaxen extends com.haxepunk.Engine
         super.resize();
     }
 
+    /**
+     * An alternate resizing algorithm. The screen is not scaled.
+     */
     public function nonScalingResize()
     {
         com.haxepunk.HXP.screen.scaleX = com.haxepunk.HXP.screen.scaleY = 1;
@@ -252,6 +304,11 @@ class Flaxen extends com.haxepunk.Engine
 	        com.haxepunk.HXP.resize(com.haxepunk.HXP.stage.stageWidth, com.haxepunk.HXP.stage.stageHeight);
     }
 
+    /**
+     * Performs a *fluid resize*, which means it determines the optimal layout (tall/wide) based on the
+     * screen dimensions. It applies scaling as needed to fit the application onto the stage, and
+     * updates all layouts with their changed properties.
+     */
     public function fluidResize()
     {
     	if(com.haxepunk.HXP.width == 0 || com.haxepunk.HXP.height == 0)
@@ -279,6 +336,11 @@ class Flaxen extends com.haxepunk.Engine
         updateLayouts(); // Update orientation and offset for all layouts
     }
 
+    /**
+     * Determines the `baseWidth` and `baseHeight` properties, taking into consideration
+     * the effective orientation and the actual orientation. Updates HaxePunk's buffers
+     * as necessary.
+     */
     private function checkScreenOrientation()
     {
     	var newOrientation:Orientation = (baseWidth > baseHeight ? Landscape : Portrait);
@@ -292,9 +354,20 @@ class Flaxen extends com.haxepunk.Engine
     }
 
     /*
-     * Creates or replaces a new layout, indexed by name.
-     * If you add a Layout to an entity which also has a Position, that Position 
+     * Creates or replaces a new `Layout`, indexed by name. A layout is simply an set of offsets
+     * that are applied (during rendering) to all entities that have that `Layout` component.
+     * When the device orientation changes, the `RenderingSystem` chooses the offsets for the
+     * mathing orientation in the Layout object.
+     * 
+     * In other words, if you add a Layout to an entity which also has a Position, that Position 
      * will be interpreted as relative to the Layout.
+     *
+     * @param	name		The name of the `Layout`
+     * @param	landscapeX	The X position of the upper left corner of layout when in landscape
+     * @param	landscapeY	The Y position of the upper left corner of layout when in landscape
+     * @param	portraitX	The X position of the upper left corner of layout when in portrait
+     * @param	portraitY	The Y position of the upper left corner of layout when in portrait
+     * @returns	The `Layout` created
      */
 	public function newLayout(name:String, portaitX:Float, portraitY:Float, 
 		landscapeX:Float, landscapeY:Float): Layout
@@ -305,8 +378,11 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Registers a layout. Make sure you set Layout.current to portrait or landscape 
+	 * Registers a new layout. Make sure you set Layout.current to portrait or landscape 
 	 * to start.
+	 *
+     * @param	name	The name of the `Layout`
+     * @returns	The `Layout` object supplied, right back atcha
 	 */
     public function addLayout(layout:Layout): Layout
     {
@@ -314,6 +390,13 @@ class Flaxen extends com.haxepunk.Engine
     	return layout;
     }
 
+    /**
+     * Returns the `Layout` defined by the supplied name, or throws an exception if it 
+     * could not be found.
+     *
+     * @param	name	The name of the `Layout`
+     * @returns	The matching Layout object
+     */
     public function getLayout(name:String): Layout
     {
     	var layout:Layout = layouts.get(name);
@@ -477,7 +560,7 @@ class Flaxen extends com.haxepunk.Engine
 	public function resolveEntity(name:String): Entity
 	{
 		if(name == null)
-			throw "Cannot resolve null name";
+			Log.error("Cannot resolve null name");
 		var e = getEntity(name, false);
 		if(e != null)
 			return e;
@@ -513,7 +596,6 @@ class Flaxen extends com.haxepunk.Engine
 		return c;
 	}	
 
-
 	/**
 	 * Adds an free entity object to Ash. Throws an exception if the entity 
 	 * is null or an entity with the same name already exists in Ash.
@@ -524,7 +606,7 @@ class Flaxen extends com.haxepunk.Engine
 	public function addEntity(entity:Entity): Entity
 	{
 		if(entity == null)
-			throw "Cannot add null entity";
+			Log.error("Cannot add null entity");
 		ash.addEntity(entity);
 		return entity;
 	}
@@ -580,6 +662,7 @@ class Flaxen extends com.haxepunk.Engine
 
 	/**
 	 * Looks up an entity and removes it from Ash.
+	 *
 	 * @param	ref				An entity object, or the string name of such an object
 	 * @param	compulsory		If true (default), throws exception if ref does not reference a known Entity in Ash
 	 * @return	True if the ref was found and removed; otherwise false
@@ -602,7 +685,8 @@ class Flaxen extends com.haxepunk.Engine
 	 * inject components from other sets or entities, execute functions,
 	 * or remove components.
 	 *
-	 * See ComponentSet for details.
+	 * See `ComponentSet` for details.
+	 *
 	 * @param	name	A unique name for the set.
 	 * @returns	The component set
 	 */
@@ -614,8 +698,12 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Adds a set of components to the entity. The ComponentSet is specified by name
-	 * and must have been previously defined by newComponentSet().
+	 * Installs/adds a set of components to the entity. The `ComponentSet` is specified by name
+	 * and must have been previously defined by `newComponentSet()`.
+	 *
+	 * @param	ref			An entity object, or the string name of such an object
+	 * @param 	setName		The name of a `ComponentSet`, previously defined by `newComponentSet`.	
+	 * @returns	The Entity manipulated
 	 */
 	public function addSet(ref:EntityRef, setName:String): Entity
 	{
@@ -628,7 +716,10 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Returns a component set.
+	 * Returns a component set. Throws an exception if the set cannot be found.
+	 *
+	 * @param 	setName		The name of a `ComponentSet`, previously defined by `newComponentSet`.	
+	 * @returns	The component set found
 	 */
 	public function getComponentSet(name:String): ComponentSet
 	{
@@ -641,6 +732,10 @@ class Flaxen extends com.haxepunk.Engine
 	/**
 	 * Convenience method, creating new entity and installing component set in one
 	 * If a name is not provided, a unique one will be generated using the setName as a prefix.
+	 *
+	 * @param 	setName			The name of a `ComponentSet`, previously defined by `newComponentSet`.	
+	 * @param 	entityName		An optional name or pattern to assign to the new entity; see `newEntity`
+	 * @returns	The entity created
 	 */
 	public function newSetEntity(setName:String, ?entityName:String, addToAsh:Bool = true): Entity
 	{
@@ -650,13 +745,21 @@ class Flaxen extends com.haxepunk.Engine
 		return addSet(e, setName);
 	}
 
+	/**
+	 * Iterates over the component set names. For debugging.
+	 *
+	 * @returns	A String iterator of component set names.
+	 */
 	public function getComponentSetKeys(): Iterator<String>
 	{
 		return sets.keys();
 	}
 	
 	/**
-	 * Returns the number of nodes matching the supplied Node class
+	 * Counts the nodes that match the supplied Node class
+	 *
+	 * @param	nodeClass	A class that extends Node<T>, see `ash.core.Node<TNode>`
+	 * @returns	The total number of entites matched by the node
 	 */
 	public function countNodes<T:Node<T>>(?nodeClass:Class<T>): Int
 	{
@@ -668,7 +771,10 @@ class Flaxen extends com.haxepunk.Engine
 
 	/**
 	 * Returns an array of all entities that match the node.
-	 *  If no node is provided, returns the full ash entity list.
+	 * If no node is provided, returns the full ash entity list.
+	 *
+	 * @param	nodeClass	A class that extends Node<T>, see `ash.core.Node<TNode>`, or null
+	 * @returns	An array of all entities matched by the node
 	 */
 	public function getEntities<T:Node<T>>(?nodeClass:Class<T>): Array<Entity>
 	{
@@ -685,7 +791,9 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Returns the number of entities in the Ash system.
+	 * Counts all of the entities in the Ash system.
+	 *
+	 * @returns	The total number of entites in the Ash engine
 	 */
 	public function countEntities(): Int
 	{
@@ -696,8 +804,10 @@ class Flaxen extends com.haxepunk.Engine
 	}	
 
 	/**
-	 * Removes all entities that match the node
-	 * Returns the number removed
+	 * Removes all entities that match the supplied node.
+	 *
+	 * @param	nodeClass	A class that extends Node<T>, see `ash.core.Node<TNode>`
+	 * @return	The number of entities removed
 	 */
 	public function removeEntities<T:Node<T>>(?nodeClass:Class<T>): Int
 	{
@@ -712,13 +822,20 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Generates a new named marker if it doesn't exist.
-	 * If a name is not given, a unique marker name is generated and returned.
+	 * Generates a new named marker, if it doesn't exist.
 	 *
 	 * Markers are entities with no content, identified by a unique name.
 	 * They can be used ad-hoc controls: systems can check for the existence
 	 * of a marker as permission to do some behavior. Since markers are
 	 * essentially just strings, you are advised to define them in constants.
+	 *
+	 * All marker entities are distinguishable from other entities because 
+	 * their name starts with the same marker prefix. See `generateMarkerName`.
+	 *
+	 * - TODO: For distinguishing - wouldn't it worker better to add a static Marker component?
+	 *
+	 * @param	name	An optional marker name; if one is not supplied, a name will be generated for you
+	 * @returns	The marker name
 	 */
 	public function newMarker(?name:String): String
 	{
@@ -729,7 +846,10 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Returns true if a marker exists (see newMarker)
+	 * Returns true if a marker exists (see `newMarker`)
+	 *
+	 * @param	name	The marker name
+	 * @returns	True if the marker exists otherwise false
 	 */
 	public function hasMarker(name:String): Bool
 	{
@@ -739,6 +859,10 @@ class Flaxen extends com.haxepunk.Engine
 
 	/**
 	 * Removes the named marker, if it exists.
+	 *
+	 * - TODO: Add compulsory option?
+	 *
+	 * @param	name	The marker name
 	 */
 	public function removeMarker(name:String): Void
 	{
@@ -747,17 +871,21 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Internal function for generating a full entity name for a marker
+	 * Internal function for generating a full entity name for a marker.
+	 * Prefixes the marker name with __marker__.
 	 */
-	private function generateMarkerName(name:String): String
+	@:dox(hide) private function generateMarkerName(name:String): String
 	{
 		return '__marker__$name';
 	}
 
 	/**
-	 * Creates and adds the second entity, making it dependent of the first entity
-	 * The parent may be specified by name or by passing the Entity itself
-	 * Returns the child entity
+	 * Creates a child entity and makes it dependent on the parent entity
+	 * The parent may be specified by name or by passing the Entity itself.
+	 *
+	 * @param	parentRef	An entity object representing the parent, or the string name of such an object
+	 * @param	childName	The name of the child, or a naming pattern; see `newEntity` for naming
+	 * @returns The new child entity
 	 */
 	public function newChildEntity(parentRef:EntityRef, childName:String): Entity
 	{
@@ -769,6 +897,9 @@ class Flaxen extends com.haxepunk.Engine
 	/**
 	 * Creates a lifecycle dependency between entities. When the parent entity is 
 	 * destroyed, all of its dependent children will be destroyed immediately after.
+	 *
+	 * @param	parentRef	An entity object representing the parent, or the string name of such an object
+	 * @param	childRef	An entity object representing the dependent, or the string name of such an object
 	 */
 	public function addDependent(parentRef:EntityRef, childRef:EntityRef): Void
 	{		
@@ -782,7 +913,10 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Destroys all dependents of the entity. Does not affect the entity.
+	 * Destroys all dependents of the entity. Does not remove the entity itself,
+	 * just its dependents.
+	 *
+	 * @param	ref		An entity object, or the string name of such an object
 	 */
 	public function removeDependents(ref:EntityRef): Void
 	{
@@ -798,9 +932,10 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Callback; forces the cascade removal of dependent entities
+	 * Callback; forces the cascade removal of dependent entities.
+	 * This is an internal method.
 	 */
-	private function dependentsNodeRemoved(node:DependentsNode): Void
+	@:dox(hide) private function dependentsNodeRemoved(node:DependentsNode): Void
 	{
 		removeDependents(node.entity);
 	}
@@ -812,12 +947,11 @@ class Flaxen extends com.haxepunk.Engine
 	 * whether or not this mode has been initialized. The application entity
 	 * is protected from removal when transitioning.
 	 *
-	 * See ModeSystem.
+	 * See `ModeSystem`.
 	 */
-
 	public function getApp(): Application
 	{
-		var e = resolveEntity(APPLICATION);
+		var e = resolveEntity("_app");
 		if(!e.has(Application))
 		{
 			e.add(new Application());
@@ -827,9 +961,17 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * You can add a Transitional to an entity and specify a kind in it.
+	 * You can add a `Transitional` to an entity and specify a kind in it.
 	 * This is a classification. You can then use this method to remove all
 	 * entities having or lacking specific kind values.
+	 * ```
+	 * var trans = new Transitional(Play, "fx");
+	 * e.add(trans);
+	 * removeTransitionedEntities("fx"); // remove all fx entities
+	 * ```
+	 *
+	 * @param	matching	The name of the kind of entity you want to remove
+	 * @param	excluding	The name of the kind of entity to exclude from this removal
 	 */
 	public function removeTransitionedEntities(matching:String = null, excluding:String = null)
 	{
@@ -848,8 +990,11 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Queues up a transition to the new mode; causes the stop handler to execute, 
-	 * eliminates unprotected entities, then executes the start handler.
+	 * Queues up a transition to the new mode; causes the current mode's stop handler 
+	 * to execute, eliminates unprotected entities, then executes new mode's start handler.
+	 * See `ModeSystem`.
+	 *
+	 * @param	mode	The `ApplicationMode` to transition to
 	 */
 	public function setMode(mode:ApplicationMode): Void
 	{
@@ -859,7 +1004,7 @@ class Flaxen extends com.haxepunk.Engine
 
 	/**
 	 * Queues up a self-transition to the current mode; causes the stop handler to execute, 
-	 * eliminates unprotected entities, then executes the start handler.
+	 * eliminates unprotected entities, then executes the start handler. See `setMode`.
 	 */
 	public function restartMode(): Void
 	{
@@ -868,7 +1013,12 @@ class Flaxen extends com.haxepunk.Engine
 	}	
 
 	/**
-	 * Adds a function that is called when an application mode is started. See setHandler.
+	 * Adds a function that is called when an application mode is started.
+	 * Also see `setHandler`.
+	 *
+	 * @param	callback	A function that accepts Flaxen and returns nothing
+	 * @param	mode		An optional `ApplicationMode` that determines when this callback runs
+	 * @returns	The Flaxen instance
 	 */
 	public function setStartCallback(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
@@ -878,7 +1028,12 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Adds a function that is called when an application mode is stopped. See setHandler
+	 * Adds a function that is called when an application mode is stopped. 
+	 * Also see `setHandler`.
+	 *
+	 * @param	callback	A function that accepts Flaxen and returns nothing
+	 * @param	mode		An optional `ApplicationMode` that determines when this callback runs
+	 * @returns	The Flaxen instance
 	 */
 	public function setStopCallback(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
@@ -890,7 +1045,11 @@ class Flaxen extends com.haxepunk.Engine
 	/**
 	 * Adds a function that is called regularly only during a specific application mode.
 	 * Generally this is intended for handling input, but you could also use it just as
-	 * an update function. See UpdateSystem for more information. Also see setHandler.
+	 * an update function. See UpdateSystem for more information. Also see `setHandler`.
+	 *
+	 * @param	callback	A function that accepts Flaxen and returns nothing
+	 * @param	mode		An optional `ApplicationMode` that determines when this callback runs
+	 * @returns	The Flaxen instance
 	 */
 	public function setUpdateCallback(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
 	{
@@ -900,12 +1059,24 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/** 
-	 * Sets up all mode callbacks in one shot. Create a subclass of FlaxenHandler and
+	 * Sets up all mode callbacks in one shot. Create a subclass of `FlaxenHandler` and
 	 * override the functions you want. You cannot "unset" a handler once set.
-	 * If a mode is not supplied, registers it as Default, which is the bootstrap mode.
-	 * If Always is supplied, the handlers are run in ALL MODES, after the primary handlers
-	 * run. For example: setHandler(handler1, Play); setHandler(handler2, Always); 
-	 * If you setMode(Play), handler1.start will be called, followed by handler2.start.
+	 * If a mode is not supplied, the mode defaults to `Default`, which is the mode
+	 * that runs when the application bootstraps.
+	 * If the mode is `Always`, the handlers are run in *all modes*, after the primary handlers
+	 * run.
+	 * See `ModeSystem`.
+	 *
+	 * In this example, when Play mode is entered, handler1.start() will be called, 
+	 * followed by handler2.start():
+	 * ```
+	 * setHandler(handler1, Play); 
+	 * setHandler(handler2, Always); 
+	 * ```
+	 *
+	 * @param	handler		A `FlaxenHandler` instance, this is a class you create
+	 * @param	mode		An optional `ApplicationMode` that determines when these callbacks runs
+	 * @returns	The Flaxen instance
 	 */
 	public function setHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Flaxen
 	{
@@ -918,10 +1089,12 @@ class Flaxen extends com.haxepunk.Engine
 	/*
 	 * Returns the global audio object. Creates the object if it does not yet exist.
 	 * Use it to set global volume, mute, or stop audio after a cutoff.
+	 *
+	 * @returns	The `GlobalAudio` object
 	 */
 	public function getGlobalAudio(): GlobalAudio
 	{
-		var entity:Entity = resolveEntity(GLOBAL_AUDIO);
+		var entity:Entity = resolveEntity("_globalAudio");
 	
 		if(!entity.has(GlobalAudio))
 			entity
@@ -932,7 +1105,8 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/** 
-	 * Stops all currently playing sounds
+	 * Stops all currently playing sounds. 
+	 * Sounds are not stopped until the `AudioSystem` processes them. 
 	 */
 	public function stopSounds(): Void
 	{
@@ -940,7 +1114,11 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Stops a specific sound from playing
+	 * Stops all instances of a specific sound from playing, based on the path to the sound.
+	 * If you want to stop a single instance, maintain a reference to the `Sound` entity (or
+	 * component) and set the component's stop property to true.
+	 * 
+	 * @param	file	The path to the sound asset; ex. "sound/beep.wav"
 	 */
 	public function stopSound(file:String): Void
 	{
@@ -1166,6 +1344,8 @@ abstract EntityRef(Either<Entity, String>)
 		return new EntityRef(Right(str));
 
 	/**
+	 * Returns the name of this entity. May return null if the ref is null.
+	 *
 	 * @returns	The entity's name
 	 */
 	@:to public function toString(): String
@@ -1182,9 +1362,9 @@ abstract EntityRef(Either<Entity, String>)
 	}
 
 	/**
-	 * Converts the EntityRef into an Entity. If the EntityRef already 
-	 * references an Entity, does not do a lookup to verify the entity
-	 * exists in the Ash engine.
+	 * Converts the EntityRef into an Entity. If the EntityRef references 
+	 * an Entity, does not do a lookup to verify the entity exists in the 
+	 * Ash engine (i.e., it may be a free entity).
 	 * 
 	 * @param	f			The Flaxen object
 	 * @param	compulsory	If true, throws exception instead of returning null
@@ -1195,7 +1375,7 @@ abstract EntityRef(Either<Entity, String>)
 		if(this == null)
 		{
 			if(compulsory)
-				throw "Compulsory entity cannot be null";
+				Log.error("Compulsory entity cannot be null");
 		 	return null;
 		}
 

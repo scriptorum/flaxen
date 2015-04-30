@@ -44,6 +44,8 @@ import flaxen.Log;
  * only one start/stop/input handler per mode, but you can also specify the virtual 
  * mode Always (or null). The Always handler will be called (always) in every mode, 
  * after the mode-specific handler is called.*
+ *
+ * Also see `Transitional`.
  */
 class ModeSystem extends FlaxenSystem
 {

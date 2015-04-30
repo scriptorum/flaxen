@@ -20,7 +20,7 @@ import flaxen.Log;
  * To protect an entity from being removed when the mode changes:
  *    entity.add(Transitional.ALWAYS); // Never will be removed
  *    entity.add(Transitional.NEXT); // Will be protected through transition to next mode, only, then protection is removed
- *    entity.add(new Transitional(PlayMode)); // Will be protected only if next mode matches this mode
+ *    entity.add(new Transitional(Play)); // Will be protected only if next mode matches this mode
  *
  *  - TODO: The entire "transitional" system needs to be made clearer and cleaner. Also, the mode system needs to support
  *      layered/stacked modes. For example, hitting ESC brings an options window, and selecting calibrate controller 
@@ -45,12 +45,13 @@ class Transitional implements Completable
 	public var kind:String; 		  
 
 
-	public function new(mode:ApplicationMode, ?onComplete:OnCompleteTransition)
+	public function new(mode:ApplicationMode, ?kind:String, ?onComplete:OnCompleteTransition)
 	{	
 		if(mode == null)
 			Log.error("ApplicationMode cannot be null");
 
 		this.mode = mode;
+		this.kind = kind;
 		this.onComplete = (onComplete == null ? None : onComplete);
 	}
 
