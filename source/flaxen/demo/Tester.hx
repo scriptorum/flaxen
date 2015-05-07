@@ -515,15 +515,6 @@ class FlaxenTest extends FlaxenTestCase
 	}
 }
 
-class MyPosition extends Position
-{
-	public var base:Bool = true;
-	public function new(x:Float, y:Float)
-	{
-		super(x, y);
-	}
-}
-
 class ActionQueueTest extends FlaxenTestCase
 {
 	public var aq:ActionQueue;
@@ -897,18 +888,30 @@ class ActionQueueTest extends FlaxenTestCase
 	}
 }
 
-class Task implements Completable
+///// HELPER CLASSES
+
+@:dox(hide) class Task implements Completable
 {
 	public var complete:Bool = false;
 	public function new() { }
 }
 
-class ScaleNode extends Node<ScaleNode>
+@:dox(hide) class ScaleNode extends Node<ScaleNode>
 {
 	public var scale:Scale;
 }
 
-class AlphaNode extends Node<AlphaNode>
+@:dox(hide) class AlphaNode extends Node<AlphaNode>
 {
 	public var Alpha:Alpha;
 }
+
+@:dox(hide) class MyPosition extends Position
+{
+	public var base:Bool = true;
+	public function new(x:Float, y:Float)
+	{
+		super(x, y);
+	}
+}
+

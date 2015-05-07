@@ -3,6 +3,7 @@ package flaxen.demo;
 import ash.core.Entity;
 import com.haxepunk.utils.Key;
 import flaxen.common.LoopType;
+import flaxen.common.OnCompleteAnimation;
 import flaxen.component.Alpha;
 import flaxen.component.Animation;
 import flaxen.component.Data;

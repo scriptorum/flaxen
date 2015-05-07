@@ -375,5 +375,5 @@ class ActionQueue implements Completable
 /**
  * Defines an object for storing the first and last actions in a queue.
  */
-typedef QueueTips = { first:Action, last:Action }
+@:dox(hide) typedef QueueTips = { first:Action, last:Action }
 
