@@ -50,7 +50,7 @@ class UpdateSystem extends FlaxenSystem
 		handlers = new Map<ApplicationMode, FlaxenCallback>();
 
 		#if profiler
-		stats = f.resolveEntity(Flaxen.PROFILER).get(ProfileStats);
+		stats = f.resolveEntity(Flaxen.profilerName).get(ProfileStats);
 		#end
 	}
 

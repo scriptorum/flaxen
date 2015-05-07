@@ -21,6 +21,6 @@ class Alpha
 
 	public static function half()
 	{
-		return new Alpha(1.0);
+		return new Alpha(0.5);
 	}
 }

@@ -6,10 +6,12 @@ import openfl.system.System;
 /**
  * Logging and debugging services.
  *
- * - TODO: What's the different between a util and a service? Which is this??*
+ * - TODO: What's the different between a util and a service? Which is this?? Would this be better as an instance property of Flaxen?
  */
 class Log
 {
+	public static var last(default,null):String = null;
+
 	inline public static function write(msg:String)
 	{
 		log(msg);
@@ -20,11 +22,13 @@ class Log
 	//	    Possible? Look into Context and macros.
 	inline public static function log(msg:String)
 	{
+		last = msg;
 		trace(msg);
 	}
 
 	inline public static function warn(msg:String)
 	{
+		last = msg;
 		#if debug
 			trace(msg);
 		#end
@@ -39,9 +43,11 @@ class Log
 	// error: no viable conversion from 'Dynamic' to 'Void' (aka 'null')
 	public static function error(msg:String = "Unspecified error")
 	{
+		last = msg;
 		throw(msg);
 	}
 
+	// These could be improved upon
 	inline public static function assert(condition:Bool, ?msg:String = "Assert failed")
 	{
 		if(condition != true)

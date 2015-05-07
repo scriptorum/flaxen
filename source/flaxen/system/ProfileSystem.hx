@@ -28,7 +28,7 @@ import flaxen.service.InputService;
 	{
 		super(flaxen);
 
-		this.stats = flaxen.resolveEntity(Flaxen.PROFILER).get(ProfileStats);
+		this.stats = flaxen.resolveEntity(Flaxen.profilerName).get(ProfileStats);
 		this.profile = stats.getOrCreate(name);
 		this.opener = opener;
 	}

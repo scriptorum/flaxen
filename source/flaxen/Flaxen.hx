@@ -68,9 +68,10 @@ import flaxen.system.*;
  * ```
  * class MyFlaxenApp
  * {
+ *     public var f:Flaxen;
  *     public static function main()
  *     {
- * 		    var f = new Flaxen();
+ * 		    f = new Flaxen();
  * 		    f.newActionQueue()
  * 			    .waitForProperty(f.getApp(), "ready", true)
  * 			    .call(ready);
@@ -79,7 +80,7 @@ import flaxen.system.*;
  *     public function ready()
  *     {
  *         // Setup here...
- *         var entity:Entity = newEntity("player"); 
+ *         var entity:Entity = f.newEntity("player"); 
  *         ...
  *     }
  * }
@@ -94,36 +95,6 @@ import flaxen.system.*;
  */
 class Flaxen extends com.haxepunk.Engine
 {
-	/** If the system profiler is used, this is the profiler entity name */
-	public static inline var PROFILER:String = "_profiler";
-
-	@:dox(hide) private var coreSystemId:Int = 0;
-	@:dox(hide) private var userSystemId:Int = 10000;
-	@:dox(hide) private var standardSystemId:Int = 20000;
-	@:dox(hide) private var uniqueId:Int = 0;
-	@:dox(hide) private var modeSystem:ModeSystem;
-	@:dox(hide) private var updateSystem:UpdateSystem;
-	@:dox(hide) private var layouts:Map<String, Layout>;
-	@:dox(hide) private var sets:Map<String, ComponentSet>;
-
-	/** The Ash engine; access this for direct manipulation of entities in Ash; READ-ONLY */
-	public var ash:ash.core.Engine;
-
-	/** The base screen width; READ-ONLY */
-	public var baseWidth:Int;
-
-	/** The base screen height; READ-ONLY */
-	public var baseHeight:Int;
-
-	/** The current layout orientation; READ-ONLY */
-	public var layoutOrientation:Orientation;
-
-	/** The current layout offset; READ-ONLY */
-	public var layoutOffset:Position;
-
-	/** The options Flaxen was initialized with; READ-ONLY */
-	public var options:FlaxenOptions;
-
 	/**
 	 * Creates a new Flaxen instance. If subclassed, this should be called 
 	 * by super() in your subclass constructor. Flaxen can be configured
@@ -162,7 +133,7 @@ class Flaxen extends com.haxepunk.Engine
 		// Prepare profile stats if requires
 		#if profiler
 			var stats = new ProfileStats();
-			var pe = resolveEntity(PROFILER);
+			var pe = resolveEntity(profilerName);
 			pe.add(stats);
 		#end
 
@@ -416,33 +387,40 @@ class Flaxen extends com.haxepunk.Engine
     }
 
 	/**
-	 * Generates an automatic entity name, or parses an existing name to replace "#" with 
-	 * a unique ID. The latter is useful for naming a class of entities with the same prefix.
-	 * For example, "bullet#" will generate bullet0, bullet1, bullet2, etc. The ID is 
-	 * guaranteed to be unique among all generated names.
-	 * @param	name	An entity name (aka, "a singleton"), prefix pattern (with "#"), or null
-	 * @return	The generated/parsed name
-	 */
-	public function generateEntityName(name:String = "_entity#"): String
-	{
-		return StringTools.replace(name, "#", Std.string(uniqueId++));
-	}
-
-	/**
-	 * Creates a new entity and (by default) adds it to the Ash engine. If you do 
-	 * not provide a name for the entity, one will be generated. You may a include
-	 * "#" symbol in your name it will be replaced with a unique id. You may pass
-	 * false for addToAsh to make a "free" entity, which you can add later using
-	 * `addEntity`.
+	 * Creates a new entity and (by default) adds it to the Ash engine. 
+	 * 
+	 * If you do not provide a name for the entity, a unique name will be 
+	 * generated. (See `ash.core.Entity.name`.) 
 	 *
-	 * @param	name		The name for the new entity, see `generateEntityName()`
+	 * You may a include the "#" symbol in your name and it will be replaced 
+	 * with the number of entities that were previously created by this method.
+	 * This pattern naming is useful for debugging; e.g., "ball#" will generate 
+	 * entities named ball0, ball1, ball2, etc.
+	 *
+	 * You may pass false for addToAsh to make a "free" entity, which you can 
+	 * add later using `addEntity`.
+	 *
+	 * @param	name		A name or name pattern for the new entity (optional)
 	 * @param	addToAsh	If true, adds the new entity to the Ash engine; otherwise, returns a free entity
 	 */
 	public function newEntity(?name:String, addToAsh:Bool = true): Entity 
 	{
-		var entity:Entity = new Entity(generateEntityName(name));
+		// Provide default name
+		if(name == null)
+			name = entityPrefix + "#";
+
+		// Process # pattern
+		name = StringTools.replace(name, "#", Std.string(numEntities));
+
+		// Crete entity, and probably add it to ash
+		var entity:Entity = new Entity(name);
 		if(addToAsh)
 			addEntity(entity);
+
+		// increment total number of entities this method has created
+		++numEntities; 
+
+		// Return the entity instance; refer to entity.name to determine the unique name generated
 		return entity;
 	}    
 
@@ -529,9 +507,10 @@ class Flaxen extends com.haxepunk.Engine
 	}	
 
 	/**
-	 * Returns true if the supplied entity reference is in Ash's engine. If 
-	 * the ref is a string, does a lookup in Ash by name. If it's an entity,
-	 * verifies the entity is not a free entity.
+	 * Returns true if the supplied entity reference is in Ash's engine. It
+	 * does a lookup in Ash by the name supplied (if the ref is a string) or
+	 * the entity's name (if the ref is an entity). This will also return false
+	 * if the entity is a "free entity".
 	 * 
 	 * @param	ref		An entity object, or the string name of such an object
 	 * @returns	True if the entity exists in the Ash engine, false if it's an name that can't be looked up or a free entity
@@ -564,7 +543,7 @@ class Flaxen extends com.haxepunk.Engine
 		var e = getEntity(name, false);
 		if(e != null)
 			return e;
-		return addEntity(new Entity(name));
+		return newEntity(name);
 	}
 
 	/**
@@ -761,7 +740,7 @@ class Flaxen extends com.haxepunk.Engine
 	 * @param	nodeClass	A class that extends Node<T>, see `ash.core.Node<TNode>`
 	 * @returns	The total number of entites matched by the node
 	 */
-	public function countNodes<T:Node<T>>(?nodeClass:Class<T>): Int
+	public function countNodes<T:Node<T>>(nodeClass:Class<T>): Int
 	{
 		var count:Int = 0;
 	 	for(node in ash.getNodeList(nodeClass))
@@ -770,23 +749,52 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Returns an array of all entities that match the node.
-	 * If no node is provided, returns the full ash entity list.
+	 * Returns an array of all entities that match the supplied node.
 	 *
-	 * @param	nodeClass	A class that extends Node<T>, see `ash.core.Node<TNode>`, or null
+	 * @param	nodeClass	A class that extends Node<T>, see `ash.core.Node<TNode>`
 	 * @returns	An array of all entities matched by the node
 	 */
-	public function getEntities<T:Node<T>>(?nodeClass:Class<T>): Array<Entity>
+	public function getEntities<T:Node<T>>(nodeClass:Class<T>): Array<Entity>
 	{
 		var result = new Array<Entity>();
-
-		if(nodeClass == null)
-			for(e in ash.entities)
-				result.push(e);
-
-		else for(node in ash.getNodeList(nodeClass))
+		for(node in ash.getNodeList(nodeClass))
 			result.push(node.entity);
+	 	return result;
+	}
 
+	/**
+	 * When expecting exactly one node, this returns the one entity matching the supplied node.
+	 *
+	 * @param	nodeClass	A class that extends Node<T>, see `ash.core.Node<TNode>`
+	 * @param	compulsory	If true, throws exception if no entities found or more than one found
+	 * @returns	The matching entity, or any matching entity (arbtirary) if multiple match, or null if none match
+	 */
+	public function getOneEntity<T:Node<T>>(nodeClass:Class<T>, compulsory:Bool = true): Entity
+	{
+		var e:Entity = null;
+		for(node in ash.getNodeList(nodeClass))
+		{
+			if(e != null && compulsory)
+				throw 'Found more than one entity matching node $nodeClass';
+			e = node.entity;
+		}
+
+		if(e == null && compulsory)
+			throw 'Found no one entities matching node $nodeClass';
+
+		return e;
+	}
+
+	/**
+	 * Returns an array of ALL entities in Ash.
+	 *
+	 * @returns	An array of all entities.
+	 */
+	public function getAllEntities(): Array<Entity>
+	{
+		var result = new Array<Entity>();
+		for(e in ash.entities)
+			result.push(e);
 	 	return result;
 	}
 
@@ -822,61 +830,48 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
-	 * Generates a new named marker, if it doesn't exist.
+	 * Generates a new named marker, if it doesn't already exist.
 	 *
 	 * Markers are entities with no content, identified by a unique name.
 	 * They can be used ad-hoc controls: systems can check for the existence
 	 * of a marker as permission to do some behavior. Since markers are
 	 * essentially just strings, you are advised to define them in constants.
 	 *
-	 * All marker entities are distinguishable from other entities because 
-	 * their name starts with the same marker prefix. See `generateMarkerName`.
+	 * All marker entities instances are distinguishable from other entities 
+	 * because they start with a marker prefix (see `markerToEntityPrefix`).
 	 *
-	 * - TODO: For distinguishing - wouldn't it worker better to add a static Marker component?
+	 * - TODO: For processing options, add a static Marker instance to these entities.
 	 *
 	 * @param	name	An optional marker name; if one is not supplied, a name will be generated for you
-	 * @returns	The marker name
+	 * @returns	The marker name; if you did not supply a name, or if your name included a #, this is the actual name generated
 	 */
 	public function newMarker(?name:String): String
 	{
 		if(name == null)
-			name = "_mark" + uniqueId++;
-		resolveEntity(generateMarkerName(name));
-		return name;
+			name = markerPrefix + "#";
+		var e = resolveEntity(markerToEntityPrefix + name);
+		return e.name;
 	}
 
 	/**
-	 * Returns true if a marker exists (see `newMarker`)
+	 * Returns true if a marker exists. See `newMarker`.
 	 *
 	 * @param	name	The marker name
 	 * @returns	True if the marker exists otherwise false
 	 */
 	public function hasMarker(name:String): Bool
 	{
-		var markerName = generateMarkerName(name);
-		return hasEntity(markerName);
+		return hasEntity(markerToEntityPrefix + name);
 	}
 
 	/**
-	 * Removes the named marker, if it exists.
-	 *
-	 * - TODO: Add compulsory option?
+	 * Removes the named marker, if it exists. See `newMarker`.
 	 *
 	 * @param	name	The marker name
 	 */
 	public function removeMarker(name:String): Void
 	{
-		var markerName:String = generateMarkerName(name);
-		removeEntity(markerName, false);
-	}
-
-	/**
-	 * Internal function for generating a full entity name for a marker.
-	 * Prefixes the marker name with __marker__.
-	 */
-	@:dox(hide) private function generateMarkerName(name:String): String
-	{
-		return '__marker__$name';
+		removeEntity(markerToEntityPrefix + name, false);
 	}
 
 	/**
@@ -951,7 +946,7 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 	public function getApp(): Application
 	{
-		var e = resolveEntity("_app");
+		var e = resolveEntity(applicationName);
 		if(!e.has(Application))
 		{
 			e.add(new Application());
@@ -1094,7 +1089,7 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 	public function getGlobalAudio(): GlobalAudio
 	{
-		var entity:Entity = resolveEntity("_globalAudio");
+		var entity:Entity = resolveEntity(globalAudioName);
 	
 		if(!entity.has(GlobalAudio))
 			entity
@@ -1241,7 +1236,7 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 	public function newWrapper(component:Dynamic, ?name:String, addToAsh:Bool = true): Entity
 	{
-		var e = newEntity((name == null ? "_wrapper#" : name), addToAsh);
+		var e = newEntity((name == null ? wrapperPrefix + "#" : name), addToAsh);
 		e.add(component);
 		return e;
 	}
@@ -1257,7 +1252,7 @@ class Flaxen extends com.haxepunk.Engine
 	public function newActionQueue(autoStart:Bool = true, ?name:String): ActionQueue
 	{
 		var aq = new ActionQueue(this, DestroyEntity, autoStart);
-		var e = newWrapper(aq, (name == null ? "_actionQueue#" : name));
+		var e = newWrapper(aq, (name == null ? actionQueuePrefix + "#" : name));
 		aq.name = e.name;
 		return aq;
 	}
@@ -1279,7 +1274,7 @@ class Flaxen extends com.haxepunk.Engine
 		?loop:LoopType, ?autoStart:Bool = true, ?name:String): Tween
 	{
 		var tween = new Tween(source, target, duration, easing, loop, DestroyEntity, autoStart);
-		var e = newWrapper(tween, (name == null ? "_tween#" : name));
+		var e = newWrapper(tween, (name == null ? tweenPrefix + "#" : name));
 		tween.name = e.name;
 		return tween;
 	}
@@ -1306,6 +1301,60 @@ class Flaxen extends com.haxepunk.Engine
 		e.add(sound);
 		return e;
 	}
+
+	/** The name of the entity holding the ProfileStats component */
+	public static inline var profilerName:String = "_profiler";
+
+	/** The name of the entity holding the GlobalAudio component */
+	public static inline var globalAudioName:String = "_globalAudio";
+
+	/** The entity name holding the Application component */
+	public static inline var applicationName:String = "_application";
+
+	/** The prefix put before marker names when converting to entity names */ 
+	public static inline var markerToEntityPrefix:String = "_marker:";
+
+	/** The prefix put before automatically named new entities */
+	public static inline var entityPrefix:String = "_entity";
+
+	/** The prefix put before automatically named wrapped entities */
+	public static inline var wrapperPrefix:String = "_wrapper";
+
+	/** The prefix put before automatically named entities holding action queues */
+	public static inline var actionQueuePrefix:String = "_actionQueue";
+
+	/** The prefix put before automatically named entities holding tweens */
+	public static inline var tweenPrefix:String = "_tween";
+
+	/** The prefix put before automatically named markers */
+	public static inline var markerPrefix:String = "_marker";
+
+	@:dox(hide) private var coreSystemId:Int = 0;
+	@:dox(hide) private var userSystemId:Int = 10000;
+	@:dox(hide) private var standardSystemId:Int = 20000;
+	@:dox(hide) private var numEntities:Int = 0; // number of entities created by `newEntity`
+	@:dox(hide) private var modeSystem:ModeSystem;
+	@:dox(hide) private var updateSystem:UpdateSystem;
+	@:dox(hide) private var layouts:Map<String, Layout>;
+	@:dox(hide) private var sets:Map<String, ComponentSet>;	
+
+	/** The Ash engine; access this for direct manipulation of entities in Ash; READ-ONLY */
+	public var ash:ash.core.Engine;
+
+	/** The base screen width; READ-ONLY */
+	public var baseWidth:Int;
+
+	/** The base screen height; READ-ONLY */
+	public var baseHeight:Int;
+
+	/** The current layout orientation; READ-ONLY */
+	public var layoutOrientation:Orientation;
+
+	/** The current layout offset; READ-ONLY */
+	public var layoutOffset:Position;
+
+	/** The options Flaxen was initialized with; READ-ONLY */
+	public var options:FlaxenOptions;	
 }
 
 /**

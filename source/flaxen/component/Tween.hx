@@ -9,17 +9,24 @@ import flaxen.Log;
 /**
  * General interpolation class. This example moves myEntity to the upper left corner
  * over the course of two seconds, after which the Tween component removes itself from 
- * myEntity. Tweens require the TweeningSystem to be active.
+ * myEntity.
  *
+ * ```
  * 	var pos = myEntity.get(Position);
  * 	var tween = new Tween(pos, { x:0, y:0 }, 2);
- * 	tween.destroyComponent = true;
+ * 	tween.onComplete = DestroyComponent;
  * 	myEntity.add(t);
+ * ```
+ *
+ * For a tween to be processed, you must use TweeningSystem, the Tween instance
+ * must be added to an entity, the entity must be added to Ash, and either autoStart
+ * must be true on creation, or running set to true after creation. 
  *
  *  - TODO: Add ability to fast-forward Tween to particular time-step. AND/OR
  * 	  Add ability to specify start values instead of using current values in source.
  * 	  MultiVarTween. Consider reusing HaxePunk's tweeners.
  *  - TODO: Add chaining methods for adjusting easing, loop, autostart, name and onComplete.
+ *  - TODO: Add some static methods for creating Tweens with common settings, say Tween.createAndDestroy, or with a typedef create(props:TweenOptions)
  */
 class Tween implements Completable
 {

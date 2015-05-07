@@ -15,6 +15,8 @@ interface Completable
  * When a component "completes," what action should we take?
  * This is a default OnComplete enum to use. Some components
  * provide their own alternate OnComplete with additional options.
+ * 
+ * - CONSIDER: Changing DestroyComponent to RemoveComponent
  */
 enum OnComplete
 {

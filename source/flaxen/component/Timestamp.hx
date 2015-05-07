@@ -1,5 +1,8 @@
 package flaxen.component;
 
+/**
+ * A component that holds a timestamp value, in milliseconds.
+ */
 class Timestamp
 {
 	public var stamp:Int;
