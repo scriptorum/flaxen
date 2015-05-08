@@ -12,16 +12,18 @@ class ActionWrap extends Action
 	public var flaxen:Flaxen;
 	public var name:String;
 
-	public function new(flaxen:Flaxen, component:Dynamic, name:String = null)
+	public function new(f:Flaxen, component:Dynamic, name:String = null)
 	{
 		super();
-		this.flaxen = flaxen;
+		this.flaxen = f;
 		this.component = component;
 		this.name = name;
 	}
 
 	override public function execute(): Bool
 	{
+		if(flaxen == null)
+			throw "Flaxen must be non-null";
 		flaxen.newWrapper(component, name);
 		return true;
 	}

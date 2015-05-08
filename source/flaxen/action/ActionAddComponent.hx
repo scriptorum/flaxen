@@ -25,6 +25,6 @@ class ActionAddComponent extends Action
 
 	override public function toString(): String
 	{
-		return "ActionAddComponent (entity:" + entity.name + " component:"+ component + ")";
+		return 'ActionAddComponent (entity:${entity.name} component:$component)';
 	}
 }
