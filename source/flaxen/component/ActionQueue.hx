@@ -72,10 +72,10 @@ class ActionQueue implements Completable
 	/** 
 	 * Creates a new ActionQueue.
 	 * 
-	 * @param The Flaxen object
-	 * @param onComplete What to do after the queue completes
-	 * @param autoStart If true (default) runs the queue automatically; if false, you may run the queue manually by setting `running`
-	 * @param The name of the ActionQueue; see `name`
+	 * @param	flaxen		The Flaxen object
+	 * @param	onComplete	What to do after the queue completes
+	 * @param	autoStart	If true (default) runs the queue automatically; if false, you may run the queue manually by setting `running`
+	 * @param	name		The name of the ActionQueue; see `name`
 	 */
 	public function new(?f:Flaxen, ?onComplete:OnComplete, autoStart:Bool = true, ?name:String)
 	{
@@ -139,6 +139,21 @@ class ActionQueue implements Completable
 	public function setOnComplete(onComplete:OnComplete): ActionQueue
 	{
 		this.onComplete = onComplete;
+		return this;
+	}
+
+	/**
+	 * Sets the `name` of this action queue.
+	 *
+	 * The name is primarily intended for the holding entity's name, which can be
+	 * used to look up the entity in Ash. See `name` for more.
+	 *
+	 * @param	name	The name of the action queue
+	 * @returns This ActionQueue object
+	 */
+	public function setName(name:String): ActionQueue
+	{
+		this.name = name;
 		return this;
 	}
 
@@ -356,19 +371,26 @@ class ActionQueue implements Completable
 
 	/**
 	 * Pauses the action queue.
+	 *
 	 * Call `resume` to continue.
+	 *
+	 * @returns This action queue instance
 	 */
-	public function pause()
+	public function pause(): ActionQueue
 	{
 		this.running = false;
+		return this;
 	}
 
 	/**
 	 * Resumes a paused action queue.
+	 *
+	 * @returns This action queue instance
 	 */
-	public function resume()
+	public function resume(): ActionQueue
 	{
 		this.running = true;
+		return this;
 	}
 }
 

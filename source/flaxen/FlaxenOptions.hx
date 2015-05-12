@@ -34,7 +34,7 @@ class FlaxenOptions
 		else this.earlySystems = earlySystems;
 
 		if(lateSystems == null)
-			this.lateSystems = [ActionSystem, TweeningSystem, RenderingSystem, AudioSystem];
+			this.lateSystems = [ActionSystem, TweenSystem, RenderingSystem, AudioSystem];
 		else this.lateSystems = lateSystems;
 	}
 }

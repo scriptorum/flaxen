@@ -13,125 +13,344 @@ import flaxen.Log;
  *
  * ```
  * 	var pos = myEntity.get(Position);
- * 	var tween = new Tween(pos, { x:0, y:0 }, 2);
- * 	tween.onComplete = DestroyComponent;
+ * 	var tween = new Tween(2)
+ * 		.addTarget(pos, "x", 0)
+ * 		.addTarget(pos, "y", 0)
+ *		.setOnComplete(DestroyComponent);
  * 	myEntity.add(t);
  * ```
  *
- * For a tween to be processed, you must use TweeningSystem, the Tween instance
+ * For a tween to be processed, you must use TweenSystem, the Tween instance
  * must be added to an entity, the entity must be added to Ash, and either autoStart
  * must be true on creation, or running set to true after creation. 
  *
- *  - TODO: Add ability to fast-forward Tween to particular time-step. AND/OR
- * 	  Add ability to specify start values instead of using current values in source.
- * 	  MultiVarTween. Consider reusing HaxePunk's tweeners.
- *  - TODO: Add chaining methods for adjusting easing, loop, autostart, name and onComplete.
  *  - TODO: Add some static methods for creating Tweens with common settings, say Tween.createAndDestroy, or with a typedef create(props:TweenOptions)
+ *  - TODO: Add multitween static method to tween more than one property of the same object, in a single call
  */
 class Tween implements Completable
 {
-	public static var created:Int = 0;
-
+	/** This is set to true when the tween completes the tween */
 	public var complete:Bool = false;
-	public var running:Bool = false;
-	public var source:Dynamic;
-	public var target:Dynamic;
-	public var ranges:Array<Float>;
-	public var starts:Array<Float>;
-	public var props:Array<String>;
-	public var easing:EasingFunction;
-	public var elapsed:Float = 0;
-	public var loop:LoopType; // Can set after creating tween
-	public var optional:Float = 1.70158;
-	public var duration:Float;
+
+	/** What to do after the tween completes */
 	public var onComplete:OnComplete;
-	public var fields:Array<String>;
-	public var name:String; // optional object name for logging
-	public var stopAfterLoops:Int = 0; // Only if loop is not None; if 0 assumed infinite
+
+	/** The tween is only being updated when running is true; you can set
+		this false to pause automatic tweening; you can pass false for autoStart to 
+		delay execution; see `scrub` */
+	public var running:Bool = false;
+
+	/** The name is primarily intended for the holding entity's name, which can be
+		helpful in some cases; `Flaxen.newTween` sets this automatically;
+		can be null if not defined */
+	public var name:String;
+
+	/** The duration of the tween in seconds */
+	public var duration:Float;
+
+	/** The loop type of the tween; the tween only loops if this is not None */
+	public var loop:LoopType;
+
+	/** The default easing function for all tween targets without a specified easing; set before adding targets */
+	public var easing:EasingFunction;
+
+	/** The amount of elapsed time; this can be updated to advance or scrub the tween */
+	public var elapsed:Float = 0;
+
+	/** Sets the maximum number of loops; only applicable if `loop` is not None; a value of 0 is ignored (endless looping) */
+	public var maxLoops:Int = 0;
+
+	/** The number of times the tween has looped */
 	public var loopCount(default, null):Int = 0;
 
-	public function new(source:Dynamic, target:Dynamic, duration:Float, ?easing:EasingFunction, 
-		?loop:LoopType, ?onComplete:OnComplete, autoStart:Bool = true, ?name:String)
+	/** All of the tween targets */
+	private var targets:Array<TweenTarget>;
+
+	/**
+	 * Constructs a new Tween
+	 *
+	 * For a tween to be processed, it must have targets added to it (see 
+	 * `addTarget`) and be added to an Ash Entity.
+	 *
+	 * @param	duration	The duration of the tween in seconds
+	 * @param	easing		A easing function, which will be applied to all targets that don't specify an easing; defaults to `Easing.linear`
+	 * @param	loop		The loop type of the tween; `None` does not loop, all other `LoopType`s do
+	 * @param	onComplete	What to do after the tween completes
+	 * @param	autoStart	If true (default) kicks off the tween automatically; if false, you must kick it off by setting `running`
+	 * @param	name		The duration of the tween in seconds
+	 */
+	public function new(duration:Float, ?easing:EasingFunction, ?loop:LoopType, 
+		?onComplete:OnComplete, autoStart:Bool = true, ?name:String)
 	{
-		this.source = source;
-		this.target = target;
+		targets = new Array<TweenTarget>();
+
 		this.duration = duration;
 		Log.assert(duration > 0);
-		this.easing = (easing == null ? Easing.linearTween : easing);
-		this.loop = (loop == null ? LoopType.None : loop);
-		this.onComplete = (onComplete == null ? None : onComplete);
-		this.name = "__tween"  + Std.string(++created);
-		
-		if(autoStart)
-			start();
+		this.easing = (easing == null ? Easing.linear : easing);
+		setLoop(loop);
+		setOnComplete(onComplete);
+		setName(name);
+		this.running = autoStart;
 	}
 
 	/**
-	 * If not autostarted, must call this to run tween
+	 * Internal method for adding a `TweenTarget` to the tween
+	 * Each TweenTarget is an individual object property that can be tweened.
+	 * For a shorter convenience method, see `to`.
+	 *
+	 *  - TODO: Add basic pathing support by allowing Array for target
+	 *
+	 * @param	obj		The object with the property that is to be tweened
+	 * @param	prop	The name of the property within the object
+	 * @param	target	The target value to tween to
+	 * @param	initial	The initial value to tween from; if not supplied, defaults to the current value of the property
+	 * @param	easing	The easing function to use for this tween; if not supplied, defaults to the current value of `Tween.easing` 
+	 * @returns	This `Tween`
 	 */
-	public function start()
+	public function addTarget(obj:Dynamic, prop:String, target:Float, ?initial:Null<Float>, ?easing:EasingFunction): Tween
+	{
+		if(Math.isNaN(cast target))
+			Log.error('Property $prop is not a number ($target)');
+		if(initial == null)
+			initial = Reflect.getProperty(obj, prop);
+		if(easing == null)
+			easing = this.easing;
+
+		var change = target - initial; // precalculate one subtraction, such a good optimizer I yam I yam
+		var o = { obj:obj, prop:prop, change:change, initial:initial, easing:easing };
+		targets.push(o);
+
+		return this;
+	}
+
+	/**
+	 * Convenience method, see `addTarget` for behavior.
+	 */
+	inline public function to(obj:Dynamic, prop:String, target:Float, ?initial:Null<Float>, ?easing:EasingFunction): Tween
+	{
+		return addTarget(obj, prop, target, initial, easing);
+	}
+
+	/**
+	 * Call to restart the tween from the beginning.
+	 */
+	public function restart(): Tween
+	{
+		this.elapsed = 0;
+		this.complete = false;
+		return this;
+	}
+
+	/**
+	 * Immediately sets `onComplete`.
+	 *
+	 * @param	OnComplete	What to do after the tween completes; defaults to `OnComplete.None`
+	 * @returns This Tween
+	 */
+	public function setOnComplete(?onComplete:OnComplete): Tween
+	{
+		this.onComplete = (onComplete == null ? OnComplete.None : onComplete);
+		return this;
+	}
+
+	/**
+	 * Sets the `name` of this tween.
+	 *
+	 * The name is primarily intended for the holding entity's name, which can be
+	 * used to look up the entity in Ash. See `name` for more.
+	 *
+	 * @param	name	The name of the tween (may be null)
+	 * @returns This Tween
+	 */
+	public function setName(name:String): Tween
+	{
+		this.name = name;
+		return this;
+	}
+
+	/**
+	 * Sets the `loop` type of this tween.
+	 *
+	 * @param	loop	The `LoopType` of this tween; defaults to `LoopType.None`
+	 * @returns This Tween
+	 */
+	public function setLoop(?loop:LoopType): Tween
+	{
+		this.loop = (loop == null ? LoopType.None : loop);
+		return this;
+	}
+
+	/**
+	 * Sets the elapsed time.
+	 *
+	 * This is generally managed automatically. You might call this before the tween
+	 * begins to "fast-forward" the tween to a particular point. For example, 1.5 seconds
+	 * into a 3.0 second tween would start the tween at the midpoint.
+	 *
+	 * Another possibility is to "scrub" over values of the tween. See scrub()
+	 */
+	public function setElapsed(val:Float): Tween
+	{
+ 		elapsed = Math.min(val, duration);
+ 		if(elapsed < 0)
+ 			elapsed = 0;
+ 		return this;
+	}
+
+	/**
+	 * UNTESTED. Enables manual tweening aka scrubbing.
+	 *
+	 * Immediately scrubs all targets to a specific tween time. The
+	 * val should be between 0 and the tween duration, or 0-1 if you 
+	 * set asPercentage to true. This method sets `running` to false 
+	 * (see `pause`) which turns off automatic tweening for this 
+	 * instance. When you want to stop scrubbing and resume automatic
+	 * tweening, set it back to true or call `resume`.
+	 * 
+	 */
+	public function scrub(val:Float, asPercentage:Bool = false): Tween
+	{
+		// Turn off automatic tweening
+		running = false;
+
+		// Support 0-1 value for scrub, regardless of duration
+		if(asPercentage)
+			val = val * duration;
+
+		// Change elapsed time to desired time
+		setElapsed(val);
+
+		// Update the tweening properties of all the targets
+		applyTweens();
+
+		return this;
+	}
+
+
+	/**
+	 * Pauses the tween.
+	 *
+	 * This prevents all automatic tweening, and enables scrubbing. See `scrub`. Call `resume` to continue.
+	 *
+	 * @returns This tween
+	 */
+	public function pause(): Tween
+	{
+		this.running = false;
+		return this;
+	}
+
+	/**
+	 * Resumes a paused tween. 
+	 *
+	 * This resumes from the last pause point.
+	 * If it was paused due to scrubbing (see `scrub`) this resumes from the last scrub point.
+	 *
+	 * @returns This tween
+	 */
+	public function resume(): Tween
 	{
 		this.running = true;
-		this.elapsed = 0;
+		return this;
+	}	
 
-		if(Reflect.isObject(target))
-			fields = Reflect.fields(target);
-		else Log.error("Unsupported properties object");
-		if(fields.length == 0)
-			Log.error("No fields found for tween target; ensure it is an anonymous object.");
-
-		ranges = new Array<Float>();
-		starts = new Array<Float>();
-		props = new Array<String>();
-		for(field in fields)
-		{
-			var sVal:Float = Reflect.getProperty(source, field);
-			var tVal:Float = Reflect.getProperty(target, field);
-			if(Math.isNaN(tVal))
-				Log.error("Property " + field + " is not a number (" + tVal + ")");
-			if(Math.isNaN(sVal))
-				Log.error("Start object lacks numeric field " + field + " (" + sVal + ")");
-			props.push(field);
-			starts.push(sVal);
-			ranges.push(tVal - sVal);
-			// trace("Storing field " + field + " from " + sVal + " to " + tVal  + " (" + (tVal - sVal) + ")");
-		}
-	}
-
-	public function restart(): Void
+	/**
+	 * Sets the maximum number of loops a looping tween will have before it completes.
+	 * If `loop` is None, this setting has no effect. Supply 0 to disable this feature
+	 * (endless looping).
+	 *
+	 * @param	count	The maximum number of loops; may not be negative; 0 means no limit
+	 * @returns This tween
+	 */	
+	public function setMaxLoops(count:Int): Tween
 	{
-		this.elapsed = 0;
+		this.maxLoops = count;
+		return this;
 	}
 
+	/**
+	 * Updates automatic tweening for all targets in this instance.
+	 *
+	 * Internal method, called by the `TweenSystem`.
+	 *
+	 * @param	time	The elapsed time in seconds
+	 */
 	public function update(time:Float): Void
 	{
- 		if(complete || !running)
- 			return;
+		if(!running || complete)
+			return;
 
- 		elapsed = Math.min(elapsed + time, duration);
- 		
-		for(i in 0...props.length)
-		{
-			var pos = (loop == LoopType.BothBackward || loop == LoopType.Backward ? 
-				duration - elapsed : elapsed);
-			var value = easing(pos, starts[i], ranges[i], duration, optional);
-			Reflect.setProperty(source, props[i], value);
-		}
+		// Determine time elapsed
+		setElapsed(elapsed + time);
 
+		// Tween all the targets
+		applyTweens();
+
+		// We've looped!
  		if(elapsed >= duration)
  		{
-			if(loop == LoopType.None || (stopAfterLoops > 0 && ++loopCount >= stopAfterLoops))
+ 			// No looping used, or a loop count has been reached
+			if(loop == LoopType.None || (maxLoops > 0 && ++loopCount >= maxLoops))
 			{				
  				complete = true;
  				return;
 			}
 
+			// If it's a "Both" loop, reverse the loop type
 			if(loop == LoopType.Both)
 				loop = LoopType.BothBackward;
 			else if(loop == LoopType.BothBackward)
 				loop = LoopType.Both;
 
+			// Loop now
 			restart();
  		}
 	}	
+
+	/**
+	 * Updates the tween targets with the correct value for their properties
+	 */
+	private function applyTweens()
+	{
+ 		// Tween each target
+		for(target in targets)
+		{
+			// Determine effective time elapsed; support backward loops
+			var seconds:Float = (loop == LoopType.BothBackward || loop == LoopType.Backward ? 
+				duration - elapsed : elapsed);
+
+			// Convert seconds elapsed into a t value from 0...1 where 1 is the duration
+			var t:Float = seconds / duration;
+
+			// Support easing
+			t = target.easing(t);
+
+			// Now tween value
+			var value:Float = target.initial + target.change * t;
+
+			// Set tween value
+			Reflect.setProperty(target.obj, target.prop, value);
+		}
+	}
+}
+
+/**
+ * An internal structure for holding tween target data.
+ */
+@:dox(hide) private typedef TweenTarget = 
+{
+	/** The object with the property that is to be tweened */
+	var obj:Dynamic;
+
+	/** The name of the property within the object */
+	var prop:String;
+
+	/** The variable (tweened) amount of change to add to the initial */	
+	var change:Dynamic;
+
+	/** The initial value to tween from; if not supplied, defaults to the current value of the property */	
+	@:optional var initial:Dynamic;
+
+	/** The easing function to use for this tween; if not supplied, defaults to `Tween.easing` */
+	@:optional var easing:EasingFunction;
 }

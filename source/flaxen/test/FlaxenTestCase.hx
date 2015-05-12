@@ -16,6 +16,7 @@ class FlaxenTestCase extends haxe.unit.TestCase
 
 	public function assertNear(a:Float, b:Float, minDifference:Float = 0.00000001, ?c:haxe.PosInfos)
 	{
+		currentTest.done = true;
 		var diff = Math.abs(a-b);
 		if(diff <= minDifference)
 			return;
@@ -28,6 +29,7 @@ class FlaxenTestCase extends haxe.unit.TestCase
 
 	public function assertException(func:Void->Void, ?c:haxe.PosInfos)
 	{
+		currentTest.done = true;
 		var flag = false;
 		try { func(); }
 		catch(ex:Dynamic) { flag = true; }
@@ -43,6 +45,7 @@ class FlaxenTestCase extends haxe.unit.TestCase
 
 	public function assertNull(val:Dynamic, ?c:haxe.PosInfos)
 	{
+		currentTest.done = true;
 		if(val == null)
 			return;
 

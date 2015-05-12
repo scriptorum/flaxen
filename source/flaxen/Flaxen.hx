@@ -108,7 +108,7 @@ class Flaxen extends com.haxepunk.Engine
 	 * @param	fixed			Supply false for a variable framestep (the default), or true for a fixed framestep
 	 * @param	smoothing		Supply true for pixel smoothing which is slower but smoother
 	 * @param	earlySystems	Override the default early systems (`ModeSystem`, `UpdateSystem`)
-	 * @param	lateSystems		Override the default late systems (`ActionSystem`, `TweeningSystem`, `RenderingSystem`, `AudioSystem`)
+	 * @param	lateSystems		Override the default late systems (`ActionSystem`, `TweenSystem`, `RenderingSystem`, `AudioSystem`)
 	 */
 	public function new(?optionsOrWidth:Dynamic, ?height:Int, ?fps:Int, ?fixed:Bool, ?smoothing:Bool,
 		?earlySystems:Array<Class<FlaxenSystem>>, ?lateSystems:Array<Class<FlaxenSystem>>)
@@ -1259,10 +1259,10 @@ class Flaxen extends com.haxepunk.Engine
 
 	/**
 	 * Creates a new Tween and puts it into a new Entity. See `Tween`.
-	 * This entity will be destroyed when the tween completes.
+	 * This entity will be destroyed when the tween completes. The returned tween
+	 * must be configured with what to tween using `Tween.addTarget` or `Tween.to` calls. 
+	 * For example, newTween(10).to(position, "x", 10);
 	 *
-	 * @param	source		The object/component containing the properties to tween; ex: `ent.get(Position)`
-	 * @param	target		An anonymous object identifying the properties and their final values; ex. `{x:100, y:200}`
 	 * @param	duration	The duration of the tween in seconds
 	 * @param	easing		An optional easing function; see `Easing`; defaults to `Linear`
 	 * @param	loop		An optional loop type; see `LoopType`; defaults to None
@@ -1270,10 +1270,10 @@ class Flaxen extends com.haxepunk.Engine
 	 * @param	name		An optional name or pattern; see `new Entity` for naming
 	 * @return	The Tween instance; you can find the enclosing entity with `getEntity(tween.name)`
 	 */
-	public function newTween(source:Dynamic, target:Dynamic, duration:Float, ?easing:EasingFunction, 
-		?loop:LoopType, ?autoStart:Bool = true, ?name:String): Tween
+	public function newTween(duration:Float, ?easing:EasingFunction, ?loop:LoopType, 
+		autoStart:Bool = true, ?name:String)
 	{
-		var tween = new Tween(source, target, duration, easing, loop, DestroyEntity, autoStart);
+		var tween = new Tween(duration, easing, loop, DestroyEntity, true, name);
 		var e = newWrapper(tween, (name == null ? tweenPrefix + "#" : name));
 		tween.name = e.name;
 		return tween;

@@ -2,13 +2,14 @@ package flaxen.test;
 
 import ash.core.Entity;
 import ash.core.Node;
+import flaxen.common.Completable;
 import flaxen.component.ActionQueue;
+import flaxen.component.Alpha;
+import flaxen.component.Position;
+import flaxen.component.Scale;
 import flaxen.component.Timestamp;
 import flaxen.Flaxen;
-import flaxen.component.Position;
-import flaxen.component.Alpha;
-import flaxen.component.Scale;
-import flaxen.common.Completable;
+import flaxen.node.ActionQueueNode;
 import flaxen.system.ActionSystem;
 
 using StringTools;
@@ -403,4 +404,3 @@ class ActionQueueTest extends FlaxenTestCase
 {
 	public var Alpha:Alpha;
 }
-

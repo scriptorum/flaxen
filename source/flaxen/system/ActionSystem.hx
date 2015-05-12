@@ -1,14 +1,9 @@
 package flaxen.system;
 
-import ash.core.Node;
 import flaxen.Flaxen;
 import flaxen.FlaxenSystem;
 import flaxen.component.ActionQueue;
-
-class ActionQueueNode extends Node<ActionQueueNode>
-{
-	public var actionQueue:ActionQueue;
-}
+import flaxen.node.ActionQueueNode;
 
 class ActionSystem extends FlaxenSystem
 {

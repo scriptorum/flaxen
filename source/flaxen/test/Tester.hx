@@ -15,6 +15,7 @@ class Tester extends Sprite
 		var r = new TestRunner();
 		r.add(new FlaxenTest());
 		r.add(new ActionQueueTest());
+		r.add(new TweenTest());
 		r.run();
 
 		#if !flash
