@@ -26,8 +26,8 @@ class TweenTest extends FlaxenTestCase
 	override public function setup()
 	{
 		super.setup();
-		tween = new Tween(10.0);
 		value = 0.0;
+		tween = new Tween(10.0);
 	}
 
 	public function testConstructor()
@@ -136,12 +136,45 @@ class TweenTest extends FlaxenTestCase
 	
 	public function testRestart()
 	{
-		assertTrue(true);
+		tween.to(this, "value", 10, 0);
+		assertEquals(0.0, tween.elapsed);
+		assertFalse(tween.complete);
+		tween.update(5);
+		assertFalse(tween.complete);
+		assertEquals(5.0, tween.elapsed);
+		tween.update(5);
+		assertEquals(10.0, tween.elapsed);
+		assertTrue(tween.complete);
+
+		tween.restart();
+		assertEquals(0.0, tween.elapsed);
+		assertFalse(tween.complete);
+		tween.update(5);
+		assertFalse(tween.complete);
+		assertEquals(5.0, tween.elapsed);
+		tween.update(5);
+		assertEquals(10.0, tween.elapsed);
+		assertTrue(tween.complete);
 	}
 	
 	public function testScrub()
 	{
-		assertTrue(true);
+		tween.to(this, "value", 10);
+		tween.scrub(0.5, true); // scrub as %
+		assertEquals(5.0, value);
+		assertFalse(tween.running);
+		tween.scrub(1.0, true); // scrubbing to end should not complete tween
+		assertEquals(10.0, value);
+		assertFalse(tween.complete);
+		tween.scrub(2.5); // scrub as elapsed
+		assertEquals(2.5, value);
+		tween.resume(); // turn off scrubbing
+		assertTrue(tween.running);
+		tween.update(2.5);
+		assertEquals(5.0, value);
+		tween.update(9999); // total elapsed cannot exceed duration
+		assertTrue(tween.complete);
+		assertEquals(10.0, tween.elapsed);
 	}
 	
 	public function testSetElapsed()
@@ -149,38 +182,114 @@ class TweenTest extends FlaxenTestCase
 		assertTrue(true);
 	}
 	
-	public function testSetLoop()
+	public function testLooping()
 	{
-		assertTrue(true);
-	}
-	
-	public function testSetMaxLoops()
-	{
-		assertTrue(true);
-	}
-	
-	public function testSetName()
-	{
-		assertTrue(true);
-	}
-	
-	public function testSetOnComplete()
-	{
-		assertTrue(true);
-	}
-	
-	public function testSetOptional()
-	{
-		assertTrue(true);
-	}
+		// Simple forward loop
+		tween = new Tween(10.0, null, Forward);
+		assertEquals(0, tween.loopCount);
+		tween.update(999);
+		assertEquals(1, tween.loopCount);
+		assertEquals(0.0, tween.elapsed);
+		tween.update(2.0);
+		assertEquals(2.0, tween.elapsed); // Ensure we're going forward still
+		tween.update(999);
+		assertEquals(2, tween.loopCount);
+		assertFalse(tween.complete);
 
-	public function testTweenSystem()
+		// Test backward
+		tween = new Tween(10.0, null, Backward);
+		tween.to(this, "value", 10, 0);
+		tween.update(3);
+		assertEquals(7.0, value); // test backward
+
+		// Test forward and back looping
+		tween = new Tween(10.0, null, Both);
+		tween.to(this, "value", 10, 0);
+		tween.update(3);
+		assertEquals(0, tween.loopCount);
+		assertEquals(3.0, value); // test forward
+		tween.update(7);
+		assertEquals(1, tween.loopCount); // loop
+		assertEquals(10.0, value); // should still be at end
+		tween.update(3); // test backward
+		assertEquals(7.0, value); // should be backward
+		tween.update(10);
+		assertEquals(2, tween.loopCount); // loop again
+		assertEquals(0.0, value); // should be at start
+		tween.update(3);
+		assertEquals(3.0, value); // And back to forward
+	}
+	
+	public function testMaxLoops()
 	{
-		assertTrue(true);
+		tween = new Tween(10.0, null, Forward)
+			.setMaxLoops(3);
+		assertFalse(tween.complete);
+		assertEquals(0, tween.loopCount);
+		tween.update(10);
+		assertFalse(tween.complete);
+		assertEquals(1, tween.loopCount);
+		tween.update(10);
+		assertFalse(tween.complete);
+		assertEquals(2, tween.loopCount);
+		tween.update(10);
+		assertTrue(tween.complete);
+		assertEquals(3, tween.loopCount);
 	}
 	
 	public function testNewTween()
 	{
-		assertTrue(true);
+		tween = f.newTween(10.0);
+		assertTrue(tween.name.startsWith(Flaxen.tweenPrefix));
+		assertTrue(tween.running);
+		assertTrue(f.hasEntity(tween.name));
+		assertEquals(DestroyEntity, tween.onComplete);
+	}
+
+	public function testTweenSystem()
+	{
+		var o = { first:0.0, second:0.0, third:0.0 };
+
+		// Wrap free tween, do not destroy (default with manually constructed tween)
+		var tween1 = new Tween(10)
+			.addTarget(o, "first", 10);
+		f.newWrapper(tween1, "first");
+		assertTrue(f.hasEntity("first"));
+		assertTrue(f.hasComponent("first", Tween));
+
+		// Use newTween, destroy entity (default with newTween call)
+		var tween2 = f.newTween(10)
+			.addTarget(o, "second", 20);
+		assertTrue(f.hasEntity(tween2.name));
+		assertTrue(f.hasComponent(tween2.name, Tween));
+
+		// Use newTween, destroy component (override default)
+		var tween3 = f.newTween(10)
+			.addTarget(o, "third", 30)
+			.setOnComplete(DestroyComponent);
+		assertTrue(f.hasEntity(tween3.name));
+		assertTrue(f.hasComponent(tween3.name, Tween));
+
+		assertEquals(3, f.countNodes(TweenNode));
+
+		// Run the tween system, which should process all tweens in Ash
+		f.ash.update(10); // run TweenSystem with time of 10s, enough to complete all tweens
+
+		// Ensure all action queues ran to completion
+		assertTrue(tween1.complete);
+		assertTrue(tween2.complete);
+		assertTrue(tween3.complete);
+
+		// Ensure all values were updated appropriately
+		assertEquals(10.0, o.first);
+		assertEquals(20.0, o.second);
+		assertEquals(30.0, o.third);
+
+		// Ensure destroyed components/entities are gone, and everything else remains
+		assertTrue(f.hasEntity("first"));
+		assertTrue(f.hasComponent("first", Tween));
+		assertFalse(f.hasEntity(tween2.name));
+		assertTrue(f.hasEntity(tween3.name));
+		assertFalse(f.hasComponent(tween3.name, Tween));	
 	}
 }

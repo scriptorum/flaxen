@@ -188,6 +188,9 @@ class Tween implements Completable
 	 * into a 3.0 second tween would start the tween at the midpoint.
 	 *
 	 * Another possibility is to "scrub" over values of the tween. See scrub()
+	 *
+	 * @param	val	The elapsed time, must be positive
+	 * @returns This Tween
 	 */
 	public function setElapsed(val:Float): Tween
 	{
@@ -286,11 +289,11 @@ class Tween implements Completable
 		// Tween all the targets
 		applyTweens();
 
-		// We've looped!
+		// We've completed one tween -- should we loop?
  		if(elapsed >= duration)
  		{
  			// No looping used, or a loop count has been reached
-			if(loop == LoopType.None || (maxLoops > 0 && ++loopCount >= maxLoops))
+			if(loop == LoopType.None || (++loopCount >= maxLoops && maxLoops > 0))
 			{				
  				complete = true;
  				return;
