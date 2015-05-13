@@ -27,11 +27,13 @@ import flaxen.common.TextAlign;
  * - TODO: I'd rather use CTRL/CMD-ENTER to toggle fullscreen. Right now, Flash 
  * 	  requires ESC to leave fullscreen mode. Also, I'm triggering on the F
  * 	  key instead the desired key combo.
- * - TODO: Text is not displaying correctly on neko target, perhaps desktop.
+ * - TODO: Text is not positioning correctly.
  */
 class LayoutDemo extends Flaxen
 {
 	private static var logo:String = "logo";
+	private var scales = [0.5, 1.5];
+	private var which = 0;
 
 	public static function main()
 	{
@@ -59,7 +61,7 @@ class LayoutDemo extends Flaxen
 			.add(new Position(240, 240)) // center of central layout
 			.add(central)
 			.add(Offset.center()); // center image
-		wobble(e, { x:0.8, y:1.2 });
+		wobble(e);
 
 		var travertine = new Image("art/travertine.png");
 		var travLayer = new Layer(15);
@@ -86,12 +88,15 @@ class LayoutDemo extends Flaxen
 		});
 	}
 
-	public function wobble(e:Entity, wobbleTarget:Dynamic)
+	public function wobble(e:Entity)
 	{
-		var scale = new Scale();
-		var tween = new Tween(scale, wobbleTarget, 0.2, Easing.easeOutQuad);
-		tween.loop = Both;
+		var other = which;
+		which = 1 - which;
 
+		var scale = new Scale();
+		var tween = new Tween(0.2, Easing.quadOut, Both)
+			.to(scale, "x", scales[which])
+			.to(scale, "y", scales[other]);
 		e.add(scale);
 		e.add(tween);
 	}

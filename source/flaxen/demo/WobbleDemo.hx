@@ -17,6 +17,8 @@ import flaxen.common.Easing;
 class WobbleDemo extends Flaxen
 {
 	private static var logo:String = "logo";
+	private var scales = [0.5, 1.5];
+	private var which = 0;
 
 	public static function main()
 	{
@@ -32,7 +34,7 @@ class WobbleDemo extends Flaxen
 			.add(new Position(com.haxepunk.HXP.halfWidth, com.haxepunk.HXP.halfHeight))
 			.add(Offset.center());
 
-		wobble(e, { x:0.8, y:1.2 });
+		wobble(e, which);
 	}
 
 	public function handleInput(_)
@@ -41,17 +43,18 @@ class WobbleDemo extends Flaxen
 		{
 			var e = getEntity(logo); // get entity or Log.error( error 
 			var tween = e.get(Tween);
-			var target = { x:tween.target.y, y:tween.target.x }; // swap targets
-			wobble(e, target);
+			which = (which == 0 ? 1 : 0);
+			wobble(e, which);
 		}
 	}
 
-	public function wobble(e:Entity, wobbleTarget:Dynamic)
+	public function wobble(e:Entity, which:Int)
 	{
+		var other = 1 - which;
 		var scale = new Scale();
-		var tween = new Tween(scale, wobbleTarget, 0.2, Easing.easeOutQuad);
-		tween.loop = Both;
-
+		var tween = new Tween(0.2, Easing.quadOut, Both)
+			.to(scale, "x", scales[which])
+			.to(scale, "y", scales[other]);
 		e.add(scale);
 		e.add(tween);
 	}
