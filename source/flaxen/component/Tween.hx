@@ -7,9 +7,12 @@ import flaxen.common.LoopType;
 import flaxen.Log;
 
 /**
- * General interpolation class. This example moves myEntity to the upper left corner
- * over the course of two seconds, after which the Tween component removes itself from 
- * myEntity.
+ * Alters one or more values between two points over a series of time. 
+ *
+ * General interpolation class. Supports easing, looping, and onComplete 
+ * operations. This example moves myEntity to the upper left corner
+ * over the course of two seconds, after which the Tween component removes 
+ * itself from myEntity.
  *
  * ```
  * 	var pos = myEntity.get(Position);
@@ -20,9 +23,11 @@ import flaxen.Log;
  * 	myEntity.add(t);
  * ```
  *
- * For a tween to be processed, you must use TweenSystem, the Tween instance
- * must be added to an entity, the entity must be added to Ash, and either autoStart
- * must be true on creation, or running set to true after creation. 
+ * For a tween to be processed, you must use TweenSystem (added by default), 
+ * the Tween instance must be added to an entity (done automatically with 
+ * `Flaxen.newTween`), the entity must be added to Ash (ditto), and either 
+ * autoStart must be true on creation (the default) or running set to true 
+ * after creation. 
  *
  *  - TODO: Add some static methods for creating Tweens with common settings, say Tween.createAndDestroy, or with a typedef create(props:TweenOptions)
  *  - TODO: Add multitween static method to tween more than one property of the same object, in a single call

@@ -15,19 +15,22 @@ import flaxen.action.*;
  * 
  * An alternative way to encode a series of actions is through an action
  * queue. ActionQueue is a chain of steps that modifies the game state in
- * sequence. Consider a dead enemy that you want to fade to white, leaving a
- * puff of smoke and removing the corpse. You overlay the corpse with an all
- * white corpseFx entity and give it an Alpha of 0 (transparent). You fade in
- * corpseFX, remove the original corpse, invoke a particle effect, wait for
- * that effect to complete, and then clean up by removing the corpseFX entity.
+ * sequence. Consider a dead enemy that you want to fade to white over two 
+ * seconds, leaving a puff of smoke and eliminating the corpse. You 
+ * overlay the corpse with an all white corpseFx entity and give it an 
+ * Alpha of 0 (transparent). You fade in corpseFX, remove the original 
+ * corpse, invoke a particle effect, wait for that effect to complete, and
+ * then clean up by removing the corpseFX entity.
  * 
  * ```
- * f.newActionQueue()
- *     .waitForWrap(new Tween(corpseFX.get(Alpha), { value:1.0 }, 1.0, null, null, DestroyEntity));
- *     .removeEntity(corpse)
- *     .addComponent(corpseFX, smokeEmitter)
- *     .waitForComplete(smokeEmitter)
- *     .removeEntity(corpseFX);
+ *	f.newActionQueue()
+ *	.waitForWrap(new Tween(2.0)
+ *		.addTarget(corpseFX.get(Alpha), "value", 1.0)
+ *		.onComplete(DestroyEntity));
+ *	.removeEntity(corpse)
+ *	.addComponent(corpseFX, smokeEmitter)
+ *	.waitForComplete(smokeEmitter)
+ *	.removeEntity(corpseFX);
  * ```
  *
  * This could be done with systems instead, and in many cases it should. Systems require
@@ -192,7 +195,7 @@ class ActionQueue implements Completable
 
 	/**
 	 * Adds a component to an existing entity
-	 * @param entity The existing entity to receive the component
+	 * @param entityRef The existing entity to receive the component
 	 * @param component The component to be added
 	 * @param priority Set true if this is a priority action (see `add()`)
 	 * @returns This ActionQueue object
@@ -205,7 +208,7 @@ class ActionQueue implements Completable
 
 	/**
 	 * Removes a component from an entity.
-	 * @param entity The entity with the component
+	 * @param entityRef The entity with the component
 	 * @param component The component to be removed
 	 * @param priority Set true if this is a priority action; see `add()`
 	 * @returns This ActionQueue object
@@ -219,7 +222,7 @@ class ActionQueue implements Completable
 	/**
 	 * Adds an entity to Ash that hasn't been added yet. 
 	 * See `newEntity(..., false)` in Flaxen or `new Entity()` in Ash.
-	 * @param entity An entity to be added
+	 * @param entityRef An entity to be added
 	 * @param priority Set true if this is a priority action (see `add()`)
 	 * @returns This ActionQueue object
 	 */
@@ -232,7 +235,7 @@ class ActionQueue implements Completable
 
 	/**
 	 * Removes an entity from Ash.
-	 * @param entity An entity object to be removed, or the string name of such an entity
+	 * @param entityRef An entity object to be removed, or the string name of such an entity
 	 * @param priority Set true if this is a priority action (see `add()`)
 	 */
 	public function removeEntity(entityRef:EntityRef, priority:Bool = false): ActionQueue
@@ -240,6 +243,23 @@ class ActionQueue implements Completable
 		verifyFlaxen();
 		var entity = entityRef.toEntity(flaxen);
 		return add(new ActionRemoveEntity(flaxen, entity), priority);
+	}
+
+	/**
+	 * Adds a component set to an entity.
+	 *
+	 * Applies all the batch operations stored in the component set to the supplied entity.
+	 * See `ComponentSet`.
+	 *
+	 * @param entityRef	The existing entity to which the `ComponentSet` is applied
+	 * @param setName	The name of the `ComponentSet` (as defined by `Flaxen.addSet`) to apply to entityRef
+	 * @param priority Set true if this is a priority action (see `add()`)
+	 * @returns This ActionQueue object
+	 */
+	public function addSet(entityRef:EntityRef, setName:String, priority:Bool = false): ActionQueue
+	{
+		verifyFlaxen();
+		return add(new ActionBatch(flaxen, entityRef, setName), priority);
 	}
 
 	/**

@@ -212,6 +212,27 @@ class ActionQueueTest extends FlaxenTestCase
 		assertTrue(aq.execute());
 	}
 
+	public function testBatch()
+	{
+		// Create component set with shared Alpha component set to half opacity
+		f.newComponentSet("centered")
+			.add(Alpha.half());
+
+		// Create empty entity
+		e = f.newEntity();
+		assertTrue(f.hasEntity(e));
+		assertFalse(f.hasComponent(e, Alpha));
+
+		// Create action queue
+		aq = new ActionQueue(f);
+		aq.addSet(e, "centered");
+
+		// Run AQ, ensure entity has had batch applied
+		aq.execute();
+		assertTrue(f.hasEntity(e));
+		assertTrue(f.hasComponent(e, Alpha));
+	}
+
 	public function testPriorityActions()
 	{
 		// Modify almost-empty queue

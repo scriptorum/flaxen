@@ -435,6 +435,19 @@ class FlaxenTest extends FlaxenTestCase
 		assertEquals(1, res.length);
 		assertEquals(e, res[0]);
 	}
+
+	// NewComponentSet
+	// getComponentSet
+	// addSet
+	// getSetKeys
+	// add
+	// addFunction
+	// addClass
+	// addEntity
+	// addSet
+	// remove
+	// removeAll
+	// install
 }
 
 ///// HELPER CLASSES

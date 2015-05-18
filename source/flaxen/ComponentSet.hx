@@ -35,7 +35,7 @@ class ComponentSet
 	 * will be sharing the same single instance of this component. See addClass.
 	 * TODO Verify this is not a Class or Function being passed in.
 	 */
-	public function add<T>(component:T): ComponentSet
+	public function add(component:Dynamic): ComponentSet
 	{
 		steps.push(component);
 		return this;
