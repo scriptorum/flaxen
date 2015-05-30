@@ -5,6 +5,9 @@ import flaxen.component.Timestamp;
 
 /**
  * Low level "SoundChannel" wrapper.
+ * This component will be added automatically to any entity that has the `Sound` component.
+ * See `Sound` and `AudioSystem`.
+ * You can use this to manipulate the underlying SoundChannel directly.
  */
 class Audio
 {
@@ -21,6 +24,11 @@ class Audio
 	}
 }
 
+/**
+ * Global Audio instance. An entity with this component is added automatically
+ * when `Flaxen.getGlobalAudio` is called. Provides a manner for adjusting
+ * overall audio settings.
+ */
 class GlobalAudio
 {
 	/** Stop new audio from playing; see `mute()` */

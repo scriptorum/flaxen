@@ -4,7 +4,7 @@
   "classPath" : "source",
   "license": "MIT",
   "tags": ["ecs", "entity", "component", "system", "game", "haxepunk", "ash", "openfl"],
-  "description": "Flaxen blends an entity/component system with a Haxe-based game engine, powered by HaxePunk and Ash.",
+  "description": "Flaxen blends a Haxe-based game engine with an entity/component system; powered by HaxePunk and Ash.",
   "version": "0.0.2",
   "releasenote": "Initial Haxelib release",
   "contributors": ["scriptorum"],

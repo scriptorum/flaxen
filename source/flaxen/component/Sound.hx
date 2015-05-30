@@ -5,7 +5,11 @@ import flaxen.common.Completable;
 using StringTools;
 
 /**
- * Basic sound component
+ * Basic sound component.
+ * Add this to an entity to play a sound file.
+ * If this component is removed or the entity is destroyed, the sound will be stopped.
+ * The `AudioSystem` creates a corresponding `Audio` component for storing the 
+ * associated OpenFL SoundChannel.
  */
 class Sound implements Completable
 {

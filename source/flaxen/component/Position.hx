@@ -2,7 +2,9 @@ package flaxen.component;
 
 /*
  * Represents the 2D position of the entity.
- * Most entities that have renderable components (Image, for example) require a Position before they will display.
+ *
+ * Most entities that have renderable components (Image, for example) require
+ * a Position before they will display.
  * 
  * - TODO: The convenience methods all rely on the stage height/width, but what if the stage resizes? Consider
  * 		adding an asPercentage parameter, as it exists in Offset. Then either require the RenderingSystem
