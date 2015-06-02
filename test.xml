@@ -22,11 +22,11 @@
     <source path="source" />
     <set name="BUILD_DIR" value="export" /> 
 
-    <app title="Flaxen Demo" file="FlaxenDemo" main="flaxen.demo.LayoutDemo" company="Inscrutable Games" swf-version="11.2"/>
+    <app title="Unit Tester" file="FlaxenTests" main="flaxen.test.Tester" company="Flaxen" swf-version="11.2"/>
 
-    <window resizable="true" background="0x7b6758" orientation="landscape"/>
-    <window width="1280" height="240 " unless="mobile" />    
-    <!-- <window width="640" height="480" unless="mobile" />     -->
+    <window fps="60" resizable="false" background="0x222244" orientation="landscape"/>
+    <window width="640" height="480" if="desktop" />
+    <window width="0" height="0" if="html5" />|
     <window fullscreen="true" if="mobile" />
-</project>
 
+</project>

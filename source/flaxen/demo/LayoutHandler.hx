@@ -16,6 +16,7 @@ import flaxen.component.Application;
 import flaxen.service.InputService;
 import flaxen.common.Easing;
 import flaxen.common.TextAlign;
+import flaxen.FlaxenHandler;
 
 
 /**
@@ -24,39 +25,31 @@ import flaxen.common.TextAlign;
  * - TODO: The screen backdrop occasionally ends abruptly on resize. It seems to happen
  * 	  somewhat randomly. If you switch to fullscreen (F) and back it goes away.
  * 	  I so far can only reproduce it on Flash.
- * - TODO: I'd rather use CTRL/CMD-ENTER to toggle fullscreen. Right now, Flash 
- * 	  requires ESC to leave fullscreen mode. Also, I'm triggering on the F
- * 	  key instead the desired key combo.
  * - TODO: Text is not positioning correctly.
  */
-class LayoutDemo extends Flaxen
+class LayoutHandler extends FlaxenHandler
 {
 	private static var logo:String = "logo";
 	private var scales = [0.5, 1.5];
 	private var which = 0;
 
-	public static function main()
-	{
-		var LayoutDemo = new LayoutDemo(640, 480);
-	}
-
-	override public function ready()
+	override public function start()
 	{
 		// Layouts
-		var central = newLayout("central", 	0, 		160,	0, 		0); 
-		var panelA = newLayout("panelA", 	0,		0, 		480, 	0);
-		var panelB = newLayout("panelB", 	160,	0, 		480, 	160);
-		var panelC = newLayout("panelC", 	320,	0, 		480, 	320);
+		var central = f.newLayout("central", 	0, 		160,	0, 		0); 
+		var panelA =  f.newLayout("panelA", 	0,		0, 		480, 	0);
+		var panelB =  f.newLayout("panelB", 	160,	0, 		480, 	160);
+		var panelC =  f.newLayout("panelC", 	320,	0, 		480, 	320);
 
 		// Backdrop, no layout
-		newEntity()
+		f.newEntity()
 			.add(new Image("art/metalpanels.png"))
 			.add(Repeating.instance)
 			.add(Position.zero())
 			.add(new Layer(20));
 
 		// Central content
-		var e:Entity = resolveEntity(logo) // get or create entity
+		var e:Entity = f.resolveEntity(logo) // get or create entity
 			.add(new Image("art/flaxen.png"))
 			.add(new Position(240, 240)) // center of central layout
 			.add(central)
@@ -67,28 +60,19 @@ class LayoutDemo extends Flaxen
 		var travLayer = new Layer(15);
 		for(x in [0, 160, 320])
 		for(y in [0, 160, 320])
-			newEntity().add(travertine).add(central).add(travLayer).add(new Position(x, y));
+			f.newEntity().add(travertine).add(central).add(travLayer).add(new Position(x, y));
 
 		// Panel content
 		var style = TextStyle.createTTF(0xFFFF88, 40, null, Center);
 		for(panel in [{ layout:panelA, label:"A" }, { layout:panelB, label:"B" }, { layout:panelC, label:"C"}])
 		{
-			newEntity().add(travertine).add(panel.layout).add(travLayer).add(new Position(0, 0));
-			newEntity().add(new Text(panel.label)).add(style).add(panel.layout)
+			f.newEntity().add(travertine).add(panel.layout).add(travLayer).add(new Position(0, 0));
+			f.newEntity().add(new Text(panel.label)).add(style).add(panel.layout)
 				.add(new Position(0,60)).add(new Size(160, 160));
 		}
-
-		setUpdateCallback(function(_)
-		{
-			if(InputService.lastKey() == Key.F)
-			{
-				com.haxepunk.HXP.fullscreen = !com.haxepunk.HXP.fullscreen;
-				InputService.clearLastKey();
-			}
-		});
 	}
 
-	public function wobble(e:Entity)
+	private function wobble(e:Entity)
 	{
 		var other = which;
 		which = 1 - which;

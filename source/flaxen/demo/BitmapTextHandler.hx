@@ -12,19 +12,14 @@ import flaxen.service.InputService;
 import flaxen.common.Easing;
 import flaxen.common.TextAlign;
 
-class BitmapTextDemo extends Flaxen
+class BitmapTextHandler extends FlaxenHandler
 {
 	private static inline var YELLOW_FONT:String = "art/impact20yellow.png";
 
-	public static function main()
-	{
-		var demo = new BitmapTextDemo();
-	}
-
-	override public function ready()
+	override public function start()
 	{
 		var t = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ";
-		var e:Entity = newEntity("demo")
+		var e:Entity = f.newEntity("demo")
 			.add(new Image(YELLOW_FONT))
 			.add(Size.screen().scale(.8))
 			.add(Position.center())
@@ -32,26 +27,26 @@ class BitmapTextDemo extends Flaxen
 					+ t + t + t + t + t + t + t + t))
 			.add(TextStyle.createBitmap(true, Center, Center, -4, -2));
 
-		var e2:Entity = newEntity()
+		var e2:Entity = f.newEntity()
 			.add(new Text("This is regular TTF text."))
 			.add(Position.topLeft());
+	}
 
-		setUpdateCallback(function(f)
+	override public function update()
+	{
+		if(InputService.clicked)
 		{
-			if(InputService.clicked)
-			{
-				var e = getEntity("demo");
-				var t = e.get(Text);
-				t.message = "The message has changed. Deal with it. Bitch. Yeah that's right, I called you a bitch.";
+			var e = f.getEntity("demo");
+			var t = e.get(Text);
+			t.message = "The message has changed. Deal with it. Bitch. Yeah that's right, I called you a bitch.";
 
 
-				newEntity()
-					.add(new Image(YELLOW_FONT))
-					.add(new Text("This is a font loaded from the cache"))
-					.add(Position.bottomRight().subtract(10, 10))
-					.add(Scale.half())
-					.add(TextStyle.createBitmap(false, Right, Bottom, 0, 8, 0, 18));
-			}
-		});
+			f.newEntity()
+				.add(new Image(YELLOW_FONT))
+				.add(new Text("This is a font loaded from the cache"))
+				.add(Position.bottomRight().subtract(10, 10))
+				.add(Scale.half())
+				.add(TextStyle.createBitmap(false, Right, Bottom, 0, 8, 0, 18));
+		}
 	}
 }

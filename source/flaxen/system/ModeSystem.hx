@@ -27,6 +27,11 @@ import flaxen.Log;
  *   this handler will cause an immediate transition to another mode. You might
  *   use this, for example, in the Init handler, to immediately transition
  *   to the Menu mode without delay.
+ *
+ * Update Handler - registerUpdateHandler
+ *   The UpdateSystem invokes a callback every time the app is updated. This 
+ *   is intended to provide you with a place to process player inputs, but it 
+ *   can do any kind of frequently-called work.
  * 
  * Stop Handler - registerStopHandler
  *  
@@ -34,23 +39,15 @@ import flaxen.Log;
  *   could use this to save game state to an external source before the entities are
  *   flushed, for instance.  You can force transition to a different following mode
  *   by setting flaxen.getApp().nextMode to a different mode.
-
- * If the Always mode is supplied, this mode is executed when starting or stopping ALL modes.
- * The Always handler is called AFTER the main handler is called.
- * 
- * *NOTE: You can split the application into different modes. The app starts in Default mode.
- * Register handlers to be called when transitioning from (stop) or transitioning to
- * (start) a mode. Register an input handler for a mode here as well. There can be
- * only one start/stop/input handler per mode, but you can also specify the virtual 
- * mode Always (or null). The Always handler will be called (always) in every mode, 
- * after the mode-specific handler is called.*
  *
- * Also see `Transitional`.
+ * If the Always mode is supplied, this mode is executed when starting or stopping ALL modes.
+ * The Always handler is called AFTER the main handler is called. Also see `Transitional`.
  */
 class ModeSystem extends FlaxenSystem
 {
-	private var startHandlers:Map<ApplicationMode, FlaxenCallback>;
-	private var stopHandlers:Map<ApplicationMode, FlaxenCallback>;
+	private var startHandlers:Map<ApplicationMode, ModeCallback>;
+	private var stopHandlers:Map<ApplicationMode, ModeCallback>;
+	private var updateHandlers:Map<ApplicationMode, ModeCallback>;
 
 	public function new(f:Flaxen)
 	{ 
@@ -59,23 +56,24 @@ class ModeSystem extends FlaxenSystem
 
 	override public function init()
 	{
-		startHandlers = new Map<ApplicationMode, FlaxenCallback>();
-		stopHandlers = new Map<ApplicationMode, FlaxenCallback>();
+		startHandlers = new Map<ApplicationMode, ModeCallback>();
+		stopHandlers = new Map<ApplicationMode, ModeCallback>();
+		updateHandlers = new Map<ApplicationMode, ModeCallback>();
 	}
 
 	override public function update(time:Float)
 	{
 		var app:Application = f.getApp();
+
+		// Switch modes if time to do so
 		while(app.nextMode != null)
 		{
 			// Stop current mode
 			runStopHandler(app.curMode);
 			runStopHandler(Always);
 
-	/**
-	 * Stop handler can decline the transition by setting nextMode to null.
-	 * Or it can prevent unprotected entities from being removed by setting
-	 */
+			// Stop handler can decline the transition by setting nextMode to null.
+			// Or it can prevent unprotected entities from being removed by setting
 			// curMode to null.
 			if(app.nextMode == null)
 				break;
@@ -84,9 +82,7 @@ class ModeSystem extends FlaxenSystem
 			if(app.curMode != null)
 				removeUnprotected(app.nextMode);
 
-	/**
-	 * Was current is now previous
-	 */
+			// Was current is now previous
 			// Was next is now current
 			app.prevMode = app.curMode;
 			app.curMode = app.nextMode;
@@ -98,38 +94,77 @@ class ModeSystem extends FlaxenSystem
 			// Next is now nothing
 			app.nextMode = null;
 		}
+
+		// Update current mode
+		runUpdateHandler(app.curMode);
+
+		// Update any modes marked as "always"
+		runUpdateHandler(Always);
 	}
 
 	private function runStopHandler(mode:ApplicationMode): Void
 	{
 		if(mode == null)
-			return; // Mode might not have a handler, this is legit
-
-		var handler:FlaxenCallback = stopHandlers.get(mode);
-		if(handler != null)
-			handler(f);		
+			return;
+		runModeCallback(stopHandlers.get(mode));
 	}
 
 	private function runStartHandler(mode:ApplicationMode): Void
 	{
 		if(mode == null)
-			return; // Mode might not have a handler, this is legit
-
-		var handler:FlaxenCallback = startHandlers.get(mode);
-		if(handler != null)
-			handler(f);
+			return;
+		runModeCallback(startHandlers.get(mode));
 	}
 
-	public function registerStartHandler(handler:FlaxenCallback, mode:ApplicationMode): Void
+	private function runUpdateHandler(mode:ApplicationMode)
+	{
+		if(mode == null)
+			return;
+		runModeCallback(updateHandlers.get(mode));
+	}
+
+	/**
+	 * Runs the mode system callback. This callback is in a closure which
+	 * has access to the `Flaxen` instance specified by `f` or `flaxen`, 
+	 * in case you're not using a FlaxenHandler...
+	 */
+	private function runModeCallback(cb:ModeCallback)
+	{
+		if(cb != null)
+		{
+			var f:Flaxen = f;
+			var flaxen:Flaxen = f;
+			cb();
+		}
+	}
+
+	public function registerStartHandler(handler:ModeCallback, mode:ApplicationMode): Void
 	{
 		Log.assertNonNull(handler);
 		startHandlers.set(mode == null ? Default : mode, handler);
 	}
 
-	public function registerStopHandler(handler:FlaxenCallback, mode:ApplicationMode): Void
+	public function registerStopHandler(handler:ModeCallback, mode:ApplicationMode): Void
 	{
 		Log.assertNonNull(handler);
 		stopHandlers.set(mode == null ? Default : mode, handler);
+	}
+
+	public function registerUpdateHandler(handler:ModeCallback, ?mode:ApplicationMode): Void
+	{
+		Log.assertNonNull(handler);
+		updateHandlers.set(mode == null ? Default : mode, handler);
+	}
+
+	public function registerHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Void
+	{
+		Log.assertNonNull(handler);
+		if(mode == null)
+			mode = Default;
+
+		registerStartHandler(handler.start, mode);
+		registerStopHandler(handler.stop, mode);
+		registerUpdateHandler(handler.update, mode);
 	}
 
 	/**

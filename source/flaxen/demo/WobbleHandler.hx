@@ -10,26 +10,20 @@ import flaxen.component.Tween;
 import flaxen.component.Application;
 import flaxen.service.InputService;
 import flaxen.common.Easing;
+import flaxen.FlaxenHandler;
 
 /**
  *	Shows a wobbling image, demonstrating showing an image, scaling, tweening and input.
  */
-class WobbleDemo extends Flaxen
+class WobbleHandler extends FlaxenHandler
 {
 	private static var logo:String = "logo";
 	private var scales = [0.5, 1.5];
 	private var which = 0;
 
-	public static function main()
+	override public function start()
 	{
-		var demo = new WobbleDemo();
-	}
-
-	override public function ready()
-	{
-		setUpdateCallback(handleInput);
-
-		var e:Entity = resolveEntity(logo) // get or create entity
+		var e:Entity = f.resolveEntity(logo) // get or create entity
 			.add(new Image("art/flaxen.png"))
 			.add(new Position(com.haxepunk.HXP.halfWidth, com.haxepunk.HXP.halfHeight))
 			.add(Offset.center());
@@ -37,11 +31,11 @@ class WobbleDemo extends Flaxen
 		wobble(e, which);
 	}
 
-	public function handleInput(_)
+	override public function update()
 	{
 		if(InputService.clicked)
 		{
-			var e = getEntity(logo); // get entity or Log.error( error 
+			var e = f.getEntity(logo); // get entity or Log.error( error 
 			var tween = e.get(Tween);
 			which = (which == 0 ? 1 : 0);
 			wobble(e, which);

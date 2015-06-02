@@ -5,20 +5,16 @@ import flaxen.Flaxen;
 import flaxen.component.Image;
 import flaxen.component.Position;
 import flaxen.component.Offset;
+import flaxen.FlaxenHandler;
 
 /**
  *	Shows a basic image, demonstrating showing an image, position, and offset.
  */
-class BasicImageDemo extends Flaxen
+class SimpleHandler extends FlaxenHandler
 {
-	public static function main()
+	override public function start()
 	{
-		var demo = new BasicImageDemo();
-	}
-
-	override public function ready()
-	{
-		var e:Entity = newEntity()
+		f.newEntity()
 			.add(new Image("art/flaxen.png"))
 			.add(Position.center())
 			.add(Offset.center());

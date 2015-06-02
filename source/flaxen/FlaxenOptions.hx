@@ -30,7 +30,7 @@ class FlaxenOptions
 		this.smoothing = smoothing;
 
 		if(earlySystems == null)
-			this.earlySystems = [ModeSystem, UpdateSystem];
+			this.earlySystems = [ModeSystem];
 		else this.earlySystems = earlySystems;
 
 		if(lateSystems == null)

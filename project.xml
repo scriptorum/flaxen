@@ -13,7 +13,7 @@
     <assets path="assets/font" rename="font" type="font" include="*.ttf" unless="html5"/>
     <assets path="assets/font" rename="font" type="font" include="*.woff|*.svg" if="html5"/>
     <assets path="assets/data" rename="data" type="text" include="*.xml|*.txt" exclude="*.bak"/>
-    <icon path="assets/art/icon.svg"/>  
+    <icon path="assets/art/icon.svg"/> 
 
     <section if="console">
         <assets path="assets/console" rename="gfx" include="*.png" />
@@ -22,12 +22,10 @@
     <source path="source" />
     <set name="BUILD_DIR" value="export" /> 
 
-    <app title="Unit Tester" file="FlaxenTests" main="flaxen.test.Tester" company="Flaxen" swf-version="11.2"/>
+    <app title="Flaxen Demo" file="FlaxenDemo" main="flaxen.demo.Main" company="Flaxen" swf-version="11.2"/>
 
-    <window fps="60" resizable="false" background="0x222244" orientation="landscape"/>
-    <window width="640" height="480" if="desktop" />
-    <window width="0" height="0" if="html5" />|
+    <window fps="60" resizable="true" background="0x000000" orientation="landscape"/>
+    <window width="640" height="480" unless="mobile" />
     <window fullscreen="true" if="mobile" />
-
 </project>
 

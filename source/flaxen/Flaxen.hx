@@ -107,7 +107,7 @@ class Flaxen extends com.haxepunk.Engine
 	 * @param	fps				The desired frame rate, in frames-per-second; defaults to 60
 	 * @param	fixed			Supply false for a variable framestep (the default), or true for a fixed framestep
 	 * @param	smoothing		Supply true for pixel smoothing which is slower but smoother
-	 * @param	earlySystems	Override the default early systems (`ModeSystem`, `UpdateSystem`)
+	 * @param	earlySystems	Override the default early systems (`ModeSystem`)
 	 * @param	lateSystems		Override the default late systems (`ActionSystem`, `TweenSystem`, `RenderingSystem`, `AudioSystem`)
 	 */
 	public function new(?optionsOrWidth:Dynamic, ?height:Int, ?fps:Int, ?fixed:Bool, ?smoothing:Bool,
@@ -150,7 +150,8 @@ class Flaxen extends com.haxepunk.Engine
 
 	/**
 	 * Initialization function called by HaxePunk. This is called after
-	 * HaxePunk has completed initializing itself.
+	 * the HaxePunk Engine has completed initializing itself, but it has
+	 * not yet initialized the Scene (which this kicks off).
 	 */
 	@:dox(hide) override public function init()
 	{
@@ -219,8 +220,6 @@ class Flaxen extends com.haxepunk.Engine
 		// These systems need to be remembered for further configuration
     	if(Std.is(system, ModeSystem))
     		modeSystem = cast system;
-    	else if(Std.is(system, UpdateSystem))
-    		updateSystem = cast system;
     }
 
     /**
@@ -1015,7 +1014,7 @@ class Flaxen extends com.haxepunk.Engine
 	 * @param	mode		An optional `ApplicationMode` that determines when this callback runs
 	 * @returns	The Flaxen instance
 	 */
-	public function setStartCallback(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
+	public function setStartCallback(callback:ModeCallback, ?mode:ApplicationMode): Flaxen
 	{
 		Log.assertNonNull(modeSystem, "ModeSystem is not available");
 		modeSystem.registerStartHandler(callback, mode == null ? Default : mode);
@@ -1030,7 +1029,7 @@ class Flaxen extends com.haxepunk.Engine
 	 * @param	mode		An optional `ApplicationMode` that determines when this callback runs
 	 * @returns	The Flaxen instance
 	 */
-	public function setStopCallback(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
+	public function setStopCallback(callback:ModeCallback, ?mode:ApplicationMode): Flaxen
 	{
 		Log.assertNonNull(modeSystem, "ModeSystem is not available");
 		modeSystem.registerStopHandler(callback, mode == null ? Default : mode);
@@ -1046,10 +1045,10 @@ class Flaxen extends com.haxepunk.Engine
 	 * @param	mode		An optional `ApplicationMode` that determines when this callback runs
 	 * @returns	The Flaxen instance
 	 */
-	public function setUpdateCallback(callback:FlaxenCallback, ?mode:ApplicationMode): Flaxen
+	public function setUpdateCallback(callback:ModeCallback, ?mode:ApplicationMode): Flaxen
 	{
-		Log.assertNonNull(updateSystem, "UpdateSystem is not available");
-		updateSystem.registerHandler(callback, mode == null ? Default : mode);
+		Log.assertNonNull(modeSystem, "ModeSystem is not available");
+		modeSystem.registerUpdateHandler(callback, mode == null ? Default : mode);
 		return this;
 	}
 
@@ -1075,9 +1074,8 @@ class Flaxen extends com.haxepunk.Engine
 	 */
 	public function setHandler(handler:FlaxenHandler, ?mode:ApplicationMode): Flaxen
 	{
-		setStartCallback(handler.start, mode);
-		setStopCallback(handler.stop, mode);
-		setUpdateCallback(handler.update, mode);
+		Log.assertNonNull(modeSystem, "ModeSystem is not available");
+		modeSystem.registerHandler(handler, (mode == null ? Default : mode));
 		return this;
 	}
 
@@ -1334,7 +1332,6 @@ class Flaxen extends com.haxepunk.Engine
 	@:dox(hide) private var standardSystemId:Int = 20000;
 	@:dox(hide) private var numEntities:Int = 0; // number of entities created by `newEntity`
 	@:dox(hide) private var modeSystem:ModeSystem;
-	@:dox(hide) private var updateSystem:UpdateSystem;
 	@:dox(hide) private var layouts:Map<String, Layout>;
 	@:dox(hide) private var sets:Map<String, ComponentSet>;	
 
