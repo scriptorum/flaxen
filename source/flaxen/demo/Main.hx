@@ -1,10 +1,12 @@
 package flaxen.demo; 
-import flaxen.Flaxen;
-import flaxen.component.Transitional;
-import flaxen.component.Application;
-import flaxen.service.InputService;
-import flaxen.demo.*;
 import com.haxepunk.utils.Key;
+import flaxen.component.Application;
+import flaxen.component.Text;
+import flaxen.component.Transitional;
+import flaxen.component.Position;
+import flaxen.demo.*;
+import flaxen.Flaxen;
+import flaxen.service.InputService;
 
 /**
  * Flaxen Demo.
@@ -13,59 +15,43 @@ import com.haxepunk.utils.Key;
  * 	  requires ESC to leave fullscreen mode. Also, I'm triggering on the F
  * 	  key instead the desired key combo.
  * - TODO: All demos (but layout) suffer from resize issues. Fixxy fix it!
- * - TODO: Add name of handler on screen and key stroke instructions
- * - TODO: Add Tester as one of the handlers, and display the final result on screen, if possible.
  * - TODO: Break apart Animation demo into several examples, rather than the 1-5 key business you've got going on.
- * - TODO: Add movement, gravity, and friction demos.
  */
 class Main extends Flaxen
 {
-	private var modes:Array<ApplicationMode>;
-	private var handlerIndex:Int = 0;
+	private static var handlers:Array<Dynamic> = [SimpleHandler, 
+		WobbleHandler, AnimationHandler, BitmapTextHandler, LayoutHandler, 
+		MotionHandler];
+	public var modes:Array<String>;
+	public var handlerIndex:Int = 0;
 
 	public static function main()
 		new Main();
 
 	override public function ready()
 	{
-		modes = new Array<ApplicationMode>();
+		// Keep track of all handlers/modes
+		modes = new Array<String>();
 
-		defineHandler("BasicImage",	SimpleHandler);
-		defineHandler("Wobble",		WobbleHandler);
-		defineHandler("Animation",	AnimationHandler);
-		defineHandler("BitmapText",	BitmapTextHandler);
-		defineHandler("Layout",		LayoutHandler);
+		// Define specific handlers, each is a separate demo
+		for(handler in handlers)
+				defineHandler(handler);
 
-		// The ALWAYS update handler is called after the current update handler runs
-		setUpdateCallback(globalUpdate, Always); 
+		// Define handler that is "always" called
+		setHandler(new AlwaysHandler(this), Always);
 
-		// Transition to first mode
-		setMode(modes[handlerIndex]);		
+		// Transition to first mode/handler
+		restart();
 	}
 
-	private function defineHandler(name:String, clazz:Class<FlaxenHandler>): Void
+	private function defineHandler(clazz:Class<FlaxenHandler>): Void
 	{
+		var name:String = Type.getClassName(clazz);
+		name = name.substring(name.lastIndexOf(".") + 1);
 		var mode:ApplicationMode = Mode(name); // Create custom application mode
 		var handler:FlaxenHandler = Type.createInstance(clazz, [this]);
-		setHandler(handler, mode);
-		modes.push(mode);
-	}
-
-	// Alternatively, you could skip setUpdateCallback and this could override 
-	// HaxePunk's update, but remember to call super.update()!
-	public function globalUpdate()
-	{
-		if(InputService.lastKey() == Key.F)
-		{
-			com.haxepunk.HXP.fullscreen = !com.haxepunk.HXP.fullscreen;
-			InputService.clearLastKey();
-		}		
-
-		else if(InputService.lastKey() == Key.LEFT_SQUARE_BRACKET)
-			changeHandler(-1);
-		
-		else if(InputService.lastKey() == Key.RIGHT_SQUARE_BRACKET)
-			changeHandler(1);
+		setHandler(handler, Mode(name));
+		modes.push(name);
 	}
 
 	public function changeHandler(offset:Int)
@@ -76,7 +62,54 @@ class Main extends Flaxen
 		else if(handlerIndex >= modes.length)
 			handlerIndex = 0;
 
-		setMode(modes[handlerIndex]);
-		InputService.clearLastKey();
+		restart();
+	}
+
+	// Stops the current handler (if any) and starts the handler currently indicated by handlerIndex
+	public function restart()
+	{
+		setMode(Mode(modes[handlerIndex]));
+	}
+}
+
+// TODO Having "before" and "after" always handlers would be useful. Really gotta rethink handlers/modes.
+class AlwaysHandler extends FlaxenHandler
+{
+	public var main:Main;
+
+	public function new(main:Main)
+	{
+		super(main);
+		this.main = main;
+	}
+
+	override public function start()
+	{
+		f.newEntity()
+			.add(new Text(main.modes[main.handlerIndex] + ": [ Previous, ] Next, R Restart, F Full Screen"))
+			.add(Position.topLeft());
+	}
+
+	override public function update()
+	{
+		if(InputService.lastKey() == Key.F)
+			com.haxepunk.HXP.fullscreen = !com.haxepunk.HXP.fullscreen;
+
+		else if(InputService.lastKey() == Key.R)
+			main.restart();
+
+		else if(InputService.lastKey() == Key.LEFT_SQUARE_BRACKET)
+			main.changeHandler(-1);
+		
+		else if(InputService.lastKey() == Key.RIGHT_SQUARE_BRACKET)
+			main.changeHandler(1);
+
+		else return;
+
+		InputService.clearLastKey();		
+	}
+
+	override public function stop()
+	{
 	}
 }

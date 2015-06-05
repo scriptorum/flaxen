@@ -193,11 +193,16 @@ class Flaxen extends com.haxepunk.Engine
      * Early systems process first, then user systems, then standard systems.
      * Unless you have a good reason, you probably want to leave it in the Standard group.
      * You can add your own or predefined systems this way.
+     * 
+     * - TODO: Revisit system groups. I did it this way because I wasn't certain that
+     *   Ash would process Systems with the same priority in the order they were added.
+     *   If I verify this is the case, I can change this to a more robust priority model.
      *
      * @param	system	The `FlaxenSystem` to add
      * @param	group	The `FlaxenSystemGroup` to add the system to, defaults to `Standard`
+     * @returns Flaxen
      */
-    public function addSystem(system:FlaxenSystem, ?group:FlaxenSystemGroup):Void
+    public function addSystem(system:FlaxenSystem, ?group:FlaxenSystemGroup): Flaxen
     {
     	// Default group
     	if(group == null)
@@ -220,6 +225,22 @@ class Flaxen extends com.haxepunk.Engine
 		// These systems need to be remembered for further configuration
     	if(Std.is(system, ModeSystem))
     		modeSystem = cast system;
+
+    	return this;
+    }
+
+    /**
+     * Removes a system, based on Class name.
+     *
+     * To remove a specific system instance, use `ash.removeSystem`.
+     * 
+     * @param	clazz	The name of the system, e.g., `MovementSystem`
+     * @returns Flaxen
+     */
+    public function removeSystemByClass<TSystem:ash.core.System>(clazz:Class<TSystem>): Flaxen
+    {
+    	ash.removeSystem(ash.getSystem(clazz));
+    	return this;
     }
 
     /**
@@ -237,6 +258,7 @@ class Flaxen extends com.haxepunk.Engine
 			case Early: coreSystemId++; 
 			case Standard: userSystemId++;
 			case Late: standardSystemId++; 
+			case Custom(priority): return priority;
 		}
     }
 
@@ -1327,8 +1349,8 @@ class Flaxen extends com.haxepunk.Engine
 	/** The prefix put before automatically named markers */
 	public static inline var markerPrefix:String = "_marker";
 
-	@:dox(hide) private var coreSystemId:Int = 0;
-	@:dox(hide) private var userSystemId:Int = 10000;
+	@:dox(hide) private var coreSystemId:Int = -20000;
+	@:dox(hide) private var userSystemId:Int = 0;
 	@:dox(hide) private var standardSystemId:Int = 20000;
 	@:dox(hide) private var numEntities:Int = 0; // number of entities created by `newEntity`
 	@:dox(hide) private var modeSystem:ModeSystem;
@@ -1366,7 +1388,7 @@ private class DependentsNode extends Node<DependentsNode>
  * Flaxen divides systems into three groups, which run in sequence.
  * Within any one group, systems are processed in the order they are added.
  */
-enum FlaxenSystemGroup { Early; Standard; Late; }
+enum FlaxenSystemGroup { Early; Standard; Late; Custom(priority:Int); }
 
 /**
  * In many methods where an Entity is expected you can instead pass a String 

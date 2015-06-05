@@ -27,19 +27,24 @@ class BitmapTextHandler extends FlaxenHandler
 					+ t + t + t + t + t + t + t + t))
 			.add(TextStyle.createBitmap(true, Center, Center, -4, -2));
 
-		var e2:Entity = f.newEntity()
-			.add(new Text("This is regular TTF text."))
-			.add(Position.topLeft());
+		var style = TextStyle.createTTF();
+		style.halign = HorizontalTextAlign.Right;
+		f.newEntity("msg")
+			.add(new Text("(Click) Switch Text"))
+			.add(style)
+			.add(new Size(com.haxepunk.HXP.width, 20)) // specify size of text box
+			.add(new Position(0, com.haxepunk.HXP.height - 20)); // specify by upper left corner of text box
 	}
 
 	override public function update()
 	{
 		if(InputService.clicked)
 		{
+			f.removeEntity("msg");
+
 			var e = f.getEntity("demo");
 			var t = e.get(Text);
-			t.message = "The message has changed. Deal with it. Bitch. Yeah that's right, I called you a bitch.";
-
+			t.message = "The message has changed. Deal with it. Wubba lubba dub dub!";
 
 			f.newEntity()
 				.add(new Image(YELLOW_FONT))

@@ -25,7 +25,8 @@ import flaxen.FlaxenHandler;
  * - TODO: The screen backdrop occasionally ends abruptly on resize. It seems to happen
  * 	  somewhat randomly. If you switch to fullscreen (F) and back it goes away.
  * 	  I so far can only reproduce it on Flash.
- * - TODO: Text is not positioning correctly.
+ * - TODO: Text is not positioning correctly. It's not scaled. Probably TextView issue. 
+ * - TODO: Handler needs a way of identifying and responding to a resize event
  */
 class LayoutHandler extends FlaxenHandler
 {
@@ -48,14 +49,6 @@ class LayoutHandler extends FlaxenHandler
 			.add(Position.zero())
 			.add(new Layer(20));
 
-		// Central content
-		var e:Entity = f.resolveEntity(logo) // get or create entity
-			.add(new Image("art/flaxen.png"))
-			.add(new Position(240, 240)) // center of central layout
-			.add(central)
-			.add(Offset.center()); // center image
-		wobble(e);
-
 		var travertine = new Image("art/travertine.png");
 		var travLayer = new Layer(15);
 		for(x in [0, 160, 320])
@@ -70,18 +63,14 @@ class LayoutHandler extends FlaxenHandler
 			f.newEntity().add(new Text(panel.label)).add(style).add(panel.layout)
 				.add(new Position(0,60)).add(new Size(160, 160));
 		}
-	}
 
-	private function wobble(e:Entity)
-	{
-		var other = which;
-		which = 1 - which;
-
-		var scale = new Scale();
-		var tween = new Tween(0.2, Easing.quadOut, Both)
-			.to(scale, "x", scales[which])
-			.to(scale, "y", scales[other]);
-		e.add(scale);
-		e.add(tween);
+		// Central content
+		var style = TextStyle.createTTF(0x008833, 40, null, Center);
+		f.resolveEntity("msg")
+			.add(new Text("Resize The Window"))
+			.add(style)
+			.add(new Size(480, 60))
+			.add(central)
+			.add(new Position(0, 225));
 	}
 }

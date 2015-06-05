@@ -2,6 +2,7 @@ package flaxen.demo;
 
 import ash.core.Entity;
 import com.haxepunk.utils.Key;
+import flaxen.common.TextAlign;
 import flaxen.common.LoopType;
 import flaxen.common.OnCompleteAnimation;
 import flaxen.component.Alpha;
@@ -14,6 +15,8 @@ import flaxen.component.Offset;
 import flaxen.component.Position;
 import flaxen.component.Layer;
 import flaxen.component.Repeating;
+import flaxen.component.Size;
+import flaxen.component.Text;
 import flaxen.Flaxen;
 import flaxen.FlaxenHandler;
 import flaxen.Log;
@@ -28,6 +31,7 @@ import flaxen.service.InputService;
  */
 class AnimationHandler extends FlaxenHandler
 {
+	private var anim:Animation;
 	private static inline var northRoll:String = "11-20";
 	private static inline var eastRoll:String = "5-10,1-4";
 
@@ -44,9 +48,10 @@ class AnimationHandler extends FlaxenHandler
 			.addFunction(function(_) { return Position.center(); }) // create new Position for each
 			.add(ImageGrid.create(60, 60)); // Share image grid
 
+		anim = new Animation(northRoll, 30);
 		var ball = f.newSetEntity("ballSet", "master")
 			.add(new Data(false))
-			.add(new Animation(northRoll, 30));
+			.add(anim);
 
 		f.newSetEntity("ballSet", "ball#")
 			.add(new Animation(eastRoll, 30, LoopType.Both))
@@ -63,7 +68,27 @@ class AnimationHandler extends FlaxenHandler
 		f.newSetEntity("ballSet", "ball#")
 			.add(new Animation(eastRoll, 30, LoopType.Backward))
 			.get(Position).x = com.haxepunk.HXP.width / 3 * 2;
+
+		updateStatus();
 	}
+
+	private function updateStatus()
+	{
+		var style = TextStyle.createTTF();
+		style.halign = Right;
+		f.resolveEntity("status")
+			.add(new Text("1 " + anim.frames 
+				+ ", 2 " + (anim.paused ? "Paused" : "Running")
+				+ ", 3 " + anim.loop 
+				+ ", 4 Restart Anim"
+				+ ", 5 " + anim.onComplete
+				+ ", 6 StopReset, 7 Stop"))
+			.add(style)
+			.add(new Size(com.haxepunk.HXP.width, 20)) // specify size of text box
+			.add(new Position(0, com.haxepunk.HXP.height - 20)); // specify by upper left corner of text box			
+	}
+
+	private var status = {};
 
 	override public function update()
 	{
@@ -72,9 +97,8 @@ class AnimationHandler extends FlaxenHandler
 			var ball = f.getEntity("master");
 			var data = ball.get(Data);
 			data.value = !data.value;
-			var anim = ball.get(Animation);
 			anim.setFrames(data.value ? eastRoll : northRoll);
-			Log.write("Change animation frames to " + anim.frames);
+			updateStatus();
 		}
 
 		if(InputService.pressed(Key.DIGIT_2))
@@ -82,7 +106,7 @@ class AnimationHandler extends FlaxenHandler
 			var ball = f.getEntity("master");
 			var anim = ball.get(Animation);
 			anim.paused = !anim.paused;
-			Log.write((anim.paused ? "Pausing" : "Unpausing") + " animation");
+			updateStatus();
 		}
 
 		if(InputService.pressed(Key.DIGIT_3))
@@ -90,7 +114,7 @@ class AnimationHandler extends FlaxenHandler
 			var ball = f.getEntity("master");
 			var anim = ball.get(Animation);
 			anim.setLoopType(anim.loop == None ? Forward : None, Last);
-			Log.write("Changing animation loop type to " + anim.loop);
+			updateStatus();
 		}
 
 		if(InputService.pressed(Key.DIGIT_4))
@@ -98,7 +122,7 @@ class AnimationHandler extends FlaxenHandler
 			var ball = f.getEntity("master");
 			var anim = ball.get(Animation);
 			anim.restart = true;
-			Log.write("Restarting animation");
+			updateStatus();
 		}
 
 		if(InputService.pressed(Key.DIGIT_5))
@@ -115,7 +139,7 @@ class AnimationHandler extends FlaxenHandler
 			}
 			anim.loop = None;
 			anim.restart = true;
-			Log.write("Changed animation stop behavior to " + anim.stopType);
+			updateStatus();
 		}
 
 		if(InputService.pressed(Key.DIGIT_6))
@@ -123,7 +147,6 @@ class AnimationHandler extends FlaxenHandler
 			var ball = f.getEntity("master");
 			var view:AnimationView = cast ball.get(Display).view;
 			view.spritemap.stop(true);
-			Log.write("Stopping anim with reset");
 		}
 
 		if(InputService.pressed(Key.DIGIT_7))
@@ -131,7 +154,6 @@ class AnimationHandler extends FlaxenHandler
 			var ball = f.getEntity("master");
 			var view:AnimationView = cast ball.get(Display).view;
 			view.spritemap.stop(false);
-			Log.write("Stopping anim without reset");
 		}
 	}
 }

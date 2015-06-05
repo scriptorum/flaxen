@@ -92,8 +92,5 @@ class ShadowText extends Graphiclist
 			case Center: #if (flash || js) TextFormatAlign.CENTER #else "center" #end;
 			case Full: #if (flash || js) TextFormatAlign.JUSTIFY #else "justify" #end;
 		}
-
-		Log.warn("ShadowText Unsupported alignment:" + alignment);
-		return #if (flash || js) TextFormatAlign.LEFT #else "left" #end;
 	}
 }

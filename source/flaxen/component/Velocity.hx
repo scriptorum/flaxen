@@ -52,4 +52,13 @@ class Velocity
 		this.x = x;
 		this.y = y;
 	}
+
+	/**
+	 * Returns a new still, Velocity instance (0,0).
+	 * @returns A Velocity instance
+	 */
+	public static function zero(): Velocity
+	{
+		return new Velocity(0, 0);
+	}
 }

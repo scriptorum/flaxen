@@ -98,6 +98,8 @@ class Animation implements Completable
 
 	/**
 	 * Convenience method for changing frames and optionally also sets looping.
+	 * Frames can be an array of integers, a single integer, or a string
+	 * containing comma-separated values: integers and/or hyphenated ranges
 	 */
 	public function setFrames(frames:Dynamic, ?loop:LoopType)
 	{
