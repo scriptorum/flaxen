@@ -1,5 +1,7 @@
 package flaxen.component;
 
+import openfl.geom.Rectangle;
+
 /*
  * Represents the 2D position of the entity.
  *
@@ -65,7 +67,12 @@ class Position
 		if(o1 == null)
 			return false;
 		return (o1.matches(o2));
-	}	
+	}
+
+	public function isInside(rect:Rectangle): Bool
+	{
+		return rect.contains(this.x, this.y);
+	}
 
 	/**
 	 * Returns an angle between this point and another point, degrees, 0 north

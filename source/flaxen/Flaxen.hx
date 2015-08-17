@@ -179,13 +179,19 @@ class Flaxen extends com.haxepunk.Engine
 	 * @param	systems		An array of `FlaxenSystem` instances
 	 * @param	group		The `FlaxenSystemGroup` to add these systems to, defaults to `Standard`
 	 */
-	public function addSystems(systems:Array<Class<FlaxenSystem>>, ?group:FlaxenSystemGroup)
+	public function addSystems(systems:Array<Dynamic>, ?group:FlaxenSystemGroup)
 	{
 		if(systems == null)
 			return;
 
 		for(sys in systems)
-			addSystem(Type.createInstance(sys, [this]), group);
+		{
+			if(Std.is(sys, FlaxenSystem))
+				addSystem(sys, group);
+			else if(Std.is(sys, Class))
+				addSystem(Type.createInstance(sys, [this]), group);
+			else Log.error("Systems array must contain FlaxenSystem classes or instances");
+		}
 	}
 
 	/**
