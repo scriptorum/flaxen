@@ -2,7 +2,7 @@ package flaxen.component;
 
 import openfl.geom.Rectangle;
 
-/*
+/**
  * Represents the 2D position of the entity.
  *
  * Most entities that have renderable components (Image, for example) require
