@@ -38,7 +38,7 @@ class BitmapTextHandler extends FlaxenHandler
 
 	override public function update()
 	{
-		if(InputService.clicked)
+		if(InputService.clicked && f.hasEntity("msg"))
 		{
 			f.removeEntity("msg");
 
