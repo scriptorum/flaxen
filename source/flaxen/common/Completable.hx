@@ -17,6 +17,7 @@ interface Completable
  * provide their own alternate OnComplete with additional options.
  * 
  * - CONSIDER: Changing DestroyComponent to RemoveComponent
+ * - TODO: Add Call(Function) as on complete option
  */
 enum OnComplete
 {

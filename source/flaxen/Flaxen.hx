@@ -1297,7 +1297,7 @@ class Flaxen extends com.haxepunk.Engine
 	 * @return	The Tween instance; you can find the enclosing entity with `getEntity(tween.name)`
 	 */
 	public function newTween(duration:Float, ?easing:EasingFunction, ?loop:LoopType, 
-		autoStart:Bool = true, ?name:String)
+		autoStart:Bool = true, ?name:String): Tween
 	{
 		var tween = new Tween(duration, easing, loop, DestroyEntity, true, name);
 		var e = newWrapper(tween, (name == null ? tweenPrefix + "#" : name));
@@ -1321,7 +1321,7 @@ class Flaxen extends com.haxepunk.Engine
 	public function newSound(file:String, loop:Bool = false, volume:Float = 1, pan:Float = 0, 
 		offset:Float = 0): Entity
 	{
-		var e = newEntity("sound");
+		var e = newEntity("sound#");
 		var sound = new Sound(file, loop, volume, pan, offset);
 		sound.onComplete = DestroyEntity;
 		e.add(sound);
