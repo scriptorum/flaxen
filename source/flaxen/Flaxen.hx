@@ -881,6 +881,24 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
+	 * Toggles the existence of the named marker.
+	 * Removes the marker if it already exists. Creates the marker if it doesn't.
+	 *
+	 * @param	name	The marker name
+	 * @returns	True if the marker NOW exists otherwise false
+	 */
+	public function toggleMarker(name:String): Bool
+	{
+		if(hasMarker(name))
+		{
+			removeMarker(name);
+			return false;
+		}
+		newMarker(name);
+		return true;
+	}
+
+	/**
 	 * Returns true if a marker exists. See `newMarker`.
 	 *
 	 * @param	name	The marker name
