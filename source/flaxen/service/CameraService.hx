@@ -19,6 +19,8 @@ import openfl.events.MouseEvent;
  */
 class CameraService
 {
+	public static var SHAKE_ENTITY_NAME:String = "_CameraService_shake";
+
 	private static var _camTween:Tween;
 	private static var f:Flaxen;
 
@@ -91,13 +93,16 @@ class CameraService
 		offsetx = Math.abs(offsetx) * offsetx;
 		offsety = Math.abs(offsety) * offsety;
 
+		if(f == null || f.hasEntity(SHAKE_ENTITY_NAME))
+			return; // Disallow overlapping shakes, which could lead to the camera sliding off point
+
 		// Shake camera
 		var tween = f.newTween(duration, Easing.random)
 			.to(HXP.camera, "x", offsetx, -offsetx)
 			.to(HXP.camera, "y", offsety, -offsety);
 
 		// On complete, restore camera
-		f.newActionQueue()
+		f.newActionQueue(true, SHAKE_ENTITY_NAME)
 			.waitForComplete(tween)
 			.setProperty(HXP.camera, "x", HXP.camera.x)
 			.setProperty(HXP.camera, "y", HXP.camera.y);
