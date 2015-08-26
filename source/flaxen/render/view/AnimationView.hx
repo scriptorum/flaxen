@@ -50,7 +50,11 @@ class AnimationView extends View
 	private function animationFinished(): Void
 	{
 		if(animation.loop != None && animation.stop == false)
+		{
+			if(animation.random)
+				animation.shuffle();
 			return;
+		}
 
 		if(animation.onComplete == DestroyComponent)
 			entity.remove(Animation);

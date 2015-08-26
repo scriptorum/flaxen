@@ -3,6 +3,7 @@ package flaxen.component;
 import flaxen.common.Completable;
 import flaxen.common.LoopType;
 import flaxen.common.OnCompleteAnimation;
+import flaxen.util.ArrayUtil;
 import flaxen.util.DynUtil;
 
 /**
@@ -50,7 +51,7 @@ class Animation implements Completable
 	/** The current frame of the animation; READ-ONLY */
 	public var frame:Int = 0;
 
-	/** This is not currently implemented */
+	/** Randomizes the frame order every loop */
 	public var random:Bool = false;
 
 	/**
@@ -118,5 +119,14 @@ class Animation implements Completable
 		if(onComplete != null)
 			this.onComplete = onComplete;
 		update();
+	}
+
+	/**
+	 * Shuffles the playback order of the frames.
+	 * This is called automatically (every loop) if random is set.
+	 */
+	public function shuffle()
+	{
+		ArrayUtil.shuffle(this.frameArr);
 	}
 }
