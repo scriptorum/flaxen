@@ -1,6 +1,7 @@
 package flaxen.render.view;
 
 import flaxen.component.Image;
+import flaxen.component.Repeating;
 
 import com.haxepunk.graphics.Backdrop;
 
@@ -33,9 +34,10 @@ class BackdropView extends View
 
 	private function setBackdrop(image:Image)
 	{
+		var repeating:Repeating = getComponent(Repeating);
 		curWidth = com.haxepunk.HXP.screen.width; // HAXEPUNK FIX
 		curHeight = com.haxepunk.HXP.screen.height; // HAXEPUNK FIX
-		graphic = new Backdrop(image.path);
+		graphic = new Backdrop(image.path, repeating.repeatX, repeating.repeatY);
 		setImageDimensions(image);
 		curImage = image;
 	}
