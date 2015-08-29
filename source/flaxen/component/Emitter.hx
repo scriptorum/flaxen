@@ -1,14 +1,13 @@
 /**
  * A basic particle emitter.
  *
- * - TODO: Change rotation to fireAngle and distance to fireDistance
+ * - TODO: Change rotation to fireAngle and f to fireDistance
  * - TODO: Add support for reversed motion (in HP's Emitter.setMotion)
  * - TODO: Add support for easing on motion, alpha, color, etc.
  */
 package flaxen.component;
 
 import flaxen.common.Completable;
-import flaxen.component.Position;
 import flaxen.component.Scale;
 import flaxen.component.Rotation;
 
@@ -57,10 +56,10 @@ class Emitter implements Completable
     public var rotationRand:Rotation;
 	
     /** Position of emission relative to emitter's position */
-    public var position:Position;
+    public var position:{x:Float, y:Float};
 	
     /** Define this for a random emission within a rectangle */
-    public var emitRectRand:Position;
+    public var emitRectRand:{x:Float, y:Float};
 	
     /** Define this for a random emission within a circle */
     public var emitRadiusRand:Float = 0.0; 
