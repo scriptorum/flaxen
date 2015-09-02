@@ -15,6 +15,17 @@ class MathUtil
 	}
 
 	/**
+	 * Flips a coin. Returns true on heads, false on tails.
+	 * 
+	 * @param trueChance If supplied, changes the probability of heads (defaults to 0.5/50%)
+	 * @returns A random true or false
+	 */
+	inline public static function rndBool(trueChance:Float = 0.5): Bool
+	{
+		return (Math.random() < trueChance);
+	}
+
+	/**
 	 * Returns a random float between a and b. B must be higher than a.
 	 * If b is null, returns a random float between 0 and a.
 	 */

@@ -1,20 +1,29 @@
 
 package flaxen.component;
 
+/**
+ * Applies a scale transformation to the entity.
+ * If an entity also has a `Size` the scale will be applied to that Size.
+ */
 class Scale
 {
 	public var x:Float;
 	public var y:Float;
 
-	public function new(x:Float = 1.0, y:Float = 1.0)
+	/**
+	 * Constructor
+	 * @param x The x scaling, defaults to 1.0 (no scaling)
+	 * @param y The y scaling, defaults to null (uniform scaling; x==y)
+	 */
+	public function new(x:Float = 1.0, ?y:Float = null)
 	{
 		set(x, y);
 	}
 
-	public function set(x:Float, y:Float)
+	public function set(x:Float, ?y:Float = null)
 	{
 		this.x = x;
-		this.y = y;
+		this.y = (y == null ? x : y);
 	}
 
 	public function clone(): Scale
