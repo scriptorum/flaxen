@@ -104,7 +104,7 @@ class AudioSystem extends FlaxenSystem
 
 	private function updateAudio(sound:Sound, entity:Entity, globalAudio:GlobalAudio): Void
 	{
-		var audio = entity.get(Audio);
+		var audio:Audio = entity.get(Audio);
 
 		if(sound.stop)
 		{
@@ -137,6 +137,7 @@ class AudioSystem extends FlaxenSystem
 
 		// Update volume/panning
 		var volume:Float = sound.volume * globalAudio.volume;
+
 		if(volume != audio.channel.soundTransform.volume || sound.pan != audio.channel.soundTransform.pan)
 			audio.channel.soundTransform = new SoundTransform(volume, sound.pan);
 	}
