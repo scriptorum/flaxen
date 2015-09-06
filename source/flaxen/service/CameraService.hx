@@ -19,10 +19,12 @@ import openfl.events.MouseEvent;
  */
 class CameraService
 {
-	public static var SHAKE_ENTITY_NAME:String = "_CameraService_shake";
+	public static var CAMERA_EFFECT:String = "_CameraService_effect";
 
 	private static var _camTween:Tween;
 	private static var f:Flaxen;
+	private static var x:Float = 0;
+	private static var y:Float = 0;
 
 	public static function init(f:Flaxen)
 	{
@@ -50,6 +52,7 @@ class CameraService
 	public static function reset(): Void
 	{
 		HXP.resetCamera();
+		CameraService.x = CameraService.y = 0.0;
 	}
 
 	private static function cameraTweenFinish(evt:TweenEvent)
@@ -76,35 +79,73 @@ class CameraService
 			entity.add(CameraFocus.instance);			
 	}
 
+	public static function getX(): Float return x;
+	public static function getY(): Float return y;
+
+	/**
+	 * Sets the camera position.
+	 * You must use this instead of accessing HXP.camera directly if you intend 
+	 * to do any camera effects like the camera shake. The camera defaults to 0,0.
+	 * @param x The horizontal position of the camera
+	 * @param y The vertical position of the camera
+	 */
+	public static function move(x:Float, y:Float)
+	{
+		CameraService.x = x;
+		CameraService.y = y;
+
+		if(!f.hasEntity(CAMERA_EFFECT))
+			HXP.setCamera(x, y);
+	}
+
+	/**
+	 * Sets the camera position.
+	 * You must use this instead of accessing HXP.camera directly if you intend 
+	 * to do any camera effects like the camera shake.
+	 * @param x How far to shift the camera horizontally (positive is right)
+	 * @param y How far to shift the camera vertically (positive is down)
+	 */
+	public static function moveRel(xOff:Float, yOff:Float)
+	{
+		move(CameraService.x + xOff, CameraService.y + yOff);
+	}
+
 	/**
 	 * Shakes the camera +/- the offset.
 	 * Make sure the screen buffer size is (offsetx * 2, offsety * 2) bigger than the window.
 	 *
-	 * @param duration How long to shake the camera in sec; resets camera offset to 0,0 when complete
+	 * NOTE: If you're going to move the camera while it is shaking, you must use `move`
+	 * and `moveRel` to set the camera's position, rather than setting HXP.camera directly.
+	 *
+	 * @param duration How long to shake the camera in seconds
 	 * @param offsetx The horizontal shakiness (0 = no horizontal shake)
 	 * @param offsety The vertical shakiness (0 = no vertical shake, null=copies offsetx)
-	 *  - TODO: Takes complete control of camera while shaking - add ability to move camera WHILE shaking
 	 */
 	public static function shake(duration:Float, offsetx:Float, ?offsety)	
 	{
+		// Verify values within domain
 		Log.assert(duration > 0, "Duration must be positive");
+
+		// Set defaults
 		if(offsety == null)
 			offsety = offsetx;
-		offsetx = Math.abs(offsetx) * offsetx;
-		offsety = Math.abs(offsety) * offsety;
 
-		if(f == null || f.hasEntity(SHAKE_ENTITY_NAME))
-			return; // Disallow overlapping shakes, which could lead to the camera sliding off point
+		// Disallow overlapping camera effects
+		if(f == null || f.hasEntity(CAMERA_EFFECT))
+			return; 
 
+		// If using HXP.camera directly, ensure our camera x/y matches HXP's
+		CameraService.x = HXP.camera.x;
+		CameraService.y = HXP.camera.y;
+ 
 		// Shake camera
 		var tween = f.newTween(duration, Easing.random)
-			.to(HXP.camera, "x", offsetx, -offsetx)
-			.to(HXP.camera, "y", offsety, -offsety);
+			.call(function(f:Float) { HXP.camera.x = CameraService.x + f * offsetx * 2 - offsetx; })
+			.call(function(f:Float) { HXP.camera.y = CameraService.y + f * offsety * 2 - offsety; });
 
 		// On complete, restore camera
-		f.newActionQueue(true, SHAKE_ENTITY_NAME)
+		f.newActionQueue(true, CAMERA_EFFECT)
 			.waitForComplete(tween)
-			.setProperty(HXP.camera, "x", HXP.camera.x)
-			.setProperty(HXP.camera, "y", HXP.camera.y);
+			.call(function() HXP.setCamera(CameraService.x, CameraService.y));
 	}
 }

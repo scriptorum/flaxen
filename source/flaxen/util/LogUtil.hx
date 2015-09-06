@@ -1,11 +1,12 @@
 package flaxen.util;
 
-import flaxen.util.ArrayUtil;
-
 #if native
 import sys.io.File;
 import sys.io.FileOutput;
 #end
+
+import flaxen.util.ArrayUtil;
+import haxe.rtti.Meta;
 
 /**
  * This and Log should really be merged, and some things from Log should move to SystemUtil or something.
@@ -90,6 +91,9 @@ class LogUtil
 		if (o == null)
 			return "<NULL>";
 
+        if(Reflect.isFunction(o))
+            return null; // Not instance data, skip
+
 		if(Std.is(o, Int) || Std.is(o, Float) || Std.is(o, Bool) || Std.is(o, String) 
                 || Reflect.isEnumValue(o))
 			return Std.string(o);
@@ -108,12 +112,22 @@ class LogUtil
 			return "<MAXDEPTH>";
 
 		var result = Type.getClassName(clazz) + ":{";
+        var meta = Meta.getFields(clazz);
 		var sep = "\n" + indent;
-
-		for(f in Reflect.fields(o))
+		for(f in Type.getInstanceFields(clazz))
 		{
-			result += sep + f + ":" + internalDump(Reflect.field(o, f), recursed, depth - 1, indent + "  ");
-			sep = ",\n" + indent;
+            var dump:String = null;
+            var fieldMeta:Dynamic = Reflect.field(meta, f);
+
+            if(fieldMeta != null && Reflect.hasField(fieldMeta, "nodump")) // @nodump on field
+                dump = "[" + Reflect.field(o, f)+ "]";  // @nodump? Just report object type
+			else dump = internalDump(Reflect.field(o, f), recursed, depth - 1, indent + "  ");
+
+            if(dump != null)
+            {
+                result += sep + '$f:$dump';
+                sep = ",\n" + indent;
+            }
 		}
 		return result + "}";
 	}

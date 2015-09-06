@@ -27,6 +27,8 @@ import flaxen.render.view.View;
 class Display
 {
 	public var updateId:Int = -1;
+	
+	@nodump // prevent recursing into with LogUtil.dump
 	public var view:View;
 
 	/**

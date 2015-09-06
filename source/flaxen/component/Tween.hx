@@ -105,8 +105,8 @@ class Tween implements Completable
 	 *
 	 *  - TODO: Add basic pathing support by allowing Array for target
 	 *
-	 * @param	obj		The object with the property that is to be tweened
-	 * @param	prop	The name of the property within the object
+	 * @param	obj		The object with the property that is to be tweened, or a function Float->Void that will be called with the tween value
+	 * @param	prop	The name of the property within the object (ignored if obj is a function)
 	 * @param	target	The target value to tween to
 	 * @param	initial	The initial value to tween from; if not supplied, defaults to the current value of the property
 	 * @param	easing	The easing function to use for this tween; if not supplied, defaults to the current value of `Tween.easing` 
@@ -114,22 +114,37 @@ class Tween implements Completable
 	 */
 	public function addTarget(obj:Dynamic, prop:String, target:Float, ?initial:Null<Float>, ?easing:EasingFunction): Tween
 	{
+		var isFunc:Bool = Reflect.isFunction(obj);
+
 		if(Math.isNaN(cast target))
 			Log.error('Property $prop is not a number ($target)');
 		if(initial == null)
+		{
+			if(isFunc)
+				Log.error("Cannot add target callback without null initial value");
 			initial = Reflect.getProperty(obj, prop);
+		}
 		if(easing == null)
 			easing = this.easing;
 
 		var change = target - initial; // precalculate one subtraction, such a good optimizer I yam I yam
-		var o = { obj:obj, prop:prop, change:change, initial:initial, easing:easing };
+		var o = { obj:obj, prop:prop, change:change, initial:initial, easing:easing, callback:isFunc };
 		targets.push(o);
 
 		return this;
 	}
 
 	/**
-	 * Convenience method, see `addTarget` for behavior.
+	 * Convenience method for `addTarget` function callback behavior.
+	 * Note this alters the order of the start/end values, since `start` is required for callbacks.
+	 */
+	public function call(func:Float->Void, start:Float = 0.0, end:Float = 1.0, ?easing:EasingFunction): Tween
+	{
+		return addTarget(func, null, start, end, easing);
+	}
+
+	/**
+	 * Convenience method for `addTarget` object/property behavior.
 	 */
 	inline public function to(obj:Dynamic, prop:String, target:Float, ?initial:Null<Float>, ?easing:EasingFunction): Tween
 	{
@@ -337,7 +352,9 @@ class Tween implements Completable
 			var value:Float = target.initial + target.change * t;
 
 			// Set tween value
-			Reflect.setProperty(target.obj, target.prop, value);
+			if(target.callback)
+				target.obj(value); // callback
+			else Reflect.setProperty(target.obj, target.prop, value); // object/prop tween
 		}
 	}
 }
@@ -361,4 +378,7 @@ class Tween implements Completable
 
 	/** The easing function to use for this tween; if not supplied, defaults to `Tween.easing` */
 	@:optional var easing:EasingFunction;
+
+	/** True if obj is a Function Float->Void */
+	var callback:Bool;
 }
