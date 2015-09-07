@@ -23,4 +23,9 @@ class Dependents
 	{
 		this.names = new Array<String>();
 	}
+
+	public function count(): Int
+	{
+		return names.length;
+	}
 }

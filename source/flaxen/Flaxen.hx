@@ -972,6 +972,20 @@ class Flaxen extends com.haxepunk.Engine
 	}
 
 	/**
+	 * Reports the number of dependents of an entity.
+	 *
+	 * @param	ref		An entity object, or the string name of such an object
+	 */
+	public function countDependents(ref:EntityRef): Int
+	{
+		var entity:Entity = ref.toEntity(this);
+		var dependents:Dependents = entity.get(Dependents);
+		if(dependents == null)
+			return 0;
+		return dependents.count();
+	}
+
+	/**
 	 * Callback; forces the cascade removal of dependent entities.
 	 * This is an internal method.
 	 */
