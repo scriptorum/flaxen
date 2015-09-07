@@ -91,10 +91,12 @@ class View extends com.haxepunk.Entity
 		{
 			if(graphic != null)
 			{
-				var amount = getComponent(ScrollFactor).amount;
+				var sf:ScrollFactor = getComponent(ScrollFactor);
 				var graphic = cast(graphic, com.haxepunk.Graphic);
-				if(amount != graphic.scrollX || amount != graphic.scrollY)
-					graphic.scrollX = graphic.scrollY = amount;
+				if(sf.x != graphic.scrollX)
+					graphic.scrollX = sf.x;
+				if(sf.y != graphic.scrollY)
+					graphic.scrollY = sf.y;
 			}
 		} // TODO What if ScrollFactor is removed
 
