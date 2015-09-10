@@ -1341,23 +1341,21 @@ class Flaxen extends com.haxepunk.Engine
 	 * Creates a new Sound and puts it into a new Entity. See Sound.
 	 * This entity will be destroyed when the tween completes.
 	 * 
-	 * - TODO This has an inconsistent return. Modify Sound to include a name attribute, and return the Sound instance here.
-	 *
 	 * @param	file	The path to the sound asset; ex. "sound/beep.wav"
 	 * @param	loop	If true, the sound loops continuously; defaults to false
 	 * @param	volume	From 0 (mute) to 1 (default, full volume)
 	 * @param	pan		From -1 (left pan) to 1 (right pan); defaults to 0 (center)
 	 * @param	offset	The number of seconds from the start of the sound to skip; defaults to 0
-	 * @returns	The enclosing Entity
+	 * @param	name		An optional name or pattern; see `new Entity` for naming
+	 * @returns	The soundinstance; you can find the enclosing entity with `getEntity(sound.name)`
 	 */
 	public function newSound(file:String, loop:Bool = false, volume:Float = 1, pan:Float = 0, 
-		offset:Float = 0): Entity
+		offset:Float = 0, ?name:String): Sound
 	{
-		var e = newEntity("sound#");
-		var sound = new Sound(file, loop, volume, pan, offset);
-		sound.onComplete = DestroyEntity;
-		e.add(sound);
-		return e;
+		var sound = new Sound(file, loop, volume, pan, offset, DestroyEntity, name);
+		var e:Entity = newWrapper(sound, (name == null ? soundPrefix + "#" : name));
+		sound.name = name;
+		return sound;
 	}
 
 	/** The name of the entity holding the ProfileStats component */
@@ -1383,6 +1381,9 @@ class Flaxen extends com.haxepunk.Engine
 
 	/** The prefix put before automatically named entities holding tweens */
 	public static inline var tweenPrefix:String = "_tween";
+
+	/** The prefix put before automatically named entities holding sounds */
+	public static inline var soundPrefix:String = "_sound";
 
 	/** The prefix put before automatically named markers */
 	public static inline var markerPrefix:String = "_marker";

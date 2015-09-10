@@ -13,6 +13,11 @@ using StringTools;
  */
 class Sound implements Completable
 {
+	/** The name is primarily intended for the holding entity's name, which can be
+		helpful in some cases; `Flaxen.newSound` sets this automatically;
+		can be null if not defined */
+	public var name:String;
+
 	/* When the sound is complete, what action should we take? */
 	public var onComplete:OnComplete;
 
@@ -40,7 +45,6 @@ class Sound implements Completable
 	/** If cannot play sound, tries again the number of times indicated */
 	public var failsAllowed:Int = 0; 
 
-
 	/**
 	 * May be modified real-time, will be picked up by AudioSystem
 	 */
@@ -51,7 +55,8 @@ class Sound implements Completable
 	 */
 	public var pan:Float; // -1 full left, +1 full right
 
-	public function new(file:String, loop:Bool = false, volume:Float = 1, pan:Float = 0, offset:Float = 0)
+	public function new(file:String, loop:Bool = false, volume:Float = 1, pan:Float = 0, offset:Float = 0, 
+		?onComplete:OnComplete, ?name:String)
 	{
 		this.isMusic = file.endsWith("mp3");
 		this.file = file;
@@ -59,6 +64,7 @@ class Sound implements Completable
 		this.volume = volume;
 		this.pan = pan;
 		this.offset = offset;
-		this.onComplete = None;
+		this.onComplete = (onComplete == null ? None : onComplete);
+		this.name = name;
 	}
 }
