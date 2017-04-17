@@ -1,5 +1,5 @@
-#Flaxen
-##Overview
+# Flaxen
+## Overview
 > You've got Haxepunk in my Ash! You got Ash in my Haxepunk!
 
 Flaxen blends an entity-component-system with a Haxe-based game engine, powered by [HaxePunk](https://github.com/HaxePunk/HaxePunk) and [Ash](https://github.com/nadako/Ash-HaXe). 
@@ -19,14 +19,14 @@ A user guide is up [on the wiki](https://github.com/scriptorum/flaxen/wiki). The
 |:---:|:---:|
 | [User Guide](https://github.com/scriptorum/flaxen/wiki) | [API](http://scriptorum.github.io/flaxen/dox/flaxen/Flaxen.html) |
 
-##Dependencies/Credits
+## Dependencies/Credits
 Flaxen would not be possible without the work of these awesome projects:
 * [HaxePunk](https://github.com/HaxePunk/HaxePunk) 
 * [Ash-Haxe](https://github.com/nadako/Ash-HaXe)
 * [OpenFL](http://www.openfl.org/)
 * [Haxe](http://haxe.org)
 
-##The MIT License (MIT)
+## The MIT License (MIT)
 
 Copyright (c) 2013-2015 Eric Lund
 
